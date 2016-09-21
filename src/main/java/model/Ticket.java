@@ -8,6 +8,13 @@ public class Ticket {
 	private User technician; //The user/technician who will respond to the ticket.
 	private String phone; //Requestor's phone
 	private String email; //Requestor's email. May be different from the User's login email.
+	private enum Progress{
+		OPEN,
+		ASSIGNED,
+		INPROGREGSS,
+		ONHOLD,
+		COMPLETED;
+	}
 	
 	//Constant values that apply to the status of a project
 	private Status status;

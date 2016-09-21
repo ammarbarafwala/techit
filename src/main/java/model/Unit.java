@@ -8,4 +8,6 @@ public class Unit {
 	
 	//A unit may have more than one supervisor. This will allow them to assign temporary leads when they are gone.
 	private ArrayList<User> supervisors;
+	private String contact;
+	private String address;
 }
