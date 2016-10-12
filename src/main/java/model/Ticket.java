@@ -1,30 +1,79 @@
 package model;
 
 import java.util.Date;
+import java.util.List;
 
 public class Ticket {
-	private int id; //Ticket's unique id.
-	private User requestor; //The user who requested the ticket.
-	private User technician; //The user/technician who will respond to the ticket.
-	private String phone; //Requestor's phone
-	private String email; //Requestor's email. May be different from the User's login email.
-	private enum Progress{
-		OPEN,
-		ASSIGNED,
-		INPROGREGSS,
-		ONHOLD,
-		COMPLETED;
+	private int id; // Ticket's unique id.
+	private String usernameRequestor; // The user who requested the ticket.
+	private User technician; // The user/technician who will respond to the
+								// ticket.
+	private String phone; // Requestor's phone
+	private String email; // Requestor's email. May be different from the User's
+							// login email.
+
+	private enum Progress {
+		OPEN(0), ASSIGNED(1), INPROGREGSS(2), ONHOLD(3), COMPLETED(4);
+
+		private int progress;
+
+		Progress(int progress) {
+			this.progress = progress;
+		};
+
+		@SuppressWarnings("unused")
+		public int getProgressValue() {
+			return progress;
+		}
+
+	};
+
+	// Constant values that apply to the status of a project
+	// private Status status; //<-- This was changed into a list of comments
+	private Progress currentProgress;
+	private String details; // Text concerning the project.
+	private Date startDate; // Project's starting date.
+	private Date endDate; // Project's completed date.
+	private String ticketLocation; // Location where the project is.
+	private List<Update> updates;
+	// Needs more work...
+	private String completionDetails; // Information pertaining vendors, cost,
+										// materials used.
+
+	// Full constructor for every field, probably need when pulling existing
+	// data from database
+	public Ticket(int id, String requestor, User technician, String phone, String email, int progress, String details,
+			Date startDate, Date endDate, String ticketLocation) {
+		this.id = id;
+		this.usernameRequestor = requestor;
+		this.technician = technician;
+		this.phone = phone;
+		this.email = email;
+
+		switch (progress) {
+		case 0:
+		default:
+			this.currentProgress = Progress.OPEN;
+			break;
+		case 1:
+			this.currentProgress = Progress.ASSIGNED;
+			break;
+		case 2:
+			this.currentProgress = Progress.INPROGREGSS;
+			break;
+		case 3:
+			this.currentProgress = Progress.ONHOLD;
+			break;
+		case 4:
+			this.currentProgress = Progress.COMPLETED;
+			break;
+		}
+		this.details = details;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.ticketLocation = ticketLocation;
+
 	}
-	
-	//Constant values that apply to the status of a project
-	private Status status;
-	private String details; //Text concerning the project.
-	private Date startDate; //Project's starting date.
-	private Date endDate; //Project's completed date.
-	private String ticketLocation; //Location where the project is.
-	
-	//Needs more work...
-	private String completionDetails; //Information pertaining vendors, cost, materials used.
 
 	public int getId() {
 		return id;
@@ -34,12 +83,12 @@ public class Ticket {
 		this.id = id;
 	}
 
-	public User getRequestor() {
-		return requestor;
+	public String getRequestor() {
+		return usernameRequestor;
 	}
 
-	public void setRequestor(User requestor) {
-		this.requestor = requestor;
+	public void setRequestor(String requestor) {
+		this.usernameRequestor = requestor;
 	}
 
 	public User getTechnician() {
@@ -64,14 +113,6 @@ public class Ticket {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
-	public void setStatus(Status status) {
-		this.status = status;
 	}
 
 	public String getDetails() {
@@ -113,6 +154,39 @@ public class Ticket {
 	public void setCompletionDetails(String completionDetails) {
 		this.completionDetails = completionDetails;
 	}
-	
-	
+
+	public List<Update> getUpdates() {
+		return updates;
+	}
+
+	public void setUpdates(List<Update> updateComments) {
+		this.updates = updateComments;
+	}
+
+	public int getProgress() {
+		return currentProgress.getProgressValue();
+	}
+
+	public void setProgress(int progress) {
+		switch (progress) {
+		case 0:
+			this.currentProgress = Progress.OPEN;
+			break;
+		case 1:
+			this.currentProgress = Progress.ASSIGNED;
+			break;
+		case 2:
+			this.currentProgress = Progress.INPROGREGSS;
+			break;
+		case 3:
+			this.currentProgress = Progress.ONHOLD;
+			break;
+		case 4:
+			this.currentProgress = Progress.COMPLETED;
+			break;
+		default:
+			break; // Does nothing if it is outside range
+		}
+	}
+
 }

@@ -1,91 +1,64 @@
 package model;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 public class User {
 
 	private int id; 				// User's unique id
 	private String firstname; 		// User's first name
 	private String lastname; 		// User's last name
 	private String username; 		// Username and email are the same.
-	private String password; 		// User's password
-	private int CIN; 				// User's campus ID if applicable
-	private boolean isSupervisor; 	// Whether if the technician is a supervisor
 
 	// Types of users on the system.
 	private enum Position {
-		SYS_ADMIN(0), TECHNICIAN(1), USER(2);
+		SYS_ADMIN(0), SUPERVISING_TECHNICIAN(1), TECHNICIAN(2), USER(3);
 
-		private int position_value;
+		private int positionValue;
 
 		Position(int position_value) {
-			this.position_value = position_value;
+			this.positionValue = position_value;
 		}
 
 		public int getValue() {
-			return position_value;
+			return positionValue;
 		}
 	};
 
 	private Position status;
 
 	private int unit_id; 		// Describes where the user belongs to in a unit (by
-								// id).
-	private int supervisor_id;
 
 	// Simple constructor for regular users ( students )
-	public User(int id, String firstname, String lastname, String username, String password, int CIN) {
+	public User(int id, String firstname, String lastname, String username, int CIN) {
 		this.id = id;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.username = username;
-		// Hashing the password with SHA256 hash
-		try {
-			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			this.password = org.apache.commons.codec.digest.DigestUtils.sha256Hex(password);
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		this.CIN = CIN;
 		this.status = Position.USER;
-		this.unit_id = 0; 				// User does not belongs to any unit
-		this.supervisor_id = 0; 		/* User does not have a supervisor ( not a
-										   technician or a supervisor themselves)*/
-		this.isSupervisor = false;
+		this.unit_id = 0; 				// User does not belongs to any unit\
 	}
 
 	// Full user paramenter constructor
-	public User(int id, String firstname, String lastname, String username, String password, int CIN, int position, 
-			int unit_id, int supervisor_id, boolean isSupervisor )
+	public User(int id, String firstname, String lastname, String username, int position, 
+			int unit_id)
 	{
 		this.id = id;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.username = username;
-		this.CIN = CIN;
-		// Hashing the password with SHA256 hash
-		try {
-			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			this.password = org.apache.commons.codec.digest.DigestUtils.sha256Hex(password);
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		switch(position)
 		{
 			case 0:
 				this.status = Position.SYS_ADMIN;
-			case 1:									// These assume that you want to enter a new technician
-			default: 								// and somehow enter a number thats not intended
+			case 1:
+				this.status = Position.SUPERVISING_TECHNICIAN;
+			case 2:
 				this.status = Position.TECHNICIAN;
+			case 3:									// These assume that you want to enter a new technician
+			default: 								// and somehow enter a number thats not intended
+				this.status = Position.USER;
 		}
 		
-		this.supervisor_id = supervisor_id;
 		this.unit_id = unit_id;
-		this.isSupervisor = isSupervisor;
 		
 	}
 
@@ -127,22 +100,6 @@ public class User {
 		this.username = username;
 	}
 
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public int getCIN() {
-		return CIN;
-	}
-
-	public void setCIN(int cIN) {
-		CIN = cIN;
-	}
-
 	public int getUnit_id() {
 		return unit_id;
 	}
@@ -155,10 +112,16 @@ public class User {
 		switch (position) {
 		case 0:
 			this.status = Position.SYS_ADMIN;
+			break;
 		case 1:
-			this.status = Position.TECHNICIAN;
+			this.status = Position.SUPERVISING_TECHNICIAN;
+			break;
 		case 2:
+			this.status = Position.TECHNICIAN;
+			break;
+		case 3:
 			this.status = Position.USER;
+			break;
 		}
 
 	}
@@ -167,21 +130,5 @@ public class User {
 		return status.getValue();
 	}
 
-	public boolean isSupervisor() {
-		return isSupervisor;
-	}
-
-	public void setSupervisor(boolean isSupervisor) {
-		this.isSupervisor = isSupervisor;
-	}
-
-	public int getSupervisor_id() {
-		return supervisor_id;
-	}
-
-	public void setSupervisor_id(int supervisor_id) {
-		this.supervisor_id = supervisor_id;
-	}
-	
 	
 }
