@@ -70,7 +70,12 @@ public class ActiveDirectory {
         try {
             dirContext = new InitialDirContext(properties);
         } catch (NamingException e) {
+<<<<<<< HEAD
             System.out.println(e.getMessage());
+=======
+            throw new Exception("Could not connect");
+            //System.out.println(e.getMessage());
+>>>>>>> origin/master
         }
         
         //default domain base for search
@@ -92,9 +97,14 @@ public class ActiveDirectory {
      * @throws NamingException
      */
     public NamingEnumeration<SearchResult> searchUser(String searchValue, String searchBy, String searchBase) throws NamingException {
+<<<<<<< HEAD
     	String filter = getFilter(searchValue, searchBy);  
     	String base = (null == searchBase) ? domainBase : getDomainBase(searchBase); // for eg.: "DC=myjeeva,DC=com";
     	System.out.println(filter);
+=======
+    	String filter = getFilter(searchValue, searchBy);    	
+    	String base = (null == searchBase) ? domainBase : getDomainBase(searchBase); // for eg.: "DC=myjeeva,DC=com";
+>>>>>>> origin/master
 		return this.dirContext.search(base, filter, this.searchCtls);
     }
 

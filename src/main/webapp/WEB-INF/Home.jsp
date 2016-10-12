@@ -28,11 +28,16 @@
 		<ul class="nav nav-pills nav-stacked pull-right">
 			<li class="active"><a href="#">Home</a></li>
 			<li><a href="Add">Add</a></li>
+<<<<<<< HEAD
 			<li><a href="#"> ${sessionScope.emailId} </a></li>
 			<li><a href="#"> ${sessionScope.distinguishedName} </a></li>
 			<li><a href="#">Add</a></li>
 		</ul>
 	</div>
 	
+=======
+		</ul>
+	</div>
+>>>>>>> origin/master
 </body>
 </html>

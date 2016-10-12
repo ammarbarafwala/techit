@@ -6,6 +6,10 @@ public class User {
 	private String firstname; 		// User's first name
 	private String lastname; 		// User's last name
 	private String username; 		// Username and email are the same.
+<<<<<<< HEAD
+=======
+	private int CIN; 				// User's campus ID if applicable
+>>>>>>> origin/master
 
 	// Types of users on the system.
 	private enum Position {
@@ -32,18 +36,30 @@ public class User {
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.username = username;
+<<<<<<< HEAD
+=======
+		this.CIN = CIN;
+>>>>>>> origin/master
 		this.status = Position.USER;
 		this.unit_id = 0; 				// User does not belongs to any unit\
 	}
 
 	// Full user paramenter constructor
+<<<<<<< HEAD
 	public User(int id, String firstname, String lastname, String username, int position, 
+=======
+	public User(int id, String firstname, String lastname, String username,int CIN, int position, 
+>>>>>>> origin/master
 			int unit_id)
 	{
 		this.id = id;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.username = username;
+<<<<<<< HEAD
+=======
+		this.CIN = CIN;
+>>>>>>> origin/master
 		
 		switch(position)
 		{
@@ -100,6 +116,17 @@ public class User {
 		this.username = username;
 	}
 
+<<<<<<< HEAD
+=======
+	public int getCIN() {
+		return CIN;
+	}
+
+	public void setCIN(int cIN) {
+		CIN = cIN;
+	}
+
+>>>>>>> origin/master
 	public int getUnit_id() {
 		return unit_id;
 	}

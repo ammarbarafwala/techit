@@ -53,9 +53,13 @@ public class Login extends HttpServlet {
 		String password = request.getParameter("password");
 		
 		LoginFunction lf = new LoginFunction();
+<<<<<<< HEAD
 		
 		int check = 4;
 		
+=======
+		int check = 4;
+>>>>>>> origin/master
 		try {
 			check = lf.checkSystemAccount(user, password);
 		} catch (SQLException e) {
@@ -65,6 +69,7 @@ public class Login extends HttpServlet {
 		
 		if (check == 0){
 			// Checks AD
+<<<<<<< HEAD
 			String domain = "ad.calstatela.edu";
 	        String choice = "username";
 
@@ -144,10 +149,22 @@ public class Login extends HttpServlet {
 			request.setAttribute("errorMessage", "Invalid username or password, please try again!");
 			request.getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
 		}
+=======
+		}
+		else if (check == 1){
+			// Incorrect pass
+			request.setAttribute("errorMessage", "Invalid username or password, please try again!");
+			request.getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
+		}
+>>>>>>> origin/master
 		else if (check == 2){
 			request.getSession().setAttribute("user", user);
 			request.getSession().setAttribute("firstname", lf.getSystemAccount().getFirstname());
 			request.getSession().setAttribute("lastname", lf.getSystemAccount().getLastname());
+<<<<<<< HEAD
+=======
+			request.getSession().setAttribute("CIN", lf.getSystemAccount().getCIN());
+>>>>>>> origin/master
 			request.getSession().setAttribute("unit_id", lf.getSystemAccount().getUnit_id());
 			request.getSession().setAttribute("position", lf.getSystemAccount().getStatus());
 			request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);	
