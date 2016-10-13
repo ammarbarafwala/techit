@@ -5,8 +5,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
-
+import model.Ticket;
 import model.User;
 /*
  * This class is meant to check if the user exists in our database. The class has a private 
@@ -18,9 +19,11 @@ import model.User;
 
 public class LoginFunction {
 	private User user;
+	private ArrayList<Ticket> ticketList;
 	
 	public LoginFunction(){
 		this.user = null;
+		this.ticketList = new ArrayList<Ticket>();
 	}
 	
 	public int checkSystemAccount(String user, String password) throws SQLException 
@@ -44,13 +47,16 @@ public class LoginFunction {
 		Connection c = null;
 		try
 		{
-			String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu05";
-			String db_user = "cs4961stu05";
-			String db_pass = ".Im0nx.W";
+//			String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu05";
+//			String db_user = "cs4961stu05";
+//			String db_pass = ".Im0nx.W";
+			String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
+			String db_user = "cs4961stu01";
+			String db_pass = ".XCGG1Bc";
 			
 			c = DriverManager.getConnection(url, db_user, db_pass);
 			
-			String search_user = "select * from user where username = ?";
+			String search_user = "select * from users where username = ?";
             PreparedStatement pstmt = c.prepareStatement( search_user );
             pstmt.setString( 1, user );
             ResultSet rs = pstmt.executeQuery();
@@ -86,6 +92,8 @@ public class LoginFunction {
             	c.close();
             	return 0;	 // User does not exist in the system
             }
+            
+            
             
 		}
 		finally{

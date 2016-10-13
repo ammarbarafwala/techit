@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 import external.ActiveDirectory;
 import model.User;
 import function.LoginFunction;
+import function.RetrieveTicket;
+import function.RetrieveUpdates;
 
 
 @WebServlet(urlPatterns="/Login", loadOnStartup = 1)
@@ -53,6 +55,8 @@ public class Login extends HttpServlet {
 		String password = request.getParameter("password");
 		
 		LoginFunction lf = new LoginFunction();
+		RetrieveTicket rttk = new RetrieveTicket();
+		RetrieveUpdates rtup = new RetrieveUpdates();
 		
 		int check = 4;
 		
@@ -150,6 +154,11 @@ public class Login extends HttpServlet {
 			request.getSession().setAttribute("lastname", lf.getSystemAccount().getLastname());
 			request.getSession().setAttribute("unit_id", lf.getSystemAccount().getUnit_id());
 			request.getSession().setAttribute("position", lf.getSystemAccount().getStatus());
+			try {
+				request.getSession().setAttribute("tickets", rttk.getUserTicket(user, lf.getSystemAccount().getStatus()));
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);	
 		}
 
