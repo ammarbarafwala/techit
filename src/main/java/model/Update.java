@@ -5,14 +5,15 @@ import java.util.Date;
 public class Update {
 
 	private int id;
-	private Ticket ticket;
+	private int ticketId;
 	
 	private String modifier; // modifier's username
 	private String updateDetails;
 	private Date modifiedDate;
 	
-	public Update(int id, String modifier, String updateDetails, Date modifiedDate){
+	public Update(int id, int ticketId, String modifier, String updateDetails, Date modifiedDate){
 		this.id = id;
+		this.ticketId = ticketId;
 		this.modifier = modifier;
 		this.updateDetails = updateDetails;
 		this.modifiedDate = modifiedDate;
@@ -24,11 +25,11 @@ public class Update {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public Ticket getTicket() {
-		return ticket;
+	public int getTicket() {
+		return ticketId;
 	}
-	public void setTicket(Ticket ticket) {
-		this.ticket = ticket;
+	public void setTicket(int ticket) {
+		this.ticketId = ticket;
 	}
 	public String getModifier() {
 		return modifier;
