@@ -61,10 +61,6 @@ public class LoginFunction {
             		int id = rs.getInt("id");
             		String firstName = rs.getString("firstname");
             		String lastName = rs.getString("lastname");
-<<<<<<< HEAD
-=======
-            		int CIN = rs.getInt("CIN");
->>>>>>> origin/master
             		int position = rs.getInt("position");
             		int unitId = rs.getInt("unit_id");
             		
@@ -73,10 +69,6 @@ public class LoginFunction {
             				firstName,
             				lastName,
             				user,
-<<<<<<< HEAD
-=======
-            				CIN,
->>>>>>> origin/master
             				position,
             				unitId);
             		
