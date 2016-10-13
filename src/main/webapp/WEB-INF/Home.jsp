@@ -33,18 +33,6 @@
 			<li><a href="#">Add</a></li>
 		</ul>
 	</div>
-	<div class="col-lg-9" style="text-align: center">
-		<c:forEach items ="${tickets}" var="item">
-			<div class="panel panel-primary">
-				<div class="panel-heading">
-					<h3 class="panel-title" style="text-align: left">TICKET# ${item.id } <p style="text-align: right">STATUS: ${item.progress }</p></h3>
-				</div>
-				<div class="panel-body">
-					${item.details }
-				</div>
-			</div>	
-		
-		</c:forEach>
-	</div>
+	
 </body>
 </html>

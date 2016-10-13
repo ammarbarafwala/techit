@@ -6,7 +6,7 @@ import java.util.List;
 public class Ticket {
 	private int id; // Ticket's unique id.
 	private String usernameRequestor; // The user who requested the ticket.
-	private int technicianId; // The user/technician who will respond to the
+	private User technician; // The user/technician who will respond to the
 								// ticket.
 	private String phone; // Requestor's phone
 	private String email; // Requestor's email. May be different from the User's
@@ -22,28 +22,8 @@ public class Ticket {
 		};
 
 		@SuppressWarnings("unused")
-		public String getProgressValue() {
-			if(progress == 0){
-				return "Open";
-			}
-			else{
-				if(progress == 1){
-					return "Assigned";
-				}
-				else{
-					if(progress == 2){
-						return "In Progress";
-					}
-					else{
-						if(progress == 3){
-							return "On Hold";
-						}
-						else{
-							return "Compeleted";
-						}
-					}
-				}
-			}
+		public int getProgressValue() {
+			return progress;
 		}
 
 	};
@@ -62,11 +42,11 @@ public class Ticket {
 
 	// Full constructor for every field, probably need when pulling existing
 	// data from database
-	public Ticket(int id, String requestor, int technician, String phone, String email, int progress, String details,
-			Date startDate, Date endDate, String ticketLocation, List<Update> updates, String completionDetails) {
+	public Ticket(int id, String requestor, User technician, String phone, String email, int progress, String details,
+			Date startDate, Date endDate, String ticketLocation) {
 		this.id = id;
 		this.usernameRequestor = requestor;
-		this.technicianId = technician;
+		this.technician = technician;
 		this.phone = phone;
 		this.email = email;
 
@@ -91,9 +71,7 @@ public class Ticket {
 		this.details = details;
 		this.startDate = startDate;
 		this.endDate = endDate;
-		this.updates = updates;
 		this.ticketLocation = ticketLocation;
-		this.completionDetails = completionDetails;
 
 	}
 
@@ -113,12 +91,12 @@ public class Ticket {
 		this.usernameRequestor = requestor;
 	}
 
-	public int getTechnicianId() {
-		return technicianId;
+	public User getTechnician() {
+		return technician;
 	}
 
-	public void setTechnician(int technician) {
-		this.technicianId = technician;
+	public void setTechnician(User technician) {
+		this.technician = technician;
 	}
 
 	public String getPhone() {
@@ -185,7 +163,7 @@ public class Ticket {
 		this.updates = updateComments;
 	}
 
-	public String getProgress() {
+	public int getProgress() {
 		return currentProgress.getProgressValue();
 	}
 
