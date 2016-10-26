@@ -78,11 +78,16 @@
 			<a class='navbar-brand' href='#'>TechIT</a>
 			<p class='navbar-text'>Signed in as ${sessionScope.firstname}
 				${sessionScope.lastname }</p>
-
+			
 			<a href='Logout' type='button' id='logout-button'
 				class='navbar-btn btn btn-default logout-button navbar-right'>Logout</a>
+				
+			<button class="navbar-btn btn btn-default navbar-right">Account Manager</button>
+			<button class="navbar-btn btn btn-default navbar-right">My Settings</button>
 		</div>
 	</nav>
+	
+	<!--  Side Navigation Bar not needed right now...
 	<div class="col-md-2" id="line-left">
 		<ul class="nav nav-pills nav-stacked pull-right">
 			<li class="active"><a href="#">Home</a></li>
@@ -92,15 +97,25 @@
 			<li><a href="#">Add</a></li>
 		</ul>
 	</div>
+	-->
 	
 	<!-- This section holds the tabs and ticket view for the users. -->
 	
-	<div class="col-lg-9" style="text-align: center">
+	<div class="text-center col-lg-9" style="text-align: center">
 		<ul class="nav nav-tabs pull-center">
 		  <li id="recent" class="active" onclick="switchView(1)"><a href="#">RECENT</a></li>
 		  <li id="active" class="" onclick="switchView(2)"><a href="#">ACTIVE</a></li>
 		  <li id="completed" class="" onclick="switchView(3)"><a href="#">COMPLETED</a></li>
 		</ul>
+		
+		<!-- Contains the Create Ticket button, and search capabilities -->
+		<div class="pull-center">
+			<span class="pull-left"><button class="navbar-btn btn btn-default">Compose</button></span>
+			<form>
+				<span class ="pull-left col-sm-6"><input name="search" id="search" class="form-control" placeholder="Search Ticket" /></span>
+				<button class="navbar-btn btn btn-default">Search</button></span>
+			</form>
+		</div>
 		
 		<div id="rv">
 		<div id="accordion">
@@ -118,7 +133,7 @@
 					<p>
 						<button class="navbar-btn btn btn-default">Cancel</button>
 						<button class="navbar-btn btn btn-default">Edit</button>
-						<button class="navbar-btn btn btn-default">Submit</button>
+						<button class="navbar-btn btn btn-default">Assign</button>
 					</p>
 					</div>
 			</c:forEach>
@@ -130,7 +145,7 @@
 			<c:forEach items ="${tickets}" var="item">
 					<c:choose>
 						<c:when test = "${item.progress ne 'Completed'}">
-							<h3 ><span class="pull-left">TICKET# ${item.id }</span> <span class="pull-right">STATUS: ${item.progress }</span></h3>
+							<h3 class="col-span"><span class="pull-left">TICKET# ${item.id }</span> <span class="pull-right">STATUS: ${item.progress }</span></h3>
 							<div>
 								<p>
 									Requester: ${item.requestor }</br>
@@ -143,7 +158,7 @@
 								<p>
 									<button class="navbar-btn btn btn-default">Cancel</button>
 									<button class="navbar-btn btn btn-default">Edit</button>
-									<button class="navbar-btn btn btn-default">Submit</button>
+									<button class="navbar-btn btn btn-default">Assign</button>
 								</p>
 							</div>
 						</c:when>
@@ -170,7 +185,7 @@
 							<p>
 								<button class="navbar-btn btn btn-default">Cancel</button>
 								<button class="navbar-btn btn btn-default">Edit</button>
-								<button class="navbar-btn btn btn-default">Submit</button>
+								<button class="navbar-btn btn btn-default">Assign</button>
 							</p>
 						</div>
 					</c:when>

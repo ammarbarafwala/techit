@@ -18,10 +18,11 @@ public class Home extends HttpServlet {
 			throws ServletException, IOException {
 		
 		// TODO Auto-generated method stub
-		
-		if (!request.isRequestedSessionIdValid()) {
+		if (request.getSession().getAttribute("user") == null) {
+			//System.out.println("this is false");
 			request.getRequestDispatcher("/Login").forward(request, response);
 		} else {
+			//System.out.println("this is true");
 			request.getRequestDispatcher("/Home").forward(request, response);
 		}
 	}
