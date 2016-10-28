@@ -3,9 +3,9 @@ package model;
 public class User {
 
 	private int id; 				// User's unique id
-	private String firstname; 		// User's first name
-	private String lastname; 		// User's last name
-	private String username; 		// Username and email are the same.
+	private String firstName; 		// User's first name
+	private String lastName; 		// User's last name
+	private String userName; 		// Username and email are the same.
 
 	// Types of users on the system.
 	private enum Position {
@@ -22,29 +22,34 @@ public class User {
 		}
 	};
 
+	private String phoneNumber;
+	
+	private String email;
+	
 	private Position status;
 
-	private int unit_id; 		// Describes where the user belongs to in a unit (by
+	private int unitId; 		// Describes where the user belongs to in a unit (by
 
 	// Simple constructor for regular users ( students )
-	public User(int id, String firstname, String lastname, String username, int CIN) {
+	public User(int id, String firstname, String lastname, String username) {
 		this.id = id;
-		this.firstname = firstname;
-		this.lastname = lastname;
-		this.username = username;
+		this.firstName = firstname;
+		this.lastName = lastname;
+		this.userName = username;
 		this.status = Position.USER;
-		this.unit_id = 0; 				// User does not belongs to any unit\
+		this.unitId= 0; 				// User does not belongs to any unit\
 	}
 
 	// Full user paramenter constructor
-	public User(int id, String firstname, String lastname, String username, int position, 
+	public User(int id, String firstname, String lastname, String username, String phone, String email, int position, 
 			int unit_id)
 	{
 		this.id = id;
-		this.firstname = firstname;
-		this.lastname = lastname;
-		this.username = username;
-		
+		this.firstName = firstname;
+		this.lastName = lastname;
+		this.userName = username;
+		this.phoneNumber = phone;
+		this.email = email;
 		switch(position)
 		{
 			case 0:
@@ -58,7 +63,7 @@ public class User {
 				this.status = Position.USER;
 		}
 		
-		this.unit_id = unit_id;
+		this.unitId= unit_id;
 		
 	}
 
@@ -70,42 +75,58 @@ public class User {
 		this.id = id;
 	}
 
-	public String getFirstname() {
-		return firstname;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
+	public void setFirstName(String firstname) {
+		this.firstName = firstname;
 	}
 
-	public String getLastname() {
-		return lastname;
+	public String getLastName() {
+		return lastName;
 	}
 
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
+	public void setLastName(String lastname) {
+		this.lastName = lastname;
 	}
 
-	public String getEmail() {
-		return username + "@calstatela.edu"; // Since username has the same
+	public String getUsername() {
+		return userName;
+	}
+
+	public void setUsername(String username) {
+		this.userName = username;
+	}
+
+	public String getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(String phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public String getEmailFromUsername() {
+		return userName + "@calstatela.edu"; // Since username has the same
 												// header as email with the
 												// "@calstatela.edu" domain
 	}
 
-	public String getUsername() {
-		return username;
+	public String getEmail(){
+		return email;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
-	public int getUnit_id() {
-		return unit_id;
+	public int getUnitId() {
+		return unitId;
 	}
 
-	public void setUnit_id(int unit_id) {
-		this.unit_id = unit_id;
+	public void setUnitId(int unit_id) {
+		this.unitId = unit_id;
 	}
 
 	public void setStatus(int position) {
@@ -130,5 +151,14 @@ public class User {
 		return status.getValue();
 	}
 
+	public String toString(){
+		return "First name: " + this.getFirstName() + "\n"
+				+ "Last name:" + this.getLastName() + "\n"
+				+ "User name:" + this.getUsername() + "\n"
+				+ "Phone number:" + this.getPhoneNumber() + "\n"
+		 		+ "Email:" + this.getEmail() + "\n"
+		 		+ "Status:" + this.getStatus() + "\n"
+		 		+ "Unit:" + this.getUnitId() + "\n";
+	}
 	
 }

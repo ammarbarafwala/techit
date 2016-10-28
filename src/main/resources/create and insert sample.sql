@@ -1,5 +1,7 @@
 use cs4961stu01;
 drop table if exists users;
+drop table if exists updates;
+drop table if exists tickets;
 
 create table if not exists users (id int auto_increment primary key not null,
 firstname varchar(20) not null, 
@@ -7,6 +9,7 @@ lastname varchar(20) not null,
 username varchar(20) not null,
 pass varchar(255) not null,
 CIN int,
+phone varchar(15),
 position int not null default 2,
 is_supervisor bool default 0,
 supervisor_id int,
@@ -19,7 +22,7 @@ updateDetails varchar(255),
 modifiedDate DATE
 );
 
-create table if not exists updates (id int auto_increment primary key not null,
+create table if not exists tickets (id int auto_increment primary key not null,
 usernameRequestor varchar(20) not null, 
 technicianId varchar(20) not null,
 phone varchar(12) not null,

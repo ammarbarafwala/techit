@@ -51,6 +51,11 @@
 			<artifactId>spring-security-core</artifactId>
 			<version>3.0.3.RELEASE</version>
 		</dependency>
+		<dependency>
+	      <groupId>com.google.apis</groupId>
+	      <artifactId>google-api-services-gmail</artifactId>
+	      <version>v1-rev48-1.22.0</version>
+	    </dependency>
 	</dependencies>
 
 </project>

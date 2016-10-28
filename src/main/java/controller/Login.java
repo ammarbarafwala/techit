@@ -7,8 +7,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -40,7 +38,6 @@ public class Login extends HttpServlet {
 
 
  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	 	System.out.println("hello");
 		request.getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
 		
 		
@@ -50,7 +47,6 @@ public class Login extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("Byebye");
 		String user = request.getParameter("username");
 		String password = request.getParameter("password");
 		
@@ -58,7 +54,188 @@ public class Login extends HttpServlet {
 		RetrieveTicket rttk = new RetrieveTicket();
 		RetrieveUpdates rtup = new RetrieveUpdates();
 		
-		int check = 4;
+    	int check = 4;
+    	
+    	/*
+    	 * 		0 -- User doesn't exist in the database
+		 * 		1 -- User exist but since password is empty, the account is not
+		 * 				 a special account
+		 * 		2 -- User exists but incorrect password
+		 * 		3 -- User exists, password is correct, user information is saved
+		 * 				into the LoginFunction class variable
+    	 */
+    	
+		try {
+			check = lf.checkSystemAccount(user, password);
+		} catch (SQLException sqle) {
+			// TODO Auto-generated catch block
+			request.setAttribute("errorMessage", "Something went wrong, please try again later!");
+			request.getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
+		}
+		
+		String domain = "ad.calstatela.edu";
+        String choice = "username";
+
+        ActiveDirectory activeDirectory = new ActiveDirectory();
+        
+        try{
+            activeDirectory.connect( domain, user, password );
+            NamingEnumeration<SearchResult> result = activeDirectory
+                    .searchUser( user, choice, null );
+            if(result.hasMore()){
+            	if(check == 0)
+            	{
+            		SearchResult rs = (SearchResult) result.next();
+                    Attributes attrs = rs.getAttributes();
+                    String temp = attrs.get( "givenName" ).toString();
+                    
+                    String firstName = temp
+                        .substring( temp.indexOf( ":" ) + 1 );
+                    temp = attrs.get( "mail" ).toString();
+                    String emailAD = temp
+                        .substring( temp.indexOf( ":" ) + 1 );
+                    
+                    request.getSession().setAttribute("user", user);
+        			request.getSession().setAttribute("firstname", firstName);
+        			request.getSession().setAttribute("lastname", "");
+        			request.getSession().setAttribute("email", emailAD);
+        			request.getSession().setAttribute("phoneNumber", "");
+        			request.getSession().setAttribute("unit_id", 0);
+        			request.getSession().setAttribute("position", 3);
+        			
+        			try {
+        				request.getSession().setAttribute("tickets", rttk.getUserTicket(user, lf.getSystemAccount().getStatus()));
+        			} catch (SQLException e) {
+        				e.printStackTrace();
+        			}
+        			
+	            	activeDirectory.closeLdapConnection();
+	            	
+	            	request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
+            	}
+            	else{
+            		// This should be when check == 1 and NOT 2 or 3.
+            		// If it's 2 or 3, then something is VERY WRONG.
+            		
+            		request.getSession().setAttribute("user", user);
+        			request.getSession().setAttribute("firstname", lf.getSystemAccount().getFirstName());
+        			request.getSession().setAttribute("lastname", lf.getSystemAccount().getLastName());
+        			request.getSession().setAttribute("phoneNumber", lf.getSystemAccount().getPhoneNumber());
+        			request.getSession().setAttribute("email", lf.getSystemAccount().getEmail());
+        			request.getSession().setAttribute("unit_id", lf.getSystemAccount().getUnitId());
+        			request.getSession().setAttribute("position", lf.getSystemAccount().getStatus());
+        			
+        			try {
+        				request.getSession().setAttribute("tickets", rttk.getUserTicket(user, lf.getSystemAccount().getStatus()));
+        			} catch (SQLException e) {
+        				e.printStackTrace();
+        			}
+        			
+        			if( lf.getSystemAccount().getLastName().isEmpty() || lf.getSystemAccount().getPhoneNumber().isEmpty() || 
+        					lf.getSystemAccount().getEmail().isEmpty() ){
+        				request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
+        			}
+        			else{
+        				request.getRequestDispatcher("/Home").forward(request, response);
+        			}
+            	}
+            	
+            	
+            }
+            else{
+            	if(check == 3)
+            	{
+            		request.getSession().setAttribute("user", user);
+        			request.getSession().setAttribute("firstname", lf.getSystemAccount().getFirstName());
+        			request.getSession().setAttribute("lastname", lf.getSystemAccount().getLastName());
+        			request.getSession().setAttribute("phoneNumber", lf.getSystemAccount().getPhoneNumber());
+        			request.getSession().setAttribute("email", lf.getSystemAccount().getEmail());
+        			request.getSession().setAttribute("unit_id", lf.getSystemAccount().getUnitId());
+        			request.getSession().setAttribute("position", lf.getSystemAccount().getStatus());
+        			
+        			try {
+        				request.getSession().setAttribute("tickets", rttk.getUserTicket(user, lf.getSystemAccount().getStatus()));
+        			} catch (SQLException e) {
+        				e.printStackTrace();
+        			}
+        			
+        			if( lf.getSystemAccount().getLastName().isEmpty() || lf.getSystemAccount().getPhoneNumber().isEmpty() || 
+        					lf.getSystemAccount().getEmail().isEmpty() ){
+        				request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
+        			}
+        			else{
+        				request.getRequestDispatcher("/Home").forward(request, response);
+        			}
+            	}
+            	else{
+            		// This is when check = 0, 1, or 2
+	            	activeDirectory.closeLdapConnection();
+	    			request.setAttribute("errorMessage", "Invalid username or password, please try again!");
+	    			request.getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
+            	}
+            }
+            
+        }catch(Exception e){
+        	/*
+        	 * 	This is for when AD logs in fails.
+        	 * 	This section include both situation when AD is down or login is incorrect.
+        	 * 
+        	 */
+        	System.out.println("ERROR!");
+        	activeDirectory.closeLdapConnection();
+
+    		if(check == 0 || check == 1)
+    		{
+    			if(e instanceof NamingException)
+    			{	
+    				// The if clause applies when AD return an error of invalid password or username.
+	    			// Check = 0 means incorrect AD login and user does not belong in this database.
+	    			// Check = 1 means the user belongs to the database but incorrect password.
+    				
+					request.setAttribute("errorMessage", "Invalid username or password, please try again!");
+					request.getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
+    			}
+    			else{
+    				request.setAttribute("errorMessage", "CSULA account authentication seems to be down, please try again later!");
+					request.getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
+    			}
+    		}
+    		else if(check == 2)
+    		{
+				request.setAttribute("errorMessage", "Invalid username or password, please try again!");
+				request.getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
+    		}
+    		else{
+    			if(request.getSession().getAttribute("errorMessage")!= null){
+    				request.removeAttribute("errorMessage");
+    			}
+    			
+    			System.out.println("ERROR!2");
+    			request.getSession().setAttribute("user", user);
+    			request.getSession().setAttribute("firstname", lf.getSystemAccount().getFirstName());
+    			request.getSession().setAttribute("lastname", lf.getSystemAccount().getLastName());
+    			request.getSession().setAttribute("phoneNumber", lf.getSystemAccount().getPhoneNumber());
+    			request.getSession().setAttribute("email", lf.getSystemAccount().getEmail());
+    			request.getSession().setAttribute("unit_id", lf.getSystemAccount().getUnitId());
+    			request.getSession().setAttribute("position", lf.getSystemAccount().getStatus());
+    			
+    			try {
+    				request.getSession().setAttribute("tickets", rttk.getUserTicket(user, lf.getSystemAccount().getStatus()));
+    			} catch (SQLException x) {
+    				x.printStackTrace();
+    			}
+    			
+    			if( lf.getSystemAccount().getLastName().isEmpty() || lf.getSystemAccount().getPhoneNumber().isEmpty() || 
+    					lf.getSystemAccount().getEmail().isEmpty() ){
+    				request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
+    			}
+    			else{
+    				request.getRequestDispatcher("/Home").forward(request, response);
+    			}
+    		}
+		
+		//----------------- OLD IMPLEMENTATIONS ---------------------------
+/*		int check = 4;
 		
 		try {
 			check = lf.checkSystemAccount(user, password);
@@ -120,17 +297,19 @@ public class Login extends HttpServlet {
 //        			request.getSession().setAttribute("accountName", accountName);
 //        			request.getSession().setAttribute("userPrincipalName", principalName);
         			
-        			
+
+                	activeDirectory.closeLdapConnection();
                 	request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
                 
                 }
                 else{
+
+                	activeDirectory.closeLdapConnection();
         			request.setAttribute("errorMessage", "Invalid username or password, please try again!");
         			request.getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
                 }
                 
 
-            	activeDirectory.closeLdapConnection();
                 
 	        
 			} catch(NamingException e){
@@ -161,7 +340,7 @@ public class Login extends HttpServlet {
 			}
 			request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);	
 		}
-
+*/
 
 //		try {
 //			Class.forName("com.mysql.jdbc.Driver");
@@ -249,7 +428,8 @@ public class Login extends HttpServlet {
 //            }
 //        }
 
-
+        }
 	}
 
 }
+	

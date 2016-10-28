@@ -17,12 +17,10 @@ public class Home extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
-		// TODO Auto-generated method stub
-		
-		if (!request.isRequestedSessionIdValid()) {
+		if (request.getSession().getAttribute("user") == null) {
 			request.getRequestDispatcher("/Login").forward(request, response);
 		} else {
-			request.getRequestDispatcher("/Home").forward(request, response);
+			request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 		}
 	}
 

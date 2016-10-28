@@ -9,6 +9,7 @@ import java.util.ArrayList;
 
 import model.Ticket;
 import model.User;
+import function.StringFilter;
 /*
  * This class is meant to check if the user exists in our database. The class has a private 
  * user variable. If the account exists under that username, the information 
@@ -28,11 +29,14 @@ public class LoginFunction {
 	
 	public int checkSystemAccount(String user, String password) throws SQLException 
 	{
+		StringFilter sf = new StringFilter();
 		/* This method checks the input information with the one in the database.
 		 * The method returns one of the following:
 		 * 		0 -- User doesn't exist in the database
-		 * 		1 -- User exists but incorrect password
-		 * 		2 -- User exists, password is correct, user information is saved
+		 * 		1 -- User exist but since password is empty, the account is not
+		 * 				 a special account
+		 * 		2 -- User exists but incorrect password
+		 * 		3 -- User exists, password is correct, user information is saved
 		 * 				into the LoginFunction class variable
 		 */
 		
@@ -62,11 +66,13 @@ public class LoginFunction {
             ResultSet rs = pstmt.executeQuery();
             if(rs.next())
             {
-            	if(rs.getString("pass").equals(org.apache.commons.codec.digest.DigestUtils.sha256Hex(password)))
+            	if(rs.getString("pass").isEmpty())
             	{
             		int id = rs.getInt("id");
-            		String firstName = rs.getString("firstname");
-            		String lastName = rs.getString("lastname");
+            		String firstName = sf.filterNull(rs.getString("firstname"));
+            		String lastName = sf.filterNull(rs.getString("lastname"));
+            		String phoneNumber = sf.filterNull(rs.getString("phone"));
+            		String email = sf.filterNull(rs.getString("email"));
             		int position = rs.getInt("position");
             		int unitId = rs.getInt("unit_id");
             		
@@ -75,17 +81,45 @@ public class LoginFunction {
             				firstName,
             				lastName,
             				user,
+            				phoneNumber,
+            				email,
             				position,
             				unitId);
             		
             		c.close();
-            		return 2;
+            		return 1;
             	}
-            	else
-            	{
-            		c.close();
-            		return 1;	// Incorrect password
-            		
+            	else{
+	            	if(rs.getString("pass").equals(org.apache.commons.codec.digest.DigestUtils.sha256Hex(password)))
+	            	{
+	            		System.out.println("ERROR!3");
+	            		int id = rs.getInt("id");
+	            		String firstName = sf.filterNull(rs.getString("firstname"));
+	            		String lastName = sf.filterNull(rs.getString("lastname"));
+	            		String phoneNumber = sf.filterNull(rs.getString("phone"));
+	            		String email = sf.filterNull(rs.getString("email"));
+	            		int position = rs.getInt("position");
+	            		int unitId = rs.getInt("unit_id");
+	            		
+	            		
+	            		this.user = new User(id,
+	            				firstName,
+	            				lastName,
+	            				user,
+	            				phoneNumber,
+	            				email,
+	            				position,
+	            				unitId);
+	            		System.out.println(this.user.toString());
+	            		c.close();
+	            		return 3;
+	            	}
+	            	else
+	            	{
+	            		c.close();
+	            		return 2;	// Incorrect password
+	            		
+	            	}
             	}
             }
             else{
