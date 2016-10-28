@@ -181,7 +181,6 @@ public class Login extends HttpServlet {
         	 * 	This section include both situation when AD is down or login is incorrect.
         	 * 
         	 */
-        	System.out.println("ERROR!");
         	activeDirectory.closeLdapConnection();
 
     		if(check == 0 || check == 1)
@@ -210,7 +209,6 @@ public class Login extends HttpServlet {
     				request.removeAttribute("errorMessage");
     			}
     			
-    			System.out.println("ERROR!2");
     			request.getSession().setAttribute("user", user);
     			request.getSession().setAttribute("firstname", lf.getSystemAccount().getFirstName());
     			request.getSession().setAttribute("lastname", lf.getSystemAccount().getLastName());
