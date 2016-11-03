@@ -46,3 +46,4 @@ insert into tickets (usernameRequestor, technicianId, phone, mail, Progress, det
 values ("Brandon", 2, "626-202-6423", "bung@calstatela.edu", 0, "The projector is broken in room A220.", "2016-10-13 00:00:01", "2016-10-13 00:00:01", "Engineering and Technology: A220");
 insert into tickets (usernameRequestor, technicianId, phone, mail, Progress, details, startDate, lastUpdated, ticketLocation) 
 values ("Brandon", 2, "626-202-6423", "bung@calstatela.edu", 1, "A computer broke and will not turn on.", "2016-10-13 03:14:07", "2016-10-13 00:00:01", "Engineering and Technology: B9");
+
