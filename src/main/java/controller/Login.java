@@ -24,6 +24,7 @@ import function.LoginFunction;
 import function.RetrieveTicket;
 import function.RetrieveUpdates;
 
+import org.apache.log4j.Logger;
 
 @WebServlet(urlPatterns="/Login", loadOnStartup = 1)
 public class Login extends HttpServlet {
@@ -49,11 +50,10 @@ public class Login extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String user = request.getParameter("username");
 		String password = request.getParameter("password");
-		
 		LoginFunction lf = new LoginFunction();
 		RetrieveTicket rttk = new RetrieveTicket();
 		RetrieveUpdates rtup = new RetrieveUpdates();
-		
+
     	int check = 4;
     	
     	/*
@@ -68,7 +68,6 @@ public class Login extends HttpServlet {
 		try {
 			check = lf.checkSystemAccount(user, password);
 		} catch (SQLException sqle) {
-			// TODO Auto-generated catch block
 			request.setAttribute("errorMessage", "Something went wrong, please try again later!");
 			request.getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
 		}
@@ -87,14 +86,15 @@ public class Login extends HttpServlet {
             	{
             		SearchResult rs = (SearchResult) result.next();
                     Attributes attrs = rs.getAttributes();
-                    String temp = attrs.get( "givenName" ).toString();
                     
+                    String temp = attrs.get( "givenName" ).toString();
                     String firstName = temp
                         .substring( temp.indexOf( ":" ) + 1 );
+                    
                     temp = attrs.get( "mail" ).toString();
                     String emailAD = temp
-                        .substring( temp.indexOf( ":" ) + 1 );
-                    
+                        .substring( temp.indexOf( ":" ) + 1 );   
+
                     request.getSession().setAttribute("user", user);
         			request.getSession().setAttribute("firstname", firstName);
         			request.getSession().setAttribute("lastname", "");
@@ -102,12 +102,6 @@ public class Login extends HttpServlet {
         			request.getSession().setAttribute("phoneNumber", "");
         			request.getSession().setAttribute("unit_id", 0);
         			request.getSession().setAttribute("position", 3);
-        			
-        			try {
-        				request.getSession().setAttribute("tickets", rttk.getUserTicket(user, lf.getSystemAccount().getStatus()));
-        			} catch (SQLException e) {
-        				e.printStackTrace();
-        			}
         			
 	            	activeDirectory.closeLdapConnection();
 	            	
@@ -183,7 +177,7 @@ public class Login extends HttpServlet {
         	 */
         	activeDirectory.closeLdapConnection();
 
-    		if(check == 0 || check == 1)
+    		if(check == 0 || check == 1)	
     		{
     			if(e instanceof NamingException)
     			{	
@@ -238,7 +232,6 @@ public class Login extends HttpServlet {
 		try {
 			check = lf.checkSystemAccount(user, password);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -343,7 +336,7 @@ public class Login extends HttpServlet {
 //		try {
 //			Class.forName("com.mysql.jdbc.Driver");
 //		} catch (ClassNotFoundException e1) {
-//			// TODO Auto-generated catch block
+//	
 //			e1.printStackTrace();
 //		}
 //		

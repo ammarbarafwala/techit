@@ -74,15 +74,15 @@
 </head>
 <body onload="onLoadUp()">
 	<nav class='navbar navbar-default'>
-		<div class='container-fluid'>
+		<div class='navbar-header'>
 			<a class='navbar-brand' href='#'>TechIT</a>
 			<p class='navbar-text'>Signed in as ${sessionScope.firstname}
 				${sessionScope.lastname }</p>
 
 			<a href='Logout' type='button' id='logout-button'
 				class='navbar-btn btn btn-default logout-button navbar-right'>Logout</a>
-			<button class="navbar-btn btn btn-default navbar-right">Account Manager</button>
-			<button class="navbar-btn btn btn-default navbar-right">My Settings</button>
+			<button class="navbar-btn btn btn-default account-button">Account Manager</button>
+			<button class="navbar-btn btn btn-default setting-button">My Settings</button>
 		</div>
 	</nav>
 	
@@ -100,7 +100,7 @@
 	-->
 	<!-- This section holds the tabs and ticket view for the users. -->
 	
-	<div class="text-center col-lg-9" style="text-align: center">
+	<div class="text-center col-lg-12" style="text-align: center">
 		<ul class="nav nav-tabs pull-center">
 		  <li id="recent" class="active" onclick="switchView(1)"><a href="#">RECENT</a></li>
 		  <li id="active" class="" onclick="switchView(2)"><a href="#">ACTIVE</a></li>
@@ -109,10 +109,10 @@
 		
 		
 		<!-- Contains the Create Ticket button, and search capabilities -->
-		<div class="pull-center">
+		<div class="container-fluid">
 			<span class="pull-left"><button class="navbar-btn btn btn-default">Compose</button></span>
 			<form>
-				<span class ="pull-left col-sm-6"><input name="search" id="search" class="form-control" placeholder="Search Ticket" /></span>
+				<div class ="col-lg-offset-2 "><input name="search" id="search" class="form-control" placeholder="Search Ticket" /></div>
 				<button class="navbar-btn btn btn-default">Search</button></span>
 			</form>
 		</div>

@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 public class Ticket {
+	private static final long serialVersionUID = 1L;
+	
 	private int id; // Ticket's unique id.
 	private String usernameRequestor; // The user who requested the ticket.
 	private int technicianId; // The user/technician who will respond to the

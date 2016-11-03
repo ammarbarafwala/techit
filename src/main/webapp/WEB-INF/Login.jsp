@@ -32,12 +32,6 @@
 						placeholder="Password" />
 						
 					<div style="color: #FF0000;">${errorMessage}</div>
-
-					
-					<div class="checkbox">
-						<label> <input type="checkbox" name="remember" value="yes">
-								Remember Me </label>
-					</div>
 					<button class="btn btn-lg btn-primary btn-block" name="Login"
 						value="Login" type="submit">Sign in</button>
 				</form>
