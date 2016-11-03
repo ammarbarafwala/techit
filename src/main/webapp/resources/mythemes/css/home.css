@@ -1,14 +1,28 @@
 @CHARSET "UTF-8";
 .navbar-header{
 	width:100%;
-	padding: 0 50px;
+	padding: 0 5px;
 }
 
-#logout-button{
+.logout-button{
 	float:right;
+	margin-right: 1px;
+}
+
+.account-button{
+	float: right;
+	margin-right: 5px;
+}
+
+.setting-button{
+	float: right;
 	margin-right: 5px;
 }
 
 #line-left{
 	border-right: 6px solid lightgrey;
+}
+
+#accordion{
+	background:white;
 }

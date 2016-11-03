@@ -36,9 +36,9 @@ public class FirstLoginUpdate extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String firstName = request.getParameter("firstName");
-		String lastName = request.getParameter("lastName");
-		String email = request.getParameter("email");
+		String firstName = request.getParameter("firstName").replace(" ", "");
+		String lastName = request.getParameter("lastName").replace(" ", "");
+		String email = request.getParameter("email").replace(" ", "");
 		String phoneNumber = request.getParameter("phoneNumber");
 		
 		if(firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phoneNumber.isEmpty())
@@ -71,6 +71,7 @@ public class FirstLoginUpdate extends HttpServlet {
 				String search_user = "select * from users where username = ?";
 	            PreparedStatement pstmt = c.prepareStatement( search_user );
 	            pstmt.setString( 1, request.getSession().getAttribute("user").toString() );
+	            
 	            ResultSet rs = pstmt.executeQuery();
 	            
 	            if(rs.next())
@@ -88,15 +89,16 @@ public class FirstLoginUpdate extends HttpServlet {
 	            }
 	            else
 	            {
-	            	String insert_user = "insert into users (firstname, lastname, username, phone, email, position) values(?, ?, ?, ?, ?, ?)";
+	            	String insert_user = "insert into users (firstname, lastname, pass, username, phone, email, position) values(?, ?, ?, ?, ?, ?, ?)";
 	            	PreparedStatement pstmt2 = c.prepareStatement(insert_user);
 	            	pstmt2.setString(1, firstName);
 	            	pstmt2.setString(2, lastName);
-	            	pstmt2.setString(3, request.getSession().getAttribute("user").toString());
-	            	pstmt2.setString(4, phoneNumber);
-	            	pstmt2.setString(5, email);
-	            	pstmt2.setInt(6, 3);
-	            	pstmt2.executeUpdate();
+	            	pstmt2.setString(3, "");
+	            	pstmt2.setString(4, request.getSession().getAttribute("user").toString());
+	            	pstmt2.setString(5, phoneNumber);
+	            	pstmt2.setString(6, email);
+	            	pstmt2.setInt(7, 3);
+	            	pstmt2.execute();
 	            	
 	            	c.close();
 	            }
@@ -115,7 +117,9 @@ public class FirstLoginUpdate extends HttpServlet {
 					}
 				}
 			}
-			
+			if(request.getSession().getAttribute("errorMessage")!= null){
+				request.removeAttribute("errorMessage");
+			}
 			request.getSession().setAttribute("lastName", lastName);
 			request.getSession().setAttribute("firstName", firstName);
 			request.getSession().setAttribute("email", email);

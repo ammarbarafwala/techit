@@ -28,8 +28,9 @@ public class RetrieveUpdates {
 		try{
 			c = DriverManager.getConnection(url, db_user, db_pass);
 			
-			String search_update = "select * from updates where ticketId = " + ticketId;
+			String search_update = "select * from updates where ticketId = ?";
             PreparedStatement pstmt = c.prepareStatement( search_update );
+            pstmt.setInt( 1, ticketId );
             ResultSet rs = pstmt.executeQuery();
             while(rs.next()){
             	

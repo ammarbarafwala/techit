@@ -47,11 +47,13 @@ public class RetrieveTicket {
         		String details = rs.getString("details");
         		Date startDate = rs.getDate("startDate");
         		Date endDate = rs.getDate("endDate");
+        		Date lastUpdated = rs.getDate("lastUpdated");
+        		String lastUpdatedTime = rs.getTime("lastUpdated").toString();
         		String ticketLocation = rs.getString("ticketLocation");
         		List<Update> updates = rtup.getTicketUpdates(id);
         		String completionDetails = rs.getString("completeDetails");
             	
-        		Ticket newTicket = new Ticket(id, usernameRequestor, technicianId, phone, email, currentProgress, details, startDate, endDate, ticketLocation, updates, completionDetails);
+        		Ticket newTicket = new Ticket(id, usernameRequestor, technicianId, phone, email, currentProgress, details, startDate, endDate, lastUpdated, lastUpdatedTime, ticketLocation, updates, completionDetails);
         		
         		tickets.add(newTicket);
             }

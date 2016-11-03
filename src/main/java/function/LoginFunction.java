@@ -92,7 +92,6 @@ public class LoginFunction {
             	else{
 	            	if(rs.getString("pass").equals(org.apache.commons.codec.digest.DigestUtils.sha256Hex(password)))
 	            	{
-	            		System.out.println("ERROR!3");
 	            		int id = rs.getInt("id");
 	            		String firstName = sf.filterNull(rs.getString("firstname"));
 	            		String lastName = sf.filterNull(rs.getString("lastname"));
@@ -110,7 +109,6 @@ public class LoginFunction {
 	            				email,
 	            				position,
 	            				unitId);
-	            		System.out.println(this.user.toString());
 	            		c.close();
 	            		return 3;
 	            	}

@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 public class Ticket {
+	private static final long serialVersionUID = 1L;
+	
 	private int id; // Ticket's unique id.
 	private String usernameRequestor; // The user who requested the ticket.
 	private int technicianId; // The user/technician who will respond to the
@@ -54,6 +56,8 @@ public class Ticket {
 	private String details; // Text concerning the project.
 	private Date startDate; // Project's starting date.
 	private Date endDate; // Project's completed date.
+	private Date lastUpdated;
+	private String lastUpdatedTime;
 	private String ticketLocation; // Location where the project is.
 	private List<Update> updates;
 	// Needs more work...
@@ -63,7 +67,7 @@ public class Ticket {
 	// Full constructor for every field, probably need when pulling existing
 	// data from database
 	public Ticket(int id, String requestor, int technician, String phone, String email, int progress, String details,
-			Date startDate, Date endDate, String ticketLocation, List<Update> updates, String completionDetails) {
+			Date startDate, Date endDate, Date lastUpdated, String lastUpdatedTime, String ticketLocation, List<Update> updates, String completionDetails) {
 		this.id = id;
 		this.usernameRequestor = requestor;
 		this.technicianId = technician;
@@ -91,6 +95,8 @@ public class Ticket {
 		this.details = details;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.lastUpdated = lastUpdated;
+		this.lastUpdatedTime = lastUpdatedTime;
 		this.updates = updates;
 		this.ticketLocation = ticketLocation;
 		this.completionDetails = completionDetails;
@@ -159,6 +165,22 @@ public class Ticket {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+	
+	public Date getLastUpdate() {
+		return lastUpdated;
+	}
+
+	public void setLastUpdate(Date lastUpdate) {
+		this.lastUpdated = lastUpdate;
+	}
+
+	public String getLastUpdateTime() {
+		return lastUpdatedTime;
+	}
+
+	public void setLastUpdateTime(String lastUpdateTime) {
+		this.lastUpdatedTime = lastUpdateTime;
 	}
 
 	public String getTicketLocation() {

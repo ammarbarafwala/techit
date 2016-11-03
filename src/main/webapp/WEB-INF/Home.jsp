@@ -74,15 +74,15 @@
 </head>
 <body onload="onLoadUp()">
 	<nav class='navbar navbar-default'>
-		<div class='container-fluid'>
+		<div class='navbar-header'>
 			<a class='navbar-brand' href='#'>TechIT</a>
 			<p class='navbar-text'>Signed in as ${sessionScope.firstname}
 				${sessionScope.lastname }</p>
 
 			<a href='Logout' type='button' id='logout-button'
 				class='navbar-btn btn btn-default logout-button navbar-right'>Logout</a>
-			<button class="navbar-btn btn btn-default navbar-right">Account Manager</button>
-			<button class="navbar-btn btn btn-default navbar-right">My Settings</button>
+			<a class="navbar-btn btn btn-default account-button" href = 'AcctManagement'>Account Manager</a>
+			<button class="navbar-btn btn btn-default setting-button">My Settings</button>
 		</div>
 	</nav>
 	
@@ -100,7 +100,7 @@
 	-->
 	<!-- This section holds the tabs and ticket view for the users. -->
 	
-	<div class="text-center col-lg-9" style="text-align: center">
+	<div class="text-center col-lg-12" style="text-align: center">
 		<ul class="nav nav-tabs pull-center">
 		  <li id="recent" class="active" onclick="switchView(1)"><a href="#">RECENT</a></li>
 		  <li id="active" class="" onclick="switchView(2)"><a href="#">ACTIVE</a></li>
@@ -109,10 +109,10 @@
 		
 		
 		<!-- Contains the Create Ticket button, and search capabilities -->
-		<div class="pull-center">
+		<div class="container-fluid">
 			<span class="pull-left"><button class="navbar-btn btn btn-default">Compose</button></span>
 			<form>
-				<span class ="pull-left col-sm-6"><input name="search" id="search" class="form-control" placeholder="Search Ticket" /></span>
+				<div class ="col-lg-offset-2 "><input name="search" id="search" class="form-control" placeholder="Search Ticket" /></div>
 				<button class="navbar-btn btn btn-default">Search</button></span>
 			</form>
 		</div>
@@ -120,15 +120,17 @@
 		<div id="rv">
 		<div id="accordion">
 			<c:forEach items ="${tickets}" var="item">
-					<h3 ><span class="pull-left">TICKET# ${item.id }</span> <span class="pull-right">STATUS: ${item.progress }</span></h3>
+					<h3 ><span class="pull-left">${ item.requestor }: ${ item.details } </span> <span class="pull-right">STATUS: ${item.progress } </span>
+					</h3>
+					
 					<div>
 					<p>
-						Requester: ${item.requestor }</br>
+						Requester: ${item.requestor } </br>
 						Phone: ${item.phone }</br>
 						Email: ${item.email }</br>
-						Date Commissioned: ${item.startDate }</br></br>
+						Date Commissioned: ${item.startDate }</br>
 						<b>Details:</b> ${item.details }</br>
-						<b>Location:</b> ${item.ticketLocation }
+						<b>Location:</b> ${item.ticketLocation }</br>
 					</p>
 					<p>
 						<button class="navbar-btn btn btn-default">Cancel</button>
@@ -145,7 +147,7 @@
 			<c:forEach items ="${tickets}" var="item">
 					<c:choose>
 						<c:when test = "${item.progress ne 'Completed'}">
-							<h3 class="col-span"><span class="pull-left">TICKET# ${item.id }</span> <span class="pull-right">STATUS: ${item.progress }</span></h3>
+							<h3 class="col-span" style="background-color:#ffeead "><span class="pull-left" style="color:black">${ item.requestor }: ${ item.details } </span> <span class="pull-right"style="color:white">STATUS: ${item.progress }</span></h3>
 							<div>
 								<p>
 									Requester: ${item.requestor }</br>
