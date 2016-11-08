@@ -82,7 +82,7 @@
 			<a href='Logout' type='button' id='logout-button'
 				class='navbar-btn btn btn-default logout-button navbar-right'>Logout</a>
 			<a class="navbar-btn btn btn-default account-button" href = 'AcctManagement'>Account Manager</a>
-			<button class="navbar-btn btn btn-default setting-button">My Settings</button>
+			<a class="navbar-btn btn btn-default setting-button" href = 'Settings'>My Settings</a>
 		</div>
 	</nav>
 	
