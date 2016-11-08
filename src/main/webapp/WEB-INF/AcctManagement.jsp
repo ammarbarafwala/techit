@@ -31,7 +31,7 @@
 		<li><a href="#"> ${sessionScope.distinguishedName} </a></li>
 		<li><a href="#">Add</a></li>
 	</ul>
-	
+
 	<style>
 ul.tab {
 	list-style-type: none;
@@ -111,7 +111,51 @@ ul.tab li a:focus, .active {
 
 	<div id="New" class="tabcontent">
 		<h3>New User</h3>
-		<p>You are going to create a new user</p>
+		<div class="row">
+			<form action="AcctManagement" method="post">
+				<div class="form-group col-xs-5 col-md-5">
+					<label for="firstName">First Name <font color="red">*</font>
+					</label> <input type="text" class="form-control" name="firstName">
+				</div>
+
+				<div class="form-group col-xs-5 col-md-5">
+					<label for="lastName">Last Name <font color="red">*</font></label>
+					<input type="text" class="form-control" name="lastName">
+				</div>
+				<div class="form-group col-xs-5 col-md-5">
+					<label for="username">Username <font color="red">*</font></label> <input
+						type="text" class="form-control" name="username">
+				</div>
+				<div class="form-group col-xs-5 col-md-5">
+					<label for="password">Password <font color="red">*</font></label> <input
+						type="text" class="form-control" name="password">
+				</div>
+				<div class="form-group col-xs-5 col-md-5">
+					<label for="email">Email <font color="red">*</font></label> <input
+						type="text" class="form-control" name="email">
+				</div>
+
+				<div class="form-group col-xs-5 col-md-5">
+					<label for="phoneNumber">Phone Number <font color="red">*</font></label>
+					<input type="text" class="form-control" id="phoneNumber"
+						name="phoneNumber">
+				</div>
+				<div class="form-group col-xs-5 col-md-5">
+					<label for="Position">Position <font color="red">*</font>
+					</label> <input type="text" class="form-control" name="Position">
+				</div>
+				<div class="form-group col-xs-10 col-md-10">
+					<b>NOTE: <font color="red">*</font> means that the field is
+						required.
+					</b>
+				</div>
+				<div class="form-group col-xs-10 col-md-10"" style="color: #FF0000;">${errorMessage}</div>
+				<div class="form-group col-xs-10 col-md-10">
+					<input type="submit" id="Create" name="Create" value="Create" />
+				</div>
+
+			</form>
+		</div>
 	</div>
 
 	<script>
