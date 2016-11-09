@@ -2,14 +2,17 @@ package model;
 
 import java.util.Date;
 import java.util.List;
+import model.User;
 
 public class Ticket {
 	private static final long serialVersionUID = 1L;
 	
 	private int id; // Ticket's unique id.
-	private String usernameRequestor; // The user who requested the ticket.
-	private int technicianId; // The user/technician who will respond to the
-								// ticket.
+	private String username; // The user who requested the ticket.
+	private String userFirstName;
+	private String userLastName;
+	private List<User> technicians;
+	private Progress currentProgress;
 	private String phone; // Requestor's phone
 	private String email; // Requestor's email. May be different from the User's
 							// login email.
@@ -51,7 +54,7 @@ public class Ticket {
 
 	// Constant values that apply to the status of a project
 	// private Status status; //<-- This was changed into a list of comments
-	private Progress currentProgress;
+	private int unitId;
 	private String details; // Text concerning the project.
 	private Date startDate; // Project's starting date.
 	private Date endDate; // Project's completed date.
@@ -65,11 +68,11 @@ public class Ticket {
 
 	// Full constructor for every field, probably need when pulling existing
 	// data from database
-	public Ticket(int id, String requestor, int technician, String phone, String email, int progress, String details,
+	public Ticket(int id, String username, String firstName, String lastName, List<User> technician, String phone, String email, int progress, int unitId, String details,
 			Date startDate, Date endDate, Date lastUpdated, String lastUpdatedTime, String ticketLocation, List<Update> updates, String completionDetails) {
 		this.id = id;
-		this.usernameRequestor = requestor;
-		this.technicianId = technician;
+		this.username = username;
+		this.technicians = technician;
 		this.phone = phone;
 		this.email = email;
 
@@ -91,6 +94,7 @@ public class Ticket {
 			this.currentProgress = Progress.CLOSED;
 			break;
 		}
+		this.unitId = unitId;
 		this.details = details;
 		this.startDate = startDate;
 		this.endDate = endDate;
@@ -110,20 +114,24 @@ public class Ticket {
 		this.id = id;
 	}
 
-	public String getRequestor() {
-		return usernameRequestor;
+	public String getUser() {
+		return username;
 	}
 
-	public void setRequestor(String requestor) {
-		this.usernameRequestor = requestor;
+	public void setUser(String user) {
+		this.username = user;
 	}
 
-	public int getTechnicianId() {
-		return technicianId;
+	public List<User> getTechnicians() {
+		return technicians;
 	}
 
-	public void setTechnician(int technician) {
-		this.technicianId = technician;
+	public void addTechnician(User technician) {
+		this.technicians.add(technician);
+	}
+	
+	public void removeTechnician(){
+		
 	}
 
 	public String getPhone() {

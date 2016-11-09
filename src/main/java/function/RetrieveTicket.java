@@ -26,34 +26,37 @@ public class RetrieveTicket {
 		String db_pass = ".XCGG1Bc";
 		
 		ArrayList<Ticket> tickets = new ArrayList<Ticket>();
+		List<User> techs = new ArrayList<User>();
 		RetrieveUpdates rtup = new RetrieveUpdates();
 		
 		Connection c = null;
 		try{
 			c = DriverManager.getConnection(url, db_user, db_pass);
 			
-			String search_user = "select * from tickets where mail = ?";
+			String search_user = "select * from tickets where username = ?";
             PreparedStatement pstmt = c.prepareStatement( search_user );
             pstmt.setString( 1, username );
             ResultSet rs = pstmt.executeQuery();
             while(rs.next()){
             	
             	int id = rs.getInt("id");
-            	String usernameRequestor = rs.getString("usernameRequestor");
-            	int technicianId = rs.getInt("id");
+            	String usernameRequestor = rs.getString("username");
+            	String userFirstName = rs.getString("userFirstName");
+            	String userLastName = rs.getString("userLastName");
         		String phone = rs.getString("phone");
-        		String email = rs.getString("mail");
+        		String email = rs.getString("email");
         		int currentProgress = rs.getInt("Progress");
+        		int unitId = rs.getInt("unitId");
         		String details = rs.getString("details");
         		Date startDate = rs.getDate("startDate");
         		Date endDate = rs.getDate("endDate");
         		Date lastUpdated = rs.getDate("lastUpdated");
-        		String lastUpdatedTime = rs.getTime("lastUpdated").toString();
+        		String lastUpdatedTime = "";
         		String ticketLocation = rs.getString("ticketLocation");
         		List<Update> updates = rtup.getTicketUpdates(id);
-        		String completionDetails = rs.getString("completeDetails");
+        		String completionDetails = "";
             	
-        		Ticket newTicket = new Ticket(id, usernameRequestor, technicianId, phone, email, currentProgress, details, startDate, endDate, lastUpdated, lastUpdatedTime, ticketLocation, updates, completionDetails);
+        		Ticket newTicket = new Ticket(id, usernameRequestor, userFirstName, userLastName, techs, phone, email, currentProgress, unitId, details, startDate, endDate, lastUpdated, lastUpdatedTime, ticketLocation, updates, completionDetails);
         		
         		tickets.add(newTicket);
             }

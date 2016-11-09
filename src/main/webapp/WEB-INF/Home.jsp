@@ -110,7 +110,7 @@
 		
 		<!-- Contains the Create Ticket button, and search capabilities -->
 		<div class="container-fluid">
-			<span class="pull-left"><button class="navbar-btn btn btn-default">Compose</button></span>
+			<span class="pull-left"><a href="CreateTicket" class="navbar-btn btn btn-default">Compose</a></span>
 			<form>
 				<div class ="col-lg-offset-2 "><input name="search" id="search" class="form-control" placeholder="Search Ticket" /></div>
 				<button class="navbar-btn btn btn-default">Search</button></span>
@@ -120,12 +120,12 @@
 		<div id="rv">
 		<div id="accordion">
 			<c:forEach items ="${tickets}" var="item">
-					<h3 ><span class="pull-left">${ item.requestor }: ${ item.details } </span> <span class="pull-right">STATUS: ${item.progress } </span>
+					<h3 ><span class="pull-left">${ item.user }: ${ item.details } </span> <span class="pull-right">STATUS: ${item.progress } </span>
 					</h3>
 					
 					<div>
 					<p>
-						Requester: ${item.requestor } </br>
+						Requester: ${item.user } </br>
 						Phone: ${item.phone }</br>
 						Email: ${item.email }</br>
 						Date Commissioned: ${item.startDate }</br>
@@ -190,10 +190,10 @@
 			<c:forEach items ="${tickets}" var="item">
 					<c:choose>
 						<c:when test = "${item.progress ne 'Completed'}">
-							<h3 class="col-span" style="background-color:#ffeead "><span class="pull-left" style="color:black">${ item.requestor }: ${ item.details } </span> <span class="pull-right"style="color:white">STATUS: ${item.progress }</span></h3>
+							<h3 class="col-span" style="background-color:#ffeead "><span class="pull-left" style="color:black">${ item.user }: ${ item.details } </span> <span class="pull-right"style="color:white">STATUS: ${item.progress }</span></h3>
 							<div>
 								<p>
-									Requester: ${item.requestor }</br>
+									Requester: ${item.user }</br>
 									Phone: ${item.phone }</br>
 									Email: ${item.email }</br>
 									Date Commissioned: ${item.startDate }</br></br>
@@ -220,7 +220,7 @@
 						<h3 ><span class="pull-left">TICKET# ${item.id }</span> <span class="pull-right">STATUS: ${item.progress }</span></h3>
 						<div>
 							<p>
-							Requester: ${item.requestor }</br>
+							Requester: ${item.user }</br>
 							Phone: ${item.phone }</br>
 							Email: ${item.email }</br>
 							Date Commissioned: ${item.startDate }</br></br>

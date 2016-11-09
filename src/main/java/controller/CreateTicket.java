@@ -17,7 +17,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
+import function.SendEmail;
 /**
  * Servlet implementation class CreateTicket
  */
@@ -97,6 +97,8 @@ public class CreateTicket extends HttpServlet {
 			if(request.getSession().getAttribute("errorMessage")!= null){
 				request.removeAttribute("errorMessage");
 			}
+			SendEmail se = new SendEmail();
+			se.sendEmail (email,"New Ticket Created", details);
 			request.getRequestDispatcher("/Home").forward(request, response);
 		}
 	}
