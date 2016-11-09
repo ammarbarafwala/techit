@@ -15,7 +15,7 @@ public class Ticket {
 							// login email.
 
 	private enum Progress {
-		OPEN(0), ASSIGNED(1), INPROGREGSS(2), ONHOLD(3), COMPLETED(4);
+		OPEN(0), INPROGRESS(1), ONHOLD(2), COMPLETED(3), CLOSED(4);
 
 		private int progress;
 
@@ -25,27 +25,26 @@ public class Ticket {
 
 		@SuppressWarnings("unused")
 		public String getProgressValue() {
-			if(progress == 0){
-				return "Open";
+			String progress = "";
+			switch(this.progress)
+			{
+			case 0:
+				progress = "OPEN";
+				break;
+			case 1:
+				progress = "IN PROGRESS";
+				break;
+			case 2:
+				progress = "ON HOLD";
+				break;
+			case 3:
+				progress = "COMPLETED";
+				break;
+			case 4:
+				progress = "CLOSED";
+				break;
 			}
-			else{
-				if(progress == 1){
-					return "Assigned";
-				}
-				else{
-					if(progress == 2){
-						return "In Progress";
-					}
-					else{
-						if(progress == 3){
-							return "On Hold";
-						}
-						else{
-							return "Compeleted";
-						}
-					}
-				}
-			}
+			return progress;
 		}
 
 	};
@@ -80,16 +79,16 @@ public class Ticket {
 			this.currentProgress = Progress.OPEN;
 			break;
 		case 1:
-			this.currentProgress = Progress.ASSIGNED;
+			this.currentProgress = Progress.INPROGRESS;
 			break;
 		case 2:
-			this.currentProgress = Progress.INPROGREGSS;
-			break;
-		case 3:
 			this.currentProgress = Progress.ONHOLD;
 			break;
-		case 4:
+		case 3:
 			this.currentProgress = Progress.COMPLETED;
+			break;
+		case 4:
+			this.currentProgress = Progress.CLOSED;
 			break;
 		}
 		this.details = details;
@@ -217,16 +216,16 @@ public class Ticket {
 			this.currentProgress = Progress.OPEN;
 			break;
 		case 1:
-			this.currentProgress = Progress.ASSIGNED;
+			this.currentProgress = Progress.INPROGRESS;
 			break;
 		case 2:
-			this.currentProgress = Progress.INPROGREGSS;
-			break;
-		case 3:
 			this.currentProgress = Progress.ONHOLD;
 			break;
-		case 4:
+		case 3:
 			this.currentProgress = Progress.COMPLETED;
+			break;
+		case 4:
+			this.currentProgress = Progress.CLOSED;
 			break;
 		default:
 			break; // Does nothing if it is outside range

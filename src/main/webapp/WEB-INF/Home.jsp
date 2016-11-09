@@ -34,7 +34,7 @@
 		document.getElementById("rv").style.display = "block";
 		document.getElementById("av").style.display = "none";
 		document.getElementById("cv").style.display = "none";
-	}
+	};
 	
 	function switchView(selectView){
 		if (selectView == 1){
@@ -81,7 +81,7 @@
 
 			<a href='Logout' type='button' id='logout-button'
 				class='navbar-btn btn btn-default logout-button navbar-right'>Logout</a>
-			<a class="navbar-btn btn btn-default account-button" href = 'AcctManagement'>Account Manager</a>
+			<a class="navbar-btn btn btn-default account-button" href = 'AcctManagement'>Account Manager</a>	
 			<a class="navbar-btn btn btn-default setting-button" href = 'Settings'>My Settings</a>
 		</div>
 	</nav>
@@ -132,10 +132,53 @@
 						<b>Details:</b> ${item.details }</br>
 						<b>Location:</b> ${item.ticketLocation }</br>
 					</p>
-					<p>
-						<button class="navbar-btn btn btn-default">Cancel</button>
-						<button class="navbar-btn btn btn-default">Edit</button>
-						<button class="navbar-btn btn btn-default">Assign</button>
+						<p>
+							<!--  Cancel and confirmation -->
+							
+							<button type="button" class ="btn btn-default" data-toggle="modal" data-target="#cancel-button">Cancel</button>
+							
+							<div class="modal fade" id="cancel-button"	tabindex="-1" role="dialog" aria-labeledby="myModalLabel" aria-hidden="True">
+								<div class="modal-dialog">
+									<div class="modal-content">
+									
+										<!-- Modal header -->
+										
+										<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+											<h4 class="modal-title" id=myModalLabel>Ticket Cancellation Confirmation</h4>
+										</div>
+										
+										<!-- Modal Body Content -->
+										
+										<div class="modal-body">
+											<p>Are you sure you want to cancel this ticket?</p>
+										</div>
+										
+										<!-- Modal Footer & Button options -->
+									
+										<div class="modal-footer">
+											<button type="button" class="btn btn-danger" data-dismiss="modal"> No </button>
+											
+											<form class="Cancel" action="Cancel" method="post">
+												<button class="navbar-btn btn btn-default" name ="cancelBt" value="${item.id}">Cancel</button>
+											</form>
+											
+										</div>
+									
+									</div>
+								</div>
+							</div>
+
+							
+							<!--   Edit   -->                                                 -->
+							<form class="Edit" action="Edit" method="post">
+								<button class="navbar-btn btn btn-default">Edit</button>
+							</form>
+							
+							<!--   Assign Technician   -->       
+							<form class="Assign" action="Assign" method="post">
+								<button class="navbar-btn btn btn-default">Assign</button>
+							</form>
 					</p>
 					</div>
 			</c:forEach>
