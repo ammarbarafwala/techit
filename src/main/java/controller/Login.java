@@ -36,8 +36,6 @@ public class Login extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
     
-
-
  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
 		
