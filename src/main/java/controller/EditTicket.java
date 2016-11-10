@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import function.RetrieveTicket;
 import model.Ticket;
 
 /**
@@ -73,6 +74,8 @@ public class EditTicket extends HttpServlet {
 		request.getRequestDispatcher("/WEB-INF/EditTicket.jsp").forward(request, response);
 	}
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String user = request.getSession().getAttribute("user").toString();
+		int position = Integer.parseInt(request.getSession().getAttribute("position").toString());
 		String firstName = request.getParameter("firstName").replace(" ", "");
 		String lastName = request.getParameter("lastName").replace(" ", "");
 		String email = request.getParameter("email").replace(" ", "");
@@ -140,7 +143,14 @@ public class EditTicket extends HttpServlet {
 			if(request.getSession().getAttribute("errorMessage")!= null){
 				request.removeAttribute("errorMessage");
 			}
-			request.getRequestDispatcher("/Home").forward(request, response);
+			RetrieveTicket rttk = new RetrieveTicket();
+			try {
+				request.getSession().setAttribute("tickets", rttk.getUserTicket(user, position));
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			response.sendRedirect("Home");
 		}
 	}	
 
