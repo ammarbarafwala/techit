@@ -1,9 +1,11 @@
 package controller;
 
+import java.awt.List;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -12,14 +14,62 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import model.Ticket;
+
 /**
  * Servlet implementation class EditTicket
  */
 @WebServlet("/EditTicket")
 public class EditTicket extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	private Ticket getTicket (Integer id) throws ServletException
+	{
+		Ticket ticket = null;
+		List technicianList = new List();
+		List updateList = new List();
+		Connection c = null;
+		try
+		{
+			String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
+			String db_user = "cs4961stu01";
+			String db_pass = ".XCGG1Bc";
+			
+			c = DriverManager.getConnection(url, db_user, db_pass);
+			String search_user = "select * from tickets where id = ?";
+            PreparedStatement pstmt = c.prepareStatement( search_user );
+            pstmt.setInt( 1, id);   
+            ResultSet rs = pstmt.executeQuery();
+            if(rs.next())
+            {
+            	
+            	ticket = new Ticket (rs.getInt("id"), rs.getString("username"), rs.getString("userFirstName"), rs.getString("userLastName"), 
+            			rs.getString("phone"), rs.getString("email"), rs.getInt("unitId"), rs.getString("details"), rs.getDate("startDate"), rs.getDate("lastUpdated"),
+            			rs.getString("ticketLocation"));         
+            	c.close();
+            }          
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally
+		{
+			if(c != null){
+				try {
+					c.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}		
+		
+		return ticket;
+		
+	}
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		int id = Integer.parseInt(request.getParameter("id"));
+		Ticket ticket = getTicket(id);
+		System.out.println(ticket.getEmail());
+		request.setAttribute("ticket", ticket);
 		request.getRequestDispatcher("/WEB-INF/EditTicket.jsp").forward(request, response);
 	}
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -29,7 +79,8 @@ public class EditTicket extends HttpServlet {
 		String phoneNumber = request.getParameter("phoneNumber");
 		String details = request.getParameter("details");
 		String location = request.getParameter("location");
-		String units = request.getParameter("units");
+		int units = Integer.parseInt(request.getParameter("units"));
+		int id = Integer.parseInt(request.getParameter("id"));
 		int Progress = 0;
 		//java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 		if(firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phoneNumber.isEmpty() || details.isEmpty() || location.isEmpty())
@@ -61,16 +112,16 @@ public class EditTicket extends HttpServlet {
 				String db_pass = ".XCGG1Bc";
 				
 				c = DriverManager.getConnection(url, db_user, db_pass);
-				String createTicket = "insert into tickets (username, userFirstName, userLastName, phone, email, details,startDate, lastUpdated ,ticketLocation, units) values (?,?,?,?,?,?,NOW(),NOW(),?,?)";
+				String createTicket = "update tickets set userFirstName = ? , userLastName =? , phone =? , email = ?, details = ?, lastUpdated = NOW() ,ticketLocation = ?, unitId =? where id =?";
 	            PreparedStatement pstmt = c.prepareStatement( createTicket );
-	            pstmt.setString( 1, request.getSession().getAttribute("user").toString() );
-	            pstmt.setString( 2, firstName );
-	            pstmt.setString( 3, lastName );
-	            pstmt.setString( 4, phoneNumber );
-	            pstmt.setString( 5, email );
-	            pstmt.setString( 6, details );
-	            pstmt.setString( 7, location );
-	            pstmt.setString( 8, units);
+	            pstmt.setString( 1, firstName );
+	            pstmt.setString( 2, lastName );
+	            pstmt.setString( 3, phoneNumber );
+	            pstmt.setString( 4, email );
+	            pstmt.setString( 5, details );
+	            pstmt.setString( 6, location );
+	            pstmt.setInt( 7, units);
+	            pstmt.setInt( 8, id);
 	            pstmt.executeUpdate();	       
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block

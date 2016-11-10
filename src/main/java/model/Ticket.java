@@ -66,6 +66,11 @@ public class Ticket {
 	private String completionDetails; // Information pertaining vendors, cost,
 										// materials used.
 
+	// New constructor for modify Ticket
+	
+	
+	
+	
 	// Full constructor for every field, probably need when pulling existing
 	// data from database
 	public Ticket(int id, String username, String firstName, String lastName, List<User> technician, String phone, String email, int progress, int unitId, String details,
@@ -106,6 +111,34 @@ public class Ticket {
 
 	}
 
+	public Ticket(int id, String username, String userFirstName, String userLastName, String phone, String email, int unitId, String details, Date startDate, Date lastUpdated, String ticketLocation) {
+		this.id = id;
+		this.username = username;
+		this.userFirstName = userFirstName;
+		this.userLastName = userLastName;
+		this.phone = phone;
+		this.email = email;
+		this.unitId = unitId;
+		this.details = details;
+		this.startDate = startDate;
+		this.lastUpdated = lastUpdated;
+		this.ticketLocation = ticketLocation;
+	}
+	public String getUserFirstName() {
+		return userFirstName;
+	}
+
+	public void setUserFirstName(String userFirstName) {
+		this.userFirstName = userFirstName;
+	}
+
+	public String getUserLastName() {
+		return userLastName;
+	}
+
+	public void setUserLastName(String userLastName) {
+		this.userLastName = userLastName;
+	}
 	public int getId() {
 		return id;
 	}

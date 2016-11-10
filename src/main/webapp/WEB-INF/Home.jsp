@@ -170,10 +170,9 @@
 							</div>
 
 							
-							<!--   Edit   -->                                                 -->
-							<form class="Edit" action="Edit" method="post">
-								<button class="navbar-btn btn btn-default">Edit</button>
-							</form>
+							<!--   Edit   --> 
+							<a href= "EditTicket?id=${item.id}" class="navbar-btn btn btn-default">Edit</a>
+							
 							
 							<!--   Assign Technician   -->       
 							<form class="Assign" action="Assign" method="post">
@@ -202,7 +201,7 @@
 								</p>
 								<p>
 									<button class="navbar-btn btn btn-default">Cancel</button>
-									<button class="navbar-btn btn btn-default">Edit</button>
+									<a href= "EditTicket?ticketId=${item.id}" class="navbar-btn btn btn-default">Edit</a>
 									<button class="navbar-btn btn btn-default">Assign</button>
 								</p>
 							</div>
@@ -229,7 +228,7 @@
 							</p>
 							<p>
 								<button class="navbar-btn btn btn-default">Cancel</button>
-								<button class="navbar-btn btn btn-default">Edit</button>
+								<a href= "EditTicket?ticketId=${item.id}" class="navbar-btn btn btn-default">Edit</a>
 								<button class="navbar-btn btn btn-default">Assign</button>
 							</p>
 						</div>
