@@ -1,7 +1,5 @@
 package model;
 
-import java.util.Date;
-
 public class Update {
 
 	private int id;
@@ -9,9 +7,9 @@ public class Update {
 	
 	private String modifier; // modifier's username
 	private String updateDetails;
-	private Date modifiedDate;
+	private String modifiedDate;
 	
-	public Update(int id, int ticketId, String modifier, String updateDetails, Date modifiedDate){
+	public Update(int id, int ticketId, String modifier, String updateDetails, String modifiedDate){
 		this.id = id;
 		this.ticketId = ticketId;
 		this.modifier = modifier;
@@ -43,10 +41,10 @@ public class Update {
 	public void setDetails(String details) {
 		this.updateDetails = details;
 	}
-	public Date getModifiedDate() {
+	public String getModifiedDate() {
 		return modifiedDate;
 	}
-	public void setModifiedDate(Date modifiedDate) {
+	public void setModifiedDate(String modifiedDate) {
 		this.modifiedDate = modifiedDate;
 	}
 	

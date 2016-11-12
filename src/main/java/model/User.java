@@ -54,16 +54,20 @@ public class User {
 		{
 			case 0:
 				this.status = Position.SYS_ADMIN;
+				break;
 			case 1:
 				this.status = Position.SUPERVISING_TECHNICIAN;
+				break;
 			case 2:
 				this.status = Position.TECHNICIAN;
+				break;
 			case 3:									// These assume that you want to enter a new technician
 			default: 								// and somehow enter a number thats not intended
 				this.status = Position.USER;
+				break;
 		}
 		
-		this.unitId= unit_id;
+		this.unitId = unit_id;
 		
 	}
 

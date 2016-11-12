@@ -5,7 +5,6 @@ import java.util.List;
 import model.User;
 
 public class Ticket {
-	private static final long serialVersionUID = 1L;
 	
 	private int id; // Ticket's unique id.
 	private String username; // The user who requested the ticket.
@@ -26,7 +25,6 @@ public class Ticket {
 			this.progress = progress;
 		};
 
-		@SuppressWarnings("unused")
 		public String getProgressValue() {
 			String progress = "";
 			switch(this.progress)
@@ -66,11 +64,6 @@ public class Ticket {
 	private String completionDetails; // Information pertaining vendors, cost,
 										// materials used.
 
-	// New constructor for modify Ticket
-	
-	
-	
-	
 	// Full constructor for every field, probably need when pulling existing
 	// data from database
 	public Ticket(int id, String username, String firstName, String lastName, List<User> technician, String phone, String email, int progress, int unitId, String details,
@@ -110,7 +103,7 @@ public class Ticket {
 		this.completionDetails = completionDetails;
 
 	}
-
+	// Constructor without updates list and technicians list
 	public Ticket(int id, String username, String userFirstName, String userLastName, String phone, String email, int unitId, String details, Date startDate, Date lastUpdated, String ticketLocation) {
 		this.id = id;
 		this.username = username;
@@ -124,6 +117,24 @@ public class Ticket {
 		this.lastUpdated = lastUpdated;
 		this.ticketLocation = ticketLocation;
 	}
+	
+	// Constructor without updates list
+	public Ticket(int id, String username, String userFirstName, String userLastName, String phone, 
+			String email, int unitId, String details, Date startDate, Date lastUpdated, String ticketLocation, List<User> technicianList){
+		this.id = id;
+		this.username = username;
+		this.userFirstName = userFirstName;
+		this.userLastName = userLastName;
+		this.phone = phone;
+		this.email = email;
+		this.unitId = unitId;
+		this.details = details;
+		this.startDate = startDate;
+		this.lastUpdated = lastUpdated;
+		this.ticketLocation = ticketLocation;
+		this.technicians = technicianList;
+	}
+	
 	public String getUserFirstName() {
 		return userFirstName;
 	}
@@ -139,6 +150,7 @@ public class Ticket {
 	public void setUserLastName(String userLastName) {
 		this.userLastName = userLastName;
 	}
+	
 	public int getId() {
 		return id;
 	}
@@ -163,8 +175,14 @@ public class Ticket {
 		this.technicians.add(technician);
 	}
 	
-	public void removeTechnician(){
-		
+	public void removeTechnician(User technician){
+		if(this.getNumOfTechnician() > 0){
+			for(int i = 0; i < this.getNumOfTechnician(); i ++ ){
+				if(this.technicians.get(i).getId() == technician.getId()){
+					this.technicians.remove(i);
+				}
+			}
+		}
 	}
 
 	public String getPhone() {
@@ -272,5 +290,23 @@ public class Ticket {
 			break; // Does nothing if it is outside range
 		}
 	}
+	
+	public int getNumOfTechnician(){
+		return this.technicians.size();
+	}
+	
+	public int getNumOfUpdates(){
+		return this.updates.size();
+	}
 
+	public int getUnitId() {
+		return unitId;
+	}
+
+	public void setUnitId(int unitId) {
+		this.unitId = unitId;
+	}
+
+	
+	
 }

@@ -1,6 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-	pageEncoding="ISO-8859-1"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
 <!DOCTYPE html>
 <html lang='en'>
 <head>
@@ -8,11 +9,15 @@
   	<meta charset="utf-8">
 	<meta name="viewport" http-equiv="Content-Type" content="width=device-width,initial-scale=1" charset=ISO-8859-1>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- STYLESHEET -->
 	<link rel="stylesheet" href=" <c:url value='/resources/mythemes/css/jquery-ui.css' />">
 	<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/home.css' />">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- SCRIPTS -->
+	<script type="text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" ></script>
 	<script type="text/javascript" src="<c:url value='/resources/scripts/jquery-3.1.1.min.js' />"></script>
 	<script type="text/javascript" src="<c:url value='/resources/scripts/jquery-ui.js' />"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<script type="text/javascript">
 	$( function() {
 		
@@ -71,6 +76,11 @@
 		}
 	};
 	</script>
+	<style>
+		form{
+			display:inline;
+		}
+	</style>
 </head>
 <body onload="onLoadUp()">
 	<nav class='navbar navbar-default'>
@@ -81,8 +91,11 @@
 
 			<a href='Logout' type='button' id='logout-button'
 				class='navbar-btn btn btn-default logout-button navbar-right'>Logout</a>
-			<a class="navbar-btn btn btn-default account-button" href = 'AcctManagement'>Account Manager</a>	
+				
 			<a class="navbar-btn btn btn-default setting-button" href = 'Settings'>My Settings</a>
+			<c:if test="${sessionScope.position == 0 }">
+				<a class="navbar-btn btn btn-default account-button" href = 'AcctManagement'>Account Manager</a>
+			</c:if>	
 		</div>
 	</nav>
 	
@@ -98,6 +111,25 @@
 	</div>
 	
 	-->
+	
+	<!-- ALERT MESSAGES SECTION -->
+	<c:if test="${!empty fn:trim(errorMessage)}">
+		<div class="alert alert-danger" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			${ errorMessage }
+		</div>
+	</c:if>
+		<c:if test="${!empty fn:trim(successMessage)}">
+		<div class="alert alert-success" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			${ successMessage }
+		</div>
+	</c:if>
+	
 	<!-- This section holds the tabs and ticket view for the users. -->
 	
 	<div class="text-center col-lg-12" style="text-align: center">
@@ -110,12 +142,22 @@
 		
 		<!-- Contains the Create Ticket button, and search capabilities -->
 		<div class="container-fluid">
-			<span class="pull-left"><a href="CreateTicket" class="navbar-btn btn btn-default">Compose</a></span>
-			<form>
-				<div class ="col-lg-offset-2 "><input name="search" id="search" class="form-control" placeholder="Search Ticket" /></div>
-				<button class="navbar-btn btn btn-default">Search</button></span>
+			<span class="pull-left">
+				<a href="CreateTicket" class="navbar-btn btn btn-default">Compose</a>
+			</span>
+			
+			<form action="Search" method="post">
+				<div class ="col-lg-offset-2 ">
+					<input name="search" id="search" class="form-control" placeholder="Search Ticket" /></div>
+					<button class="navbar-btn btn btn-default" name="searchBtn" value="Search" type="submit">Search</button>
+					<button class="navbar-btn btn btn-default" name="searchBtn" value="Reset" type="submit">Reset</button>
 			</form>
 		</div>
+		
+
+		<!-- ------------------------------------------------ RECENT TICKETS SECTION ----------------------------------------------- -->
+		
+		
 		
 		<div id="rv">
 		<div id="accordion">
@@ -124,20 +166,58 @@
 					</h3>
 					
 					<div>
-					<p>
-						Requester: ${item.user } </br>
-						Phone: ${item.phone }</br>
-						Email: ${item.email }</br>
-						Date Commissioned: ${item.startDate }</br>
-						<b>Details:</b> ${item.details }</br>
-						<b>Location:</b> ${item.ticketLocation }</br>
+					<p> Requester: ${item.user } <br>
+						Phone: ${item.phone }    <br>
+						Email: ${item.email }    <br>
+						Date Commissioned: ${item.startDate } <br>
+						<b>Details:</b> ${item.details }      <br>
+						<b>Location:</b> ${item.ticketLocation }<br><br>	
+						<b>Updates</b><br>
 					</p>
-						<p>
+					<div class="container">
+						<c:if test="${item.progress ne 'OPEN'}">
+							<table class="table table-striped table-bordered table-hover">
+							 <thead class="thead-inverse">
+							    <tr>
+							      <th align="center">Update Date</th>
+							      <th align="center">Details</th>
+							    </tr>
+							  </thead>
+							  <tbody>
+							  	<c:forEach items="${item.updates}" var="upds">
+							  		<tr>
+							  			<td>${upds.modifiedDate}</td>
+							  			<td>${upds.updateDetails}</td>
+							  		</tr>
+							  	</c:forEach>
+							  </tbody>
+							</table>
+						</c:if>
+					</div>
 							<!--  Cancel and confirmation -->
-							
-							<button type="button" class ="btn btn-default" data-toggle="modal" data-target="#cancel-button">Cancel</button>
-							
-							<div class="modal fade" id="cancel-button"	tabindex="-1" role="dialog" aria-labeledby="myModalLabel" aria-hidden="True">
+					<c:choose>
+						<c:when test="${sessionScope.user eq item.user and item.progress eq 'OPEN'}">
+															<!--  Cancel  -->
+								<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal${item.id}">Cancel</button>
+															<!--   Edit   -->                                    
+								<a href= "EditTicket?id=${item.id}" class="navbar-btn btn btn-default">Edit</a>
+						</c:when>
+						
+						<c:when test="${ sessionScope.position <= 1 and item.progress eq 'OPEN' and sessionScope.user ne item.user }">
+								<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal${item.id}">Reject</button>
+						</c:when>
+					</c:choose>
+
+							<!--   Assign Technician   -->    
+					<c:if test="${sessionScope.position <= 2 }">
+						<a href="Update?id=${item.id}&prog=${item.progress}" type="button" class="navbar-btn btn btn-default">Update Progress</a> 
+					</c:if>
+					<c:if test="${sessionScope.position <= 1}">
+						<a href="AssignTechnician?id=${item.id}&prog=${item.progress}" type="button" class="navbar-btn btn btn-default" >Assign Technician</a> 
+					</c:if>
+					
+							<!-- Modal Pop up -->
+							<div class="modal fade" id="myModal${item.id}" role="dialog" >
 								<div class="modal-dialog">
 									<div class="modal-content">
 									
@@ -145,22 +225,35 @@
 										
 										<div class="modal-header">
 											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-											<h4 class="modal-title" id=myModalLabel>Ticket Cancellation Confirmation</h4>
+											<c:choose>
+												<c:when test="${sessionScope.position > 1 and item.progress eq 'OPEN' }">
+													<h4 class="modal-title" id=myModalLabel>Ticket Cancellation Confirmation</h4>
+												</c:when>
+												<c:when test="${sessionScope.position <= 1 and item.progress eq 'OPEN'}" >
+													<h4 class="modal-title" id=myModalLabel>Ticket Rejection Confirmation</h4>
+												</c:when>
+											</c:choose>
 										</div>
 										
 										<!-- Modal Body Content -->
 										
 										<div class="modal-body">
-											<p>Are you sure you want to cancel this ticket?</p>
+											<c:choose>
+												<c:when test="${sessionScope.position > 1 }">
+													<p>Are you sure you want to cancel this ticket?</p>
+												</c:when>
+												<c:otherwise>
+													<p>Are you sure you want to reject this ticket?</p>
+												</c:otherwise>
+											</c:choose>
 										</div>
 										
 										<!-- Modal Footer & Button options -->
 									
 										<div class="modal-footer">
-											<button type="button" class="btn btn-danger" data-dismiss="modal"> No </button>
-											
 											<form class="Cancel" action="Cancel" method="post">
-												<button class="navbar-btn btn btn-default" name ="cancelBt" value="${item.id}">Cancel</button>
+												<button type="button" class="btn btn-danger" data-dismiss="modal"> No </button>
+												<button type="button" class="btn btn-success" name ="cancelBt" value="${item.id}"> Yes </button>
 											</form>
 											
 										</div>
@@ -169,68 +262,165 @@
 								</div>
 							</div>
 
-							
-							<!--   Edit   --> 
-							<a href= "EditTicket?id=${item.id}" class="navbar-btn btn btn-default">Edit</a>
-							
-							
-							<!--   Assign Technician   -->       
-							<form class="Assign" action="Assign" method="post">
-								<button class="navbar-btn btn btn-default">Assign</button>
-							</form>
-					</p>
 					</div>
 			</c:forEach>
 		</div>
 		</div>
-			
+		
+		<!-- ------------------------------------------------- ACTIVE TICKETS SECTION ----------------------------------------------- -->
+		
 		<div id="av">
 		<div id="accordion_2">
 			<c:forEach items ="${tickets}" var="item">
 					<c:choose>
-						<c:when test = "${item.progress ne 'Completed'}">
-							<h3 class="col-span" style="background-color:#ffeead "><span class="pull-left" style="color:black">${ item.user }: ${ item.details } </span> <span class="pull-right"style="color:white">STATUS: ${item.progress }</span></h3>
+						<c:when test = "${item.progress ne 'COMPLETED' and item.progress ne 'CLOSED' }">
+							<h3 class="col-span"><span class="pull-left">${ item.user }: ${ item.details } </span> <span class="pull-right">STATUS: ${item.progress }</span></h3>
 							<div>
-								<p>
-									Requester: ${item.user }</br>
-									Phone: ${item.phone }</br>
-									Email: ${item.email }</br>
-									Date Commissioned: ${item.startDate }</br></br>
-									<b>Details:</b> ${item.details }</br>
-									<b>Location:</b> ${item.ticketLocation }
+								<p> Requester: ${item.user } <br>
+									Phone: ${item.phone }    <br>
+									Email: ${item.email }    <br>
+									Date Commissioned: ${item.startDate } <br>
+									<b>Details:</b> ${item.details }      <br>
+									<b>Location:</b> ${item.ticketLocation }<br><br>	
+									<b>Updates</b><br>
 								</p>
-								<p>
-									<button class="navbar-btn btn btn-default">Cancel</button>
-									<a href= "EditTicket?ticketId=${item.id}" class="navbar-btn btn btn-default">Edit</a>
-									<button class="navbar-btn btn btn-default">Assign</button>
-								</p>
+					<div class="container">
+						<c:if test="${item.progress ne 'OPEN'}">
+							<table class="table table-striped table-bordered table-hover">
+							 <thead class="thead-inverse">
+							    <tr>
+							      <th align="center">Update Date</th>
+							      <th align="center">Details</th>
+							    </tr>
+							  </thead>
+							  <tbody>
+							  	<c:forEach items="${item.updates}" var="upds">
+							  		<tr>
+							  			<td>${upds.modifiedDate}</td>
+							  			<td>${upds.updateDetails}</td>
+							  		</tr>
+							  	</c:forEach>
+							  </tbody>
+							</table>
+						</c:if>
+					</div>
+					<c:choose>
+						<c:when test="${sessionScope.user eq item.user and item.progress eq 'OPEN'}">
+															<!--  Cancel  -->
+								<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal${item.id}">Cancel</button>
+															<!--   Edit   -->                                    
+								<a href= "EditTicket?id=${item.id}" class="navbar-btn btn btn-default">Edit</a>
+						</c:when>
+						
+						<c:when test="${ sessionScope.position <= 1 and item.progress eq 'OPEN' and sessionScope.user ne item.user }">
+								<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal${item.id}">Reject</button>
+						</c:when>
+					</c:choose>
+
+							<!--   Assign Technician   -->    
+					<c:if test="${sessionScope.position <= 2 }">
+						<a href="Update$id=${item.id}" type="button" class="navbar-btn btn btn-default">Update Progress</a> 
+					</c:if>
+					<c:if test="${sessionScope.position <= 1}">
+							<a href="AssignTechnician?id=${item.id}&prog=${item.progress}" type="button" class="navbar-btn btn btn-default" >Assign Technician</a> 
+					</c:if>
+					
+							<!-- Modal Pop up -->
+							<div class="modal fade" id="myModal${item.id}" role="dialog" >
+								<div class="modal-dialog">
+									<div class="modal-content">
+									
+										<!-- Modal header -->
+										
+										<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+											<c:choose>
+												<c:when test="${sessionScope.position > 1 and item.progress eq 'OPEN' }">
+													<h4 class="modal-title" id=myModalLabel>Ticket Cancellation Confirmation</h4>
+												</c:when>
+												<c:when test="${sessionScope.position <= 1 and item.progress eq 'OPEN'}" >
+													<h4 class="modal-title" id=myModalLabel>Ticket Rejection Confirmation</h4>
+												</c:when>
+											</c:choose>
+										</div>
+										
+										<!-- Modal Body Content -->
+										
+										<div class="modal-body">
+											<c:choose>
+												<c:when test="${sessionScope.position > 1 }">
+													<p>Are you sure you want to cancel this ticket?</p>
+												</c:when>
+												<c:otherwise>
+													<p>Are you sure you want to reject this ticket?</p>
+												</c:otherwise>
+											</c:choose>
+										</div>
+										
+										<!-- Modal Footer & Button options -->
+									
+										<div class="modal-footer">
+											<form class="Cancel" action="Cancel" method="post">
+												<button type="button" class="btn btn-danger" data-dismiss="modal"> No </button>
+												<button type="button" class="btn btn-success" name ="cancelBt" value="${item.id}"> Yes </button>
+											</form>
+											
+										</div>
+									
+									</div>
+								</div>
+							</div>
 							</div>
 						</c:when>
 					</c:choose>
 			</c:forEach>
 		</div>
 		</div>
-			
+		
+		
+		
+		
+		<!-- -------------------------------------- COMPLETED / CLOSED TICKETS SECTION ----------------------------------------------- -->
+		
+		
+		
+		
 		<div id="cv">
 		<div id="accordion_3">
 			<c:forEach items ="${tickets}" var="item">
 				<c:choose>
-					<c:when test = "${item.progress eq 'Completed'}">
+					<c:when test = "${item.progress eq 'COMPLETED' or item.progress eq 'CLOSED' }">
 						<h3 ><span class="pull-left">TICKET# ${item.id }</span> <span class="pull-right">STATUS: ${item.progress }</span></h3>
 						<div>
 							<p>
-							Requester: ${item.user }</br>
-							Phone: ${item.phone }</br>
-							Email: ${item.email }</br>
-							Date Commissioned: ${item.startDate }</br></br>
-							<b>Details:</b> ${item.details }</br>
-							<b>Location:</b> ${item.ticketLocation }
+							Requester: ${item.user }	<br>
+							Phone: ${item.phone }		<br>
+							Email: ${item.email 		}<br>
+							Date Commissioned: ${item.startDate }<br>
+							<b>Details:</b> ${item.details }	 <br>
+							<b>Location:</b> ${item.ticketLocation }<br><br>	
+							<b>Updates</b><br>
 							</p>
-							<p>
-								<button class="navbar-btn btn btn-default">Cancel</button>
-								<a href= "EditTicket?ticketId=${item.id}" class="navbar-btn btn btn-default">Edit</a>
-								<button class="navbar-btn btn btn-default">Assign</button>
-							</p>
+					<div class="container">
+						<c:if test="${item.progress ne 'OPEN'}">
+							<table class="table table-striped table-bordered table-hover">
+							 <thead class="thead-inverse">
+							    <tr>
+							      <th align="center">Update Date</th>
+							      <th align="center">Details</th>
+							    </tr>
+							  </thead>
+							  <tbody>
+							  	<c:forEach items="${item.updates}" var="upds">
+							  		<tr>
+							  			<td>${upds.modifiedDate}</td>
+							  			<td>${upds.updateDetails}</td>
+							  		</tr>
+							  	</c:forEach>
+							  </tbody>
+							</table>
+						</c:if>
+					</div>
 						</div>
 					</c:when>
 				</c:choose>

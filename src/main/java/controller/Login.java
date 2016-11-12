@@ -1,11 +1,6 @@
 package controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.naming.NamingEnumeration;
@@ -19,12 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import external.ActiveDirectory;
-import model.User;
 import function.LoginFunction;
-import function.RetrieveTicket;
-import function.RetrieveUpdates;
-
-import org.apache.log4j.Logger;
+import function.RetrieveData;
 
 @WebServlet(urlPatterns="/Login", loadOnStartup = 1)
 public class Login extends HttpServlet {
@@ -49,8 +40,7 @@ public class Login extends HttpServlet {
 		String user = request.getParameter("username");
 		String password = request.getParameter("password");
 		LoginFunction lf = new LoginFunction();
-		RetrieveTicket rttk = new RetrieveTicket();
-		RetrieveUpdates rtup = new RetrieveUpdates();
+		RetrieveData rd = new RetrieveData();
 
     	int check = 4;
     	
@@ -103,7 +93,8 @@ public class Login extends HttpServlet {
         			
 	            	activeDirectory.closeLdapConnection();
 	            	
-	            	request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
+	            	//request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
+	            	response.sendRedirect("FirstLoginUpdate");
             	}
             	else{
             		// This should be when check == 1 and NOT 2 or 3.
@@ -118,17 +109,19 @@ public class Login extends HttpServlet {
         			request.getSession().setAttribute("position", lf.getSystemAccount().getStatus());
         			
         			try {
-        				request.getSession().setAttribute("tickets", rttk.getUserTicket(user, lf.getSystemAccount().getStatus()));
+        				request.getSession().setAttribute("tickets", rd.getUserTicket(user, lf.getSystemAccount().getStatus(), lf.getSystemAccount().getUnitId()));
         			} catch (SQLException e) {
         				e.printStackTrace();
         			}
         			
         			if( lf.getSystemAccount().getLastName().isEmpty() || lf.getSystemAccount().getPhoneNumber().isEmpty() || 
         					lf.getSystemAccount().getEmail().isEmpty() ){
-        				request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
+        				//request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
+        				response.sendRedirect("FirstLoginUpdate");
         			}
         			else{
-        				request.getRequestDispatcher("/Home").forward(request, response);
+        				//request.getRequestDispatcher("/Home").forward(request, response);
+        				response.sendRedirect("Home");
         			}
             	}
             	
@@ -146,17 +139,19 @@ public class Login extends HttpServlet {
         			request.getSession().setAttribute("position", lf.getSystemAccount().getStatus());
         			
         			try {
-        				request.getSession().setAttribute("tickets", rttk.getUserTicket(user, lf.getSystemAccount().getStatus()));
+        				request.getSession().setAttribute("tickets", rd.getUserTicket(user, lf.getSystemAccount().getStatus(), lf.getSystemAccount().getUnitId()));
         			} catch (SQLException e) {
         				e.printStackTrace();
         			}
         			
         			if( lf.getSystemAccount().getLastName().isEmpty() || lf.getSystemAccount().getPhoneNumber().isEmpty() || 
         					lf.getSystemAccount().getEmail().isEmpty() ){
-        				request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
+        				//request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
+        				response.sendRedirect("FirstLoginUpdate");
         			}
         			else{
-        				request.getRequestDispatcher("/Home").forward(request, response);
+        				//request.getRequestDispatcher("/Home").forward(request, response);
+        				response.sendRedirect("Home");
         			}
             	}
             	else{
@@ -200,7 +195,6 @@ public class Login extends HttpServlet {
     			if(request.getSession().getAttribute("errorMessage")!= null){
     				request.removeAttribute("errorMessage");
     			}
-    			
     			request.getSession().setAttribute("user", user);
     			request.getSession().setAttribute("firstname", lf.getSystemAccount().getFirstName());
     			request.getSession().setAttribute("lastname", lf.getSystemAccount().getLastName());
@@ -210,17 +204,18 @@ public class Login extends HttpServlet {
     			request.getSession().setAttribute("position", lf.getSystemAccount().getStatus());
     			
     			try {
-    				request.getSession().setAttribute("tickets", rttk.getUserTicket(user, lf.getSystemAccount().getStatus()));
+    				request.getSession().setAttribute("tickets", rd.getUserTicket(user, lf.getSystemAccount().getStatus(), lf.getSystemAccount().getUnitId()));
     			} catch (SQLException x) {
     				x.printStackTrace();
     			}
     			
     			if( lf.getSystemAccount().getLastName().isEmpty() || lf.getSystemAccount().getPhoneNumber().isEmpty() || 
     					lf.getSystemAccount().getEmail().isEmpty() ){
-    				request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
+    				//request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
+    				response.sendRedirect("FirstLoginUpdate");
     			}
     			else{
-    				request.getRequestDispatcher("/Home").forward(request, response);
+    				response.sendRedirect("Home");
     			}
     		}
 		

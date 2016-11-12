@@ -41,18 +41,18 @@
 </head>
 <body onload="onLoadUp()">
 	<nav class='navbar navbar-default'>
-		<div class='container-fluid'>
-			<a class='navbar-brand' href='Home'>TechIT</a>
+		<div class='navbar-header'>
+			<a class='navbar-brand' href='#'>TechIT</a>
 			<p class='navbar-text'>Signed in as ${sessionScope.firstname}
 				${sessionScope.lastname }</p>
 
 			<a href='Logout' type='button' id='logout-button'
 				class='navbar-btn btn btn-default logout-button navbar-right'>Logout</a>
-
-			<a class="navbar-btn btn btn-default account-button"
-				href='AcctManagement'>Account Manager</a>
-			<button class="navbar-btn btn btn-default navbar-right">My
-				Settings</button>
+				
+			<a class="navbar-btn btn btn-default setting-button" href = 'Settings'>My Settings</a>
+			<c:if test="${sessionScope.position == 0 }">
+				<a class="navbar-btn btn btn-default account-button" href = 'AcctManagement'>Account Manager</a>
+			</c:if>	
 		</div>
 	</nav>
 	<div class="alert alert-info fade in">

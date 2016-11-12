@@ -2,13 +2,9 @@ package controller;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 
 
@@ -18,9 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import function.SendEmail;
-/**
- * Servlet implementation class CreateTicket
- */
+
 @WebServlet("/CreateTicket")
 public class CreateTicket extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -78,10 +72,8 @@ public class CreateTicket extends HttpServlet {
 		        pstmt.setInt   ( 6, units );
 	            pstmt.setString( 7, details );
 	            pstmt.setString( 8, location );
-	            System.out.println("I got Here");
 	            pstmt.executeUpdate();	       
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}finally
 			{
@@ -89,7 +81,6 @@ public class CreateTicket extends HttpServlet {
 					try {
 						c.close();
 					} catch (SQLException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}

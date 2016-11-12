@@ -13,34 +13,22 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Servlet implementation class AcctManagement
- */
 @WebServlet("/AcctManagement")
 public class AcctManagement extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
 	public AcctManagement() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		request.getRequestDispatcher("/WEB-INF/AcctManagement.jsp").forward(request, response);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+
 		String Create = request.getParameter("Create");
 		String Search = request.getParameter("Search");
 		if(Search == null)
@@ -55,12 +43,12 @@ public class AcctManagement extends HttpServlet {
 
 			if(firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phoneNumber.isEmpty() || Position.isEmpty() || username.isEmpty())
 			{
-				request.getSession().setAttribute("errorMessage", "Some fields are missing!");
+				request.setAttribute("errorMessage", "Some fields are missing!");
 				request.getRequestDispatcher("/WEB-INF/AcctManagement.jsp").forward(request, response);
 			}
 			else if( phoneNumber.length() < 14){
-				request.getSession().setAttribute("errorMessage", "Incorrect phone number format!");
-				request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
+				request.setAttribute("errorMessage", "Incorrect phone number format!");
+				request.getRequestDispatcher("/WEB-INF/AcctManagement.jsp").forward(request, response);
 
 			}
 			else{

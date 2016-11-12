@@ -1,6 +1,5 @@
 package controller;
 
-import java.awt.List;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,20 +13,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import function.RetrieveTicket;
+import function.RetrieveData;
 import model.Ticket;
 
-/**
- * Servlet implementation class EditTicket
- */
 @WebServlet("/EditTicket")
 public class EditTicket extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Ticket getTicket (Integer id) throws ServletException
 	{
 		Ticket ticket = null;
-		List technicianList = new List();
-		List updateList = new List();
 		Connection c = null;
 		try
 		{
@@ -74,8 +68,6 @@ public class EditTicket extends HttpServlet {
 		request.getRequestDispatcher("/WEB-INF/EditTicket.jsp").forward(request, response);
 	}
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String user = request.getSession().getAttribute("user").toString();
-		int position = Integer.parseInt(request.getSession().getAttribute("position").toString());
 		String firstName = request.getParameter("firstName").replace(" ", "");
 		String lastName = request.getParameter("lastName").replace(" ", "");
 		String email = request.getParameter("email").replace(" ", "");
@@ -126,6 +118,13 @@ public class EditTicket extends HttpServlet {
 	            pstmt.setInt( 7, units);
 	            pstmt.setInt( 8, id);
 	            pstmt.executeUpdate();	       
+	            c.close();
+	            
+				RetrieveData rd = new RetrieveData();
+				request.getSession().setAttribute("tickets", rd.getUserTicket(request.getSession().getAttribute("user").toString(), 
+						Integer.parseInt(request.getSession().getAttribute("position").toString()), 
+						Integer.parseInt(request.getSession().getAttribute("unit_id").toString())));
+				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -143,14 +142,7 @@ public class EditTicket extends HttpServlet {
 			if(request.getSession().getAttribute("errorMessage")!= null){
 				request.removeAttribute("errorMessage");
 			}
-			RetrieveTicket rttk = new RetrieveTicket();
-			try {
-				request.getSession().setAttribute("tickets", rttk.getUserTicket(user, position));
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			response.sendRedirect("Home");
+			request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 		}
 	}	
 

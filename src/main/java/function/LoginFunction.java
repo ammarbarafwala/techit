@@ -5,9 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-
-import model.Ticket;
 import model.User;
 import function.StringFilter;
 /*
@@ -20,11 +17,9 @@ import function.StringFilter;
 
 public class LoginFunction {
 	private User user;
-	private ArrayList<Ticket> ticketList;
 	
 	public LoginFunction(){
 		this.user = null;
-		this.ticketList = new ArrayList<Ticket>();
 	}
 	
 	public int checkSystemAccount(String user, String password) throws SQLException 
@@ -99,7 +94,6 @@ public class LoginFunction {
 	            		String email = sf.filterNull(rs.getString("email"));
 	            		int position = rs.getInt("position");
 	            		int unitId = rs.getInt("unit_id");
-	            		
 	            		
 	            		this.user = new User(id,
 	            				firstName,

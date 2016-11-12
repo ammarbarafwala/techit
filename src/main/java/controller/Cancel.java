@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import function.RetrieveData;
+
 @WebServlet("/Cancel")
 public class Cancel extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -23,6 +25,8 @@ public class Cancel extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int id = Integer.parseInt(request.getParameter("cancelBt"));
+		System.out.println(id);
+		RetrieveData rd = new RetrieveData();
 		Connection c = null;
 		try
 		{
@@ -31,16 +35,28 @@ public class Cancel extends HttpServlet {
 			String db_pass = ".XCGG1Bc";
 			
 			c = DriverManager.getConnection(url, db_user, db_pass);
-			String cancel = "update tickets set position = ? where username = ?";
+			String cancel = "update tickets set Progress = ? where id = ?";
             PreparedStatement pstmt = c.prepareStatement( cancel );
-            pstmt.setInt( 1, id );
-            pstmt.setInt( 2, 4 );
+            pstmt.setInt( 1, 4 );
+            pstmt.setInt( 2, id );
+            pstmt.executeUpdate();	       
+            c.close();
+			request.getSession().setAttribute("tickets", rd.getUserTicket(request.getSession().getAttribute("user").toString(), 
+					Integer.parseInt(request.getSession().getAttribute("position").toString()), 
+					Integer.parseInt(request.getSession().getAttribute("unit_id").toString())));
 		}
 		catch(SQLException e){
-			request.getSession().setAttribute("Error Message", "Something went wrong during cancelation, please try again later!");
-			request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
+			request.setAttribute("errorMessage", "Something went wrong during cancelation, please try again later!");
+		}finally{
+			if(c != null){
+				try {
+					c.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
-			
+		request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 	}
 
 }
