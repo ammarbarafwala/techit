@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import function.SendEmail;
-
+import function.RetrieveData;
 @WebServlet("/CreateTicket")
 public class CreateTicket extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -24,6 +24,9 @@ public class CreateTicket extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String user = request.getSession().getAttribute("user").toString();
+		int UnitId = Integer.parseInt(request.getSession().getAttribute("unit_id").toString());
+		int position = Integer.parseInt(request.getSession().getAttribute("position").toString());
 		String firstName = request.getParameter("firstName").replace(" ", "");
 		String lastName = request.getParameter("lastName").replace(" ", "");
 		String email = request.getParameter("email").replace(" ", "");
@@ -64,7 +67,7 @@ public class CreateTicket extends HttpServlet {
 				c = DriverManager.getConnection(url, db_user, db_pass);
 				String createTicket = "insert into tickets (username,userFirstName,userLastName,phone, email,unitId, details,startDate,lastUpdated, ticketLocation) values (?,?,?,?,?,?,?,NOW(),NOW(),?)";
 	            PreparedStatement pstmt = c.prepareStatement( createTicket );
-	            pstmt.setString( 1, request.getSession().getAttribute("user").toString() );
+	            pstmt.setString( 1, user);
 	            pstmt.setString( 2, firstName );
 	            pstmt.setString( 3, lastName );
 	            pstmt.setString( 4, phoneNumber );
@@ -90,7 +93,14 @@ public class CreateTicket extends HttpServlet {
 			}
 			SendEmail se = new SendEmail();
 			se.sendEmail (email,"New Ticket Created", details);
-			request.getRequestDispatcher("/Home").forward(request, response);
+			RetrieveData rd = new RetrieveData();
+			try {
+			 				request.getSession().setAttribute("tickets", rd.getUserTicket(user, position, UnitId));
+			 			} catch (SQLException e) {
+			 				// TODO Auto-generated catch block
+			 				e.printStackTrace();
+			 		}
+			response.sendRedirect("Home");
 		}
 	}
 }

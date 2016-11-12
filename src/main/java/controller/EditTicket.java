@@ -68,6 +68,9 @@ public class EditTicket extends HttpServlet {
 		request.getRequestDispatcher("/WEB-INF/EditTicket.jsp").forward(request, response);
 	}
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String user = request.getSession().getAttribute("user").toString();
+		int UnitId = Integer.parseInt(request.getSession().getAttribute("unit_id").toString());
+		int position = Integer.parseInt(request.getSession().getAttribute("position").toString());
 		String firstName = request.getParameter("firstName").replace(" ", "");
 		String lastName = request.getParameter("lastName").replace(" ", "");
 		String email = request.getParameter("email").replace(" ", "");
@@ -142,7 +145,15 @@ public class EditTicket extends HttpServlet {
 			if(request.getSession().getAttribute("errorMessage")!= null){
 				request.removeAttribute("errorMessage");
 			}
-			request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
+			RetrieveData rd = new RetrieveData();
+			try {
+			 				request.getSession().setAttribute("tickets", rd.getUserTicket(user, position, UnitId));
+			 			} catch (SQLException e) {
+			 				// TODO Auto-generated catch block
+			 				e.printStackTrace();
+			 		}
+			response.sendRedirect("Home");
+			
 		}
 	}	
 
