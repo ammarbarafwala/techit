@@ -57,6 +57,8 @@ description TEXT
 -- PASS: abcd
 insert into users (id, firstname, lastname, username, pass, phone, email, position, unit_id) values(1, "John", "Smith", "jsmith", "88d4266fd4e6338d13b845fcf289579d209c897823b9217da3e161936f031589", "(555) 555-5555", "jsmith@test.com",1, 2);
 -- PASS: abcd
+insert into users (firstname, lastname, username, pass, phone, email, position, unit_id) values("Jimmy", "Jim", "jjim", "88d4266fd4e6338d13b845fcf289579d209c897823b9217da3e161936f031589", "(555) 555-5555", "jjim@test.com",2, 1);
+-- PASS: abcd
 insert into users (firstname, lastname, username, pass, phone, email, position, unit_id) values("Bob", "Lee", "blee", "88d4266fd4e6338d13b845fcf289579d209c897823b9217da3e161936f031589","(555) 555-5555", "blee@test.com", 2, 2);
 -- PASS: ohmygod
 insert into users (firstname, lastname, username, pass, phone, email, position, unit_id) values("Joseph", "Joestar", "jojo", "5ad0000a66aac644685638066d6c1beabd796dc33a5a827ce7121a94aa78552d","(555) 555-5555", "jojo@test.com", 0, 0); 

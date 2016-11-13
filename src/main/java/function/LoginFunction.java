@@ -5,6 +5,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.apache.commons.dbutils.DbUtils;
+
 import model.User;
 import function.StringFilter;
 /*
@@ -39,16 +42,15 @@ public class LoginFunction {
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+		int returnInt = 4;
 		
 		Connection c = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		try
 		{
-//			String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu05";
-//			String db_user = "cs4961stu05";
-//			String db_pass = ".Im0nx.W";
 			String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
 			String db_user = "cs4961stu01";
 			String db_pass = ".XCGG1Bc";
@@ -56,9 +58,9 @@ public class LoginFunction {
 			c = DriverManager.getConnection(url, db_user, db_pass);
 			
 			String search_user = "select * from users where username = ?";
-            PreparedStatement pstmt = c.prepareStatement( search_user );
+            pstmt = c.prepareStatement( search_user );
             pstmt.setString( 1, user );
-            ResultSet rs = pstmt.executeQuery();
+            rs = pstmt.executeQuery();
             if(rs.next())
             {
             	if(rs.getString("pass").isEmpty())
@@ -81,8 +83,7 @@ public class LoginFunction {
             				position,
             				unitId);
             		
-            		c.close();
-            		return 1;
+            		returnInt = 1;
             	}
             	else{
 	            	if(rs.getString("pass").equals(org.apache.commons.codec.digest.DigestUtils.sha256Hex(password)))
@@ -103,30 +104,30 @@ public class LoginFunction {
 	            				email,
 	            				position,
 	            				unitId);
-	            		c.close();
-	            		return 3;
+	            		
+	            		returnInt =  3;
 	            	}
 	            	else
 	            	{
-	            		c.close();
-	            		return 2;	// Incorrect password
+	            		returnInt =  2;	// Incorrect password
 	            		
 	            	}
             	}
             }
             else{
-            	c.close();
-            	return 0;	 // User does not exist in the system
+            	returnInt =  0;	 // User does not exist in the system
             }
-            
-            
-            
+            pstmt.close();
+            rs.close();
+            c.close();
 		}
 		finally{
-			if(c != null){
-				c.close();
-			}
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
 		}
+		
+		return returnInt;
 	}
 	
 	public User getSystemAccount(){

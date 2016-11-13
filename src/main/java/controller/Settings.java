@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.dbutils.DbUtils;
+
 /**
  * Servlet implementation class AcctManagement
  */
@@ -20,27 +22,11 @@ import javax.servlet.http.HttpServletResponse;
 public class Settings extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
-	public Settings() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		request.getRequestDispatcher("/WEB-INF/Settings.jsp").forward(request, response);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		String email = request.getParameter("email");
 		String pnumber = request.getParameter("phoneNumber");
 		String save = request.getParameter("Save");
@@ -63,6 +49,8 @@ public class Settings extends HttpServlet {
 		}
 		else{
 			Connection c = null;
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
 			try
 			{
 				String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
@@ -71,10 +59,10 @@ public class Settings extends HttpServlet {
 
 				c = DriverManager.getConnection(url, db_user, db_pass);
 				String search_user = "select * from users where username = ?";
-				PreparedStatement pstmt = c.prepareStatement( search_user );
+				pstmt = c.prepareStatement( search_user );
 				pstmt.setString( 1, request.getSession().getAttribute("user").toString() );
 
-				ResultSet rs = pstmt.executeQuery();
+				rs = pstmt.executeQuery();
 
 				if(rs.next())
 				{
@@ -84,23 +72,19 @@ public class Settings extends HttpServlet {
 					pstmt2.setString(2, pnumber);
 					pstmt2.setString(3, request.getSession().getAttribute("user").toString());
 					pstmt2.executeUpdate();
-
-					c.close();
 				}
-
+				
+				pstmt.close();
+				rs.close();
+				c.close();
+				
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}finally
 			{
-				if(c != null){
-					try {
-						c.close();
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+				DbUtils.closeQuietly(pstmt);
+				DbUtils.closeQuietly(rs);
+				DbUtils.closeQuietly(c);
 			}
 			if(request.getSession().getAttribute("errorMessage")!= null){
 				request.removeAttribute("errorMessage");

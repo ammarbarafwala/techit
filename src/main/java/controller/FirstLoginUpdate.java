@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.dbutils.DbUtils;
+
 /**
  * This servlet is the controller for FirstLoginUpdate.jsp
  * This code is meant to add missing information of the Active Directory system
@@ -61,6 +63,8 @@ public class FirstLoginUpdate extends HttpServlet {
 		}
 		else{
 			Connection c = null;
+			PreparedStatement pstmt = null;
+			ResultSet rs = null;
 			try
 			{
 				String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
@@ -69,10 +73,10 @@ public class FirstLoginUpdate extends HttpServlet {
 				
 				c = DriverManager.getConnection(url, db_user, db_pass);
 				String search_user = "select * from users where username = ?";
-	            PreparedStatement pstmt = c.prepareStatement( search_user );
+	            pstmt = c.prepareStatement( search_user );
 	            pstmt.setString( 1, request.getSession().getAttribute("user").toString() );
 	            
-	            ResultSet rs = pstmt.executeQuery();
+	            rs = pstmt.executeQuery();
 	            
 	            if(rs.next())
 	            {
@@ -84,8 +88,7 @@ public class FirstLoginUpdate extends HttpServlet {
 	            	pstmt2.setString(4, phoneNumber);
 	            	pstmt2.setString(5, request.getSession().getAttribute("user").toString());
 		            pstmt2.executeUpdate();
-		            
-	            	c.close();
+
 	            }
 	            else
 	            {
@@ -99,23 +102,20 @@ public class FirstLoginUpdate extends HttpServlet {
 	            	pstmt2.setString(6, email);
 	            	pstmt2.setInt(7, 3);
 	            	pstmt2.execute();
-	            	
-	            	c.close();
+
 	            }
+	            pstmt.close();
+	            rs.close();
+	            c.close();
 	            
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}finally
 			{
-				if(c != null){
-					try {
-						c.close();
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+				DbUtils.closeQuietly(pstmt);
+				DbUtils.closeQuietly(rs);
+				DbUtils.closeQuietly(c);
 			}
 			if(request.getSession().getAttribute("errorMessage")!= null){
 				request.removeAttribute("errorMessage");

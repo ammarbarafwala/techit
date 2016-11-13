@@ -306,13 +306,13 @@
 					<c:choose>
 						<c:when test="${sessionScope.user eq item.user and item.progress eq 'OPEN'}">
 															<!--  Cancel  -->
-								<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal${item.id}">Cancel</button>
+								<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal2${item.id}">Cancel</button>
 															<!--   Edit   -->                                    
 								<a href= "EditTicket?id=${item.id}" class="navbar-btn btn btn-default">Edit</a>
 						</c:when>
 						
 						<c:when test="${ sessionScope.position <= 1 and item.progress eq 'OPEN' and sessionScope.user ne item.user }">
-								<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal${item.id}">Reject</button>
+								<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal2${item.id}">Reject</button>
 						</c:when>
 					</c:choose>
 
@@ -324,7 +324,7 @@
 					</c:if>
 					
 							<!-- Modal Pop up -->
-							<div class="modal fade" id="myModal${item.id}" role="dialog" >
+							<div class="modal fade" id="myModal2${item.id}" role="dialog" >
 								<div class="modal-dialog">
 									<div class="modal-content">
 									

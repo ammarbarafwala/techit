@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.dbutils.DbUtils;
+
 @WebServlet("/AcctManagement")
 public class AcctManagement extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -53,6 +55,7 @@ public class AcctManagement extends HttpServlet {
 			}
 			else{
 				Connection c = null;
+				PreparedStatement pstmt2 = null;
 				try
 				{
 					String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
@@ -60,15 +63,8 @@ public class AcctManagement extends HttpServlet {
 					String db_pass = ".XCGG1Bc";
 
 					c = DriverManager.getConnection(url, db_user, db_pass);
-					String search_user = "select * from users where username = ?";
-					PreparedStatement pstmt = c.prepareStatement( search_user );
-					pstmt.setString( 1, request.getSession().getAttribute("user").toString() );
-
-					ResultSet rs = pstmt.executeQuery();
-
-
 					String insert_user = "insert into users (firstname, lastname, pass, username, phone, email, position) values(?, ?, ?, ?, ?, ?, ?)";
-					PreparedStatement pstmt2 = c.prepareStatement(insert_user);
+					pstmt2 = c.prepareStatement(insert_user);
 					pstmt2.setString(1, firstName);
 					pstmt2.setString(2, lastName);
 					pstmt2.setString(3, org.apache.commons.codec.digest.DigestUtils.sha256Hex(password));
@@ -77,23 +73,20 @@ public class AcctManagement extends HttpServlet {
 					pstmt2.setString(6, email);
 					pstmt2.setInt(7, Integer.parseInt(Position));
 					pstmt2.execute();
-					System.out.println("Hello");
 
+					pstmt2.close();
 					c.close();
 
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
+
+					DbUtils.closeQuietly(pstmt2);
+					DbUtils.closeQuietly(c);
+					
 					e.printStackTrace();
 				}finally
 				{
-					if(c != null){
-						try {
-							c.close();
-						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
+					DbUtils.closeQuietly(pstmt2);
+					DbUtils.closeQuietly(c);
 				}
 				if(request.getSession().getAttribute("errorMessage")!= null){
 					request.removeAttribute("errorMessage");

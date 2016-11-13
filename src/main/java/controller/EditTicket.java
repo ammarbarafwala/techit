@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.dbutils.DbUtils;
+
 import function.RetrieveData;
 import model.Ticket;
 
@@ -23,6 +25,8 @@ public class EditTicket extends HttpServlet {
 	private Ticket getTicket(Integer id) throws ServletException {
 		Ticket ticket = null;
 		Connection c = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		try {
 			String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
 			String db_user = "cs4961stu01";
@@ -30,27 +34,26 @@ public class EditTicket extends HttpServlet {
 
 			c = DriverManager.getConnection(url, db_user, db_pass);
 			String search_user = "select * from tickets where id = ?";
-			PreparedStatement pstmt = c.prepareStatement(search_user);
+			pstmt = c.prepareStatement(search_user);
 			pstmt.setInt(1, id);
-			ResultSet rs = pstmt.executeQuery();
+			rs = pstmt.executeQuery();
 			if (rs.next()) {
 
 				ticket = new Ticket(rs.getInt("id"), rs.getString("username"), rs.getString("userFirstName"),
 						rs.getString("userLastName"), rs.getString("phone"), rs.getString("email"), rs.getInt("unitId"),
 						rs.getString("details"), rs.getDate("startDate"), rs.getDate("lastUpdated"),
 						rs.getString("ticketLocation"));
-				c.close();
 			}
+			pstmt.close();
+			rs.close();
+			c.close();
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
-			if (c != null) {
-				try {
-					c.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
 		}
 
 		return ticket;
@@ -118,6 +121,7 @@ public class EditTicket extends HttpServlet {
 
 		} else {
 			Connection c = null;
+			PreparedStatement pstmt = null;
 			try {
 				String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
 				String db_user = "cs4961stu01";
@@ -125,7 +129,7 @@ public class EditTicket extends HttpServlet {
 
 				c = DriverManager.getConnection(url, db_user, db_pass);
 				String createTicket = "update tickets set userFirstName = ? , userLastName =? , phone =? , email = ?, details = ?, lastUpdated = NOW() ,ticketLocation = ?, unitId =? where id =?";
-				PreparedStatement pstmt = c.prepareStatement(createTicket);
+				pstmt = c.prepareStatement(createTicket);
 				pstmt.setString(1, firstName);
 				pstmt.setString(2, lastName);
 				pstmt.setString(3, phoneNumber);
@@ -135,6 +139,7 @@ public class EditTicket extends HttpServlet {
 				pstmt.setInt(7, units);
 				pstmt.setInt(8, id);
 				pstmt.executeUpdate();
+				pstmt.close();
 				c.close();
 
 				request.getSession().setAttribute("tickets",
@@ -145,13 +150,8 @@ public class EditTicket extends HttpServlet {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} finally {
-				if (c != null) {
-					try {
-						c.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
+				DbUtils.closeQuietly(pstmt);
+				DbUtils.closeQuietly(c);
 			}
 			if (request.getSession().getAttribute("errorMessage") != null) {
 				request.removeAttribute("errorMessage");

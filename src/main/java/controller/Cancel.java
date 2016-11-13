@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.dbutils.DbUtils;
+
 import function.RetrieveData;
 
 @WebServlet("/Cancel")
@@ -27,6 +29,7 @@ public class Cancel extends HttpServlet {
 		int id = Integer.parseInt(request.getParameter("cancelBt"));
 		RetrieveData rd = new RetrieveData();
 		Connection c = null;
+		PreparedStatement pstmt= null;
 		try
 		{
 			String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
@@ -35,7 +38,7 @@ public class Cancel extends HttpServlet {
 			
 			c = DriverManager.getConnection(url, db_user, db_pass);
 			String cancel = "update tickets set Progress = ? where id = ?";
-            PreparedStatement pstmt = c.prepareStatement( cancel );
+            pstmt = c.prepareStatement( cancel );
             pstmt.setInt( 1, 4 );
             pstmt.setInt( 2, id );
             pstmt.executeUpdate();	       
@@ -47,13 +50,8 @@ public class Cancel extends HttpServlet {
 		catch(SQLException e){
 			request.setAttribute("errorMessage", "Something went wrong during cancelation, please try again later!");
 		}finally{
-			if(c != null){
-				try {
-					c.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
+				DbUtils.closeQuietly(c);
+				DbUtils.closeQuietly(pstmt);
 		}
 		request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 	}

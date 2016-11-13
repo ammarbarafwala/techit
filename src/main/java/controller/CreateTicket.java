@@ -11,6 +11,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.dbutils.DbUtils;
+
 import function.SendEmail;
 
 import function.RetrieveData;
@@ -66,6 +69,7 @@ public class CreateTicket extends HttpServlet {
 
 		} else {
 			Connection c = null;
+			PreparedStatement pstmt = null;
 			try {
 				String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
 				String db_user = "cs4961stu01";
@@ -73,7 +77,7 @@ public class CreateTicket extends HttpServlet {
 
 				c = DriverManager.getConnection(url, db_user, db_pass);
 				String createTicket = "insert into tickets (username,userFirstName,userLastName,phone, email,unitId, details,startDate,lastUpdated, ticketLocation) values (?,?,?,?,?,?,?,NOW(),NOW(),?)";
-				PreparedStatement pstmt = c.prepareStatement(createTicket);
+				pstmt = c.prepareStatement(createTicket);
 				pstmt.setString(1, request.getSession().getAttribute("user").toString());
 				pstmt.setString(2, firstName);
 				pstmt.setString(3, lastName);
@@ -83,20 +87,20 @@ public class CreateTicket extends HttpServlet {
 				pstmt.setString(7, details);
 				pstmt.setString(8, location);
 				pstmt.executeUpdate();
+				
+				pstmt.close();
+				c.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} finally {
-				if (c != null) {
-					try {
-						c.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
+
+				DbUtils.closeQuietly(pstmt);
+				DbUtils.closeQuietly(c);
 			}
 			if (request.getSession().getAttribute("errorMessage") != null) {
 				request.removeAttribute("errorMessage");
 			}
+			
 			SendEmail se = new SendEmail();
 			se.sendEmail(email, "New Ticket Created", details);
 			RetrieveData rd = new RetrieveData();
@@ -104,6 +108,7 @@ public class CreateTicket extends HttpServlet {
 			try {
 				request.getSession().setAttribute("tickets", rd.getUserTicket(user, position, UnitId));
 			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 			response.sendRedirect("Home");
 		}

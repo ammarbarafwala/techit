@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.dbutils.DbUtils;
+
 import function.RetrieveData;
 import function.StringFilter;
 
@@ -61,7 +63,8 @@ public class Update extends HttpServlet {
 			String db_pass = ".XCGG1Bc";
 			
 			Connection c = null;
-			
+			PreparedStatement ptsmt = null;
+			PreparedStatement pstmt2 = null;
 			try{
 				c = DriverManager.getConnection(url, db_user, db_pass);
 				if(!newProg.equals(oldProg)){
@@ -88,30 +91,31 @@ public class Update extends HttpServlet {
 					System.out.println("After switch: " + status);
 					
 					String update_ticket = "update tickets set Progress = ?, lastUpdated = ? where id = ?";
-					PreparedStatement ptsmt = c.prepareStatement(update_ticket);
+					ptsmt = c.prepareStatement(update_ticket);
 					ptsmt.setInt(1, status);
 					ptsmt.setString(2, currentTime);
 					ptsmt.setInt(3, ticketId);
 					ptsmt.executeUpdate();
-					ptsmt.close();
+					
 				}
 				else{
 					String update_ticket = "update tickets set lastUpdated = ? where id = ?";
-					PreparedStatement ptsmt = c.prepareStatement(update_ticket);
+					ptsmt = c.prepareStatement(update_ticket);
 					ptsmt.setString(1, currentTime);
 					ptsmt.setInt(2, ticketId);
 					ptsmt.executeUpdate();
-					ptsmt.close();
+					
 				}
 				
 				String insert_update = "insert into updates (ticketId, modifier, updateDetails, modifiedDate) values (?, ?, ?, ?) ";
-				PreparedStatement pstmt2 = c.prepareStatement(insert_update);
+				pstmt2 = c.prepareStatement(insert_update);
 				pstmt2.setInt(1, ticketId);
 				pstmt2.setString(2, request.getSession().getAttribute("user").toString());
 				pstmt2.setString(3, updateMessage);
 				pstmt2.setString(4, currentTime);
 				pstmt2.executeUpdate();
 				
+				ptsmt.close();
 				pstmt2.close();
 				c.close();
 				
@@ -128,13 +132,9 @@ public class Update extends HttpServlet {
 				request.setAttribute("errorMessage", "Something went wrong when updating, please try again later!");
 				request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 			}finally{
-				if(c != null){
-					try {
-						c.close();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
+				DbUtils.closeQuietly(ptsmt);
+				DbUtils.closeQuietly(pstmt2);
+				DbUtils.closeQuietly(c);
 			}
 		}
 		else{

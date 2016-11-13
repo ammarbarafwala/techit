@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.dbutils.DbUtils;
+
 import model.Ticket;
 import model.Unit;
 import model.Update;
@@ -85,11 +87,14 @@ public class RetrieveData {
 
 				tickets.add(newTicket);
 			}
+			
+			pstmt.close();
+			rs.close();
 			c.close();
 		} finally {
-			if (c != null) {
-				c.close();
-			}
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
 		}
 
 		return tickets;
@@ -167,12 +172,14 @@ public class RetrieveData {
 
 				tickets.add(newTicket);
 			}
+			pstmt.close();
+			rs.close();
 			c.close();
 
 		} finally {
-			if (c != null) {
-				c.close();
-			}
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
 		}
 
 		return tickets;
@@ -183,13 +190,16 @@ public class RetrieveData {
 		List<Update> tickets = new ArrayList<Update>();
 
 		Connection c = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
 		try {
 			c = DriverManager.getConnection(url, db_user, db_pass);
 
 			String search_update = "select * from updates where ticketId = ? order by modifiedDate desc";
-			PreparedStatement pstmt = c.prepareStatement(search_update);
+			pstmt = c.prepareStatement(search_update);
 			pstmt.setInt(1, ticketId);
-			ResultSet rs = pstmt.executeQuery();
+			rs = pstmt.executeQuery();
 			while (rs.next()) {
 
 				int id = rs.getInt("id");
@@ -201,11 +211,14 @@ public class RetrieveData {
 				Update updt = new Update(id, tId, modifier, modifierDetails, modifiedDate);
 				tickets.add(updt);
 			}
+			pstmt.close();
+			rs.close();
 			c.close();
+
 		} finally {
-			if (c != null) {
-				c.close();
-			}
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
 		}
 
 		return tickets;
@@ -215,13 +228,15 @@ public class RetrieveData {
 		List<User> userList = new ArrayList<User>();
 
 		Connection c = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
 		try {
 			c = DriverManager.getConnection(url, db_user, db_pass);
 
 			String search_update = "select technicianUser from assignments where ticketId = ?";
-			PreparedStatement pstmt = c.prepareStatement(search_update);
+			pstmt = c.prepareStatement(search_update);
 			pstmt.setInt(1, ticketId);
-			ResultSet rs = pstmt.executeQuery();
+			rs = pstmt.executeQuery();
 			while (rs.next()) {
 
 				String getUser = "select * from users where username = ?";
@@ -236,12 +251,14 @@ public class RetrieveData {
 				}
 
 			}
+			pstmt.close();
+			rs.close();
 			c.close();
 
 		} finally {
-			if (c != null) {
-				c.close();
-			}
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
 		}
 		return userList;
 	}
@@ -264,9 +281,20 @@ public class RetrieveData {
 			while(rs.next()){
 				techIds.put(rs.getString("technicianUser"), true);
 			}
-		}catch(Exception e)
+			
+			pstmt.close();
+			rs.close();
+			c.close();
+			
+		}
+		catch(Exception e)
 		{
 			e.printStackTrace();
+		}
+		finally{
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
 		}
 		
 		return techIds;
@@ -309,14 +337,17 @@ public class RetrieveData {
 						currentProgress, unitId, details, startDate, endDate, lastUpdated, lastUpdatedTime,
 						ticketLocation, getTicketUpdates(id), completionDetails);
 			}
+			pstmt.close();
+			rs.close();
 			c.close();
 		}
 		catch(SQLException e){
 			e.printStackTrace();
-		}finally{
-			if(c != null){
-				c.close();
-			}
+		}		
+		finally{
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
 		}
 		
 		return tk;
@@ -344,17 +375,18 @@ public class RetrieveData {
 						rs.getInt("position"), rs.getInt("unit_id")));
 				
 			}
-			
+			pstmt.close();
+			rs.close();
 			c.close();
 		}
 		catch(Exception e)
 		{
 			e.printStackTrace();
-		}
+		}		
 		finally{
-			if(c != null){
-				c.close();
-			}
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
 		}
 		return tchl;
 	}
@@ -384,17 +416,17 @@ public class RetrieveData {
 						));
 			}
 			
+			ptsmt.close();
+			rs.close();
 			c.close();
+			
 		}catch(Exception e){
 			e.printStackTrace();
-		}finally{
-			if(c != null){
-				try {
-					c.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
+		}		
+		finally{
+			DbUtils.closeQuietly(ptsmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
 		}
 		
 		return unitList;

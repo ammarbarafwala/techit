@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.dbutils.DbUtils;
+
 import function.RetrieveData;
 
 @WebServlet("/AssignTechnician")
@@ -58,6 +60,9 @@ public class AssignTechnician extends HttpServlet {
 		Map<String, Boolean> techVerify = rd.getTechId(ticketId);
 		
 		Connection c = null;
+		PreparedStatement pstmt = null;
+		PreparedStatement pstmt2 = null;
+		PreparedStatement pstmt3 = null;
 		try{
 			c = DriverManager.getConnection(url, db_user, db_pass);
 			String insert_tech = "insert into assignments (ticketId, technicianUser) values (?, ?)";
@@ -66,7 +71,7 @@ public class AssignTechnician extends HttpServlet {
 			for( String tech : technicians ){
 				if(!techVerify.containsKey(tech)){
 					insert = true;
-					PreparedStatement pstmt = c.prepareStatement( insert_tech );
+					pstmt = c.prepareStatement( insert_tech );
 		            pstmt.setInt( 1, ticketId);   
 		            pstmt.setString(2, tech);
 		            pstmt.executeUpdate();
@@ -82,7 +87,7 @@ public class AssignTechnician extends HttpServlet {
 				
 				// Insert new technicians into assignment table
 				String insert_update = "insert into updates (ticketId, modifier, updateDetails, modifiedDate) values (?, ?, ?, ?) ";
-				PreparedStatement pstmt2 = c.prepareStatement( insert_update );
+				pstmt2 = c.prepareStatement( insert_update );
 				pstmt2.setInt(1, ticketId);
 				pstmt2.setString(2, request.getSession().getAttribute("user").toString());
 				pstmt2.setString(3, "Technician(s) have been assigned to this ticket.");
@@ -93,7 +98,7 @@ public class AssignTechnician extends HttpServlet {
 				// Update ticket table
 				if(ticketProgress.equals("OPEN")){
 					String ticket_update = "update tickets set lastUpdated = ?, Progress = ? where id = ?";
-					PreparedStatement pstmt3 = c.prepareStatement( ticket_update );
+					pstmt3 = c.prepareStatement( ticket_update );
 					pstmt3.setString(1, currentTime);
 					pstmt3.setInt(2, 1);
 					pstmt3.setInt(3, ticketId);
@@ -102,7 +107,7 @@ public class AssignTechnician extends HttpServlet {
 				}
 				else{
 					String ticket_update = "update tickets set lastUpdated = ? where id = ?";
-					PreparedStatement pstmt3 = c.prepareStatement( ticket_update );
+					pstmt3 = c.prepareStatement( ticket_update );
 					pstmt3.setString(1, currentTime);
 					pstmt3.setInt(2, ticketId);
 					pstmt3.executeUpdate();
@@ -120,13 +125,10 @@ public class AssignTechnician extends HttpServlet {
 			request.setAttribute("errorMessage", "Something went wrong when getting the technicians, please try again later.");
 			request.getRequestDispatcher("/WEB-INF/AssignTechnician.jsp").forward(request, response);
 		}finally{
-			if(c != null){
-				try {
-					c.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
+			DbUtils.closeQuietly(c);
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(pstmt2);
+			DbUtils.closeQuietly(pstmt3);
 		}
 	}
 

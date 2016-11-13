@@ -17,10 +17,7 @@ public class Search extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// Does nothing since there is no search page
 	}
-
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int position = Integer.parseInt(request.getSession().getAttribute("position").toString());
 		RetrieveData rd = new RetrieveData();
@@ -42,7 +39,6 @@ public class Search extends HttpServlet {
 		}
 		else{
 			try{
-				System.out.println("Here2");
 				request.getSession().setAttribute("tickets", rd.getUserTicket(request.getSession().getAttribute("user").toString(),
 						position, Integer.parseInt(request.getSession().getAttribute("unit_id").toString())));
 
