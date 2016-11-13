@@ -51,6 +51,7 @@ id int auto_increment primary key not null,
 unitName varchar(255) not null,
 phone varchar(15) default "",
 location varchar(255) default "",
+email varchar(50) default "",
 description TEXT
 );
 -- PASS: abcd
@@ -71,5 +72,5 @@ values ("bung@calstatela.edu", "Brandon", "Ung", "(626) 202-6423", "bung@calstat
 
 insert into assignments (ticketId, technicianUser) values(2, "blee");
 
-insert into units (id, unitName, phone, location, description) values (1, "TechOps Test", "(555) 555-5555", "Hydrogen Station", "Technical Operations Unit");
-insert into units (unitName, phone, location, description) values("TechIT Unit Test", "(555) 111-5555", "ET's Basement", "The best QA team you can get! (Not Really)");
+insert into units (id, unitName, phone, location, email, description) values (1, "TechOps Test", "(555) 555-5555", "Hydrogen Station", "techops@test.com","Technical Operations Unit");
+insert into units (unitName, phone, location, email, description) values("TechIT Unit Test", "(555) 111-5555", "ET's Basement", "techit@techittest.com","The best QA team you can get! (Not Really)");

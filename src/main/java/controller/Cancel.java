@@ -25,7 +25,6 @@ public class Cancel extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int id = Integer.parseInt(request.getParameter("cancelBt"));
-		System.out.println(id);
 		RetrieveData rd = new RetrieveData();
 		Connection c = null;
 		try

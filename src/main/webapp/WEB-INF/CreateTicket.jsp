@@ -14,10 +14,11 @@
 	<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/home.css' />">
 	
 	<!-- SCRIPTS -->
+	
+	<script type="text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" ></script>
 	<script type="text/javascript" src="<c:url value='/resources/scripts/jquery-3.1.1.min.js' />"></script>
 	<script type="text/javascript" src="<c:url value='/resources/scripts/jquery-ui.js' />"></script>
 	<script type="text/javascript" src="<c:url value='/resources/scripts/mask.js' />"></script>
-	<script type="text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" ></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<script type="text/javascript">
 		jQuery(function($) {
@@ -35,7 +36,7 @@
 <body onload="onLoadUp()">
 	<nav class='navbar navbar-default'>
 		<div class='navbar-header'>
-			<a class='navbar-brand' href='#'>TechIT</a>
+			<a class='navbar-brand' href='Home'>TechIT</a>
 			<p class='navbar-text'>Signed in as ${sessionScope.firstname}
 				${sessionScope.lastname }</p>
 
@@ -92,9 +93,9 @@
 				<div class="form-group col-xs-5 col-md-5">
 					<label for="units">Units: <font color="red">*</font></label><br>
 					<select class="selectpicker" id="units" name="units">
-						<option value="1">TechOp</option>
-						<option value="2">IT</option>
-						<option value="3">ECST</option>
+						<c:forEach items="${unitList}" var="unit">
+							<option value="${unit.id}">${unit.name}</option>
+						</c:forEach>
 					</select>
 					
 					<button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#myModal">?</button>
@@ -106,10 +107,10 @@
 									<button type="button" class="close" data-dismiss="modal">&times;</button>
 									<h4 class="modal-title">Units</h4>
 								</div>
-								<div class="modal-body">
-									<p>1) TechOp do......</p>
-									<p>2) IT do......</p>
-									<p>3) ECST do......</p>
+								<div class="modal-body">\
+									<c:forEach items="${unitList}" var="unit">
+										<p><strong>${unit.name}: </strong> ${unit.description}</p>
+									</c:forEach>
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn btn-default"
@@ -122,8 +123,7 @@
 				</div>
 				<div class="form-group col-xs-10 col-md-10">
 					<label for="details">Details: <font color="red">*</font></label>
-					<textarea class="form-control" rows="10" id="details"
-						name="details" value="${details}"></textarea>
+					<textarea class="form-control" rows="10" id="details" name="details" value="${details}"></textarea>
 				</div>
 				<div class="form-group col-xs-10 col-md-10">
 					<b>NOTE: <font color="red">*</font> means that the field is

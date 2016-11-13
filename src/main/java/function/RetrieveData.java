@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import model.Ticket;
+import model.Unit;
 import model.Update;
 import model.User;
 
@@ -356,6 +357,48 @@ public class RetrieveData {
 			}
 		}
 		return tchl;
+	}
+
+	public List<Unit> getAllUnits(){
+		Connection c = null;
+		PreparedStatement ptsmt = null;
+		ResultSet rs = null; 
+		
+		List<Unit> unitList = new ArrayList<Unit>();
+		
+		String getUnit = "select * from units";
+		
+		try{
+			
+			c = DriverManager.getConnection(url, db_user, db_pass);
+			ptsmt = c.prepareStatement(getUnit);
+			rs = ptsmt.executeQuery();
+			
+			while(rs.next()){
+				unitList.add(new Unit(rs.getInt("id"),
+						rs.getString("unitName"),
+						rs.getString("phone"),
+						rs.getString("location"),
+						rs.getString("email"),
+						rs.getString("description")
+						));
+			}
+			
+			c.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			if(c != null){
+				try {
+					c.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return unitList;
+		
 	}
 
 }

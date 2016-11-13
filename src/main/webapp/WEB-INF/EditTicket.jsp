@@ -6,26 +6,17 @@
 <head>
 <title>Edit Ticket</title>
 <meta charset="utf-8">
-<meta name="viewport" http-equiv="Content-Type"
-	content="width=device-width,initial-scale=1" charset=ISO-8859-1>
+<meta name="viewport" http-equiv="Content-Type" content="width=device-width,initial-scale=1" charset=ISO-8859-1>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<link rel="stylesheet"
-	href="<c:url value='/resources/mythemes/css/jquery-ui.css' />">
-<link rel="stylesheet"
-	href="<c:url value='/resources/mythemes/css/home.css' />">
-<script type="text/javascript"
-	src="<c:url value='/resources/scripts/jquery-3.1.1.min.js' />"></script>
-<script type="text/javascript"
-	src="<c:url value='/resources/scripts/jquery-ui.js' />"></script>
-<script type="text/javascript"
-	src="<c:url value='/resources/scripts/mask.js' />"></script>
-<script type="text/javascript">
-	src = "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" >
-</script>
-<script
-	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/jquery-ui.css' />">
+<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/home.css' />">
+
+<script type="text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" ></script>
+<script type="text/javascript" src="<c:url value='/resources/scripts/jquery-3.1.1.min.js' />"></script>
+<script type="text/javascript" src="<c:url value='/resources/scripts/jquery-ui.js' />"></script>
+<script type="text/javascript" src="<c:url value='/resources/scripts/mask.js' />"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 	jQuery(function($) {
 		$("#phoneNumber").mask("(999) 999-9999");
@@ -42,7 +33,7 @@
 <body onload="onLoadUp()">
 	<nav class='navbar navbar-default'>
 		<div class='navbar-header'>
-			<a class='navbar-brand' href='#'>TechIT</a>
+			<a class='navbar-brand' href='Home'>TechIT</a>
 			<p class='navbar-text'>Signed in as ${sessionScope.firstname}
 				${sessionScope.lastname }</p>
 
@@ -95,9 +86,9 @@
 				<div class="form-group col-xs-5 col-md-5">
 					<label for="units">Units: <font color="red">*</font></label><br>
 					<select class="selectpicker" id="units" name="units" >
-						<option value="1">TechOp</option>
-						<option value="2">IT</option>
-						<option value="3">ECST</option>
+						<c:forEach items="${unitList}" var="unit">
+							<option value="${unit.id}">${unit.name}</option>
+						</c:forEach>
 					</select>
 					<button type="button" class="btn btn-info btn-xs"
 						data-toggle="modal" data-target="#myModal">?</button>
@@ -110,9 +101,9 @@
 									<h4 class="modal-title">Units</h4>
 								</div>
 								<div class="modal-body">
-									<p>1) TechOp do......</p>
-									<p>2) IT do......</p>
-									<p>3) ECST do......</p>
+									<c:forEach items="${unitList}" var="unit">
+										<p><strong>${unit.name}: </strong> ${unit.description}</p>
+									</c:forEach>
 								</div>
 								<div class="modal-footer">
 									<button type="button" class="btn btn-default"

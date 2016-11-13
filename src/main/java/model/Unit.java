@@ -9,13 +9,15 @@ public class Unit {
 	private String phone;
 	private String location;
 	private String email;
+	private String description;
 
-	public Unit(int id, String name, String phone, String location, String email) {
+	public Unit(int id, String name, String phone, String location, String email, String description) {
 		this.id = id;
 		this.name = name;
 		this.phone = phone;
 		this.location = location;
 		this.email = email;
+		this.description = description;
 
 	}
 
@@ -58,5 +60,15 @@ public class Unit {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	
 
 }

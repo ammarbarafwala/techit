@@ -172,10 +172,10 @@
 						Date Commissioned: ${item.startDate } <br>
 						<b>Details:</b> ${item.details }      <br>
 						<b>Location:</b> ${item.ticketLocation }<br><br>	
-						<b>Updates</b><br>
 					</p>
 					<div class="container">
-						<c:if test="${item.progress ne 'OPEN'}">
+						<c:if test="${item.progress ne 'OPEN' and item.numOfUpdates > 0}">
+						<p><b>Updates</b><br></p>
 							<table class="table table-striped table-bordered table-hover">
 							 <thead class="thead-inverse">
 							    <tr>
@@ -207,9 +207,8 @@
 								<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal${item.id}">Reject</button>
 						</c:when>
 					</c:choose>
-
-							<!--   Assign Technician   -->    
-					<c:if test="${sessionScope.position <= 2 }">
+   
+					<c:if test="${sessionScope.position <= 2 and (item.progress eq 'IN PROGRESS' or item.progress eq 'ON HOLD')}">
 						<a href="Update?id=${item.id}&prog=${item.progress}" type="button" class="navbar-btn btn btn-default">Update Progress</a> 
 					</c:if>
 					<c:if test="${sessionScope.position <= 1}">
@@ -227,10 +226,10 @@
 											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 											<c:choose>
 												<c:when test="${sessionScope.position > 1 and item.progress eq 'OPEN' }">
-													<h4 class="modal-title" id=myModalLabel>Ticket Cancellation Confirmation</h4>
+													<h4 class="modal-title" id="myModalLabel">Ticket Cancellation Confirmation</h4>
 												</c:when>
 												<c:when test="${sessionScope.position <= 1 and item.progress eq 'OPEN'}" >
-													<h4 class="modal-title" id=myModalLabel>Ticket Rejection Confirmation</h4>
+													<h4 class="modal-title" id="myModalLabel">Ticket Rejection Confirmation</h4>
 												</c:when>
 											</c:choose>
 										</div>
@@ -253,7 +252,7 @@
 										<div class="modal-footer">
 											<form class="Cancel" action="Cancel" method="post">
 												<button type="button" class="btn btn-danger" data-dismiss="modal"> No </button>
-												<button type="button" class="btn btn-success" name ="cancelBt" value="${item.id}"> Yes </button>
+												<button type="submit" class="btn btn-success" name="cancelBt" value="${item.id}"> Yes </button>
 											</form>
 											
 										</div>
@@ -282,10 +281,10 @@
 									Date Commissioned: ${item.startDate } <br>
 									<b>Details:</b> ${item.details }      <br>
 									<b>Location:</b> ${item.ticketLocation }<br><br>	
-									<b>Updates</b><br>
 								</p>
 					<div class="container">
-						<c:if test="${item.progress ne 'OPEN'}">
+						<c:if test="${item.progress ne 'OPEN' and item.numOfUpdates > 0}">
+							<p><b>Updates</b><br></p>
 							<table class="table table-striped table-bordered table-hover">
 							 <thead class="thead-inverse">
 							    <tr>
@@ -317,8 +316,7 @@
 						</c:when>
 					</c:choose>
 
-							<!--   Assign Technician   -->    
-					<c:if test="${sessionScope.position <= 2 }">
+					<c:if test="${sessionScope.position <= 2 and (item.progress eq 'IN PROGRESS' or item.progress eq 'ON HOLD')}">
 						<a href="Update$id=${item.id}" type="button" class="navbar-btn btn btn-default">Update Progress</a> 
 					</c:if>
 					<c:if test="${sessionScope.position <= 1}">
@@ -336,10 +334,10 @@
 											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 											<c:choose>
 												<c:when test="${sessionScope.position > 1 and item.progress eq 'OPEN' }">
-													<h4 class="modal-title" id=myModalLabel>Ticket Cancellation Confirmation</h4>
+													<h4 class="modal-title" id="myModalLabel">Ticket Cancellation Confirmation</h4>
 												</c:when>
 												<c:when test="${sessionScope.position <= 1 and item.progress eq 'OPEN'}" >
-													<h4 class="modal-title" id=myModalLabel>Ticket Rejection Confirmation</h4>
+													<h4 class="modal-title" id="myModalLabel">Ticket Rejection Confirmation</h4>
 												</c:when>
 											</c:choose>
 										</div>
@@ -362,7 +360,7 @@
 										<div class="modal-footer">
 											<form class="Cancel" action="Cancel" method="post">
 												<button type="button" class="btn btn-danger" data-dismiss="modal"> No </button>
-												<button type="button" class="btn btn-success" name ="cancelBt" value="${item.id}"> Yes </button>
+												<button type="submit" class="btn btn-success" name="cancelBt" value="${item.id}"> Yes </button>
 											</form>
 											
 										</div>
@@ -390,7 +388,7 @@
 			<c:forEach items ="${tickets}" var="item">
 				<c:choose>
 					<c:when test = "${item.progress eq 'COMPLETED' or item.progress eq 'CLOSED' }">
-						<h3 ><span class="pull-left">TICKET# ${item.id }</span> <span class="pull-right">STATUS: ${item.progress }</span></h3>
+						<h3 ><span class="pull-left">${ item.user }: ${ item.details } </span> <span class="pull-right">STATUS: ${item.progress }</span></h3>
 						<div>
 							<p>
 							Requester: ${item.user }	<br>
@@ -399,10 +397,10 @@
 							Date Commissioned: ${item.startDate }<br>
 							<b>Details:</b> ${item.details }	 <br>
 							<b>Location:</b> ${item.ticketLocation }<br><br>	
-							<b>Updates</b><br>
 							</p>
 					<div class="container">
-						<c:if test="${item.progress ne 'OPEN'}">
+						<c:if test="${item.progress ne 'OPEN' and item.numOfUpdates > 0}">
+							<p><b>Updates</b><br></p>
 							<table class="table table-striped table-bordered table-hover">
 							 <thead class="thead-inverse">
 							    <tr>

@@ -17,25 +17,14 @@ import external.ActiveDirectory;
 import function.LoginFunction;
 import function.RetrieveData;
 
-@WebServlet(urlPatterns="/Login", loadOnStartup = 1)
+@WebServlet("/Login")
 public class Login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     
-    public Login() {
-        super();
-        
-        // TODO Auto-generated constructor stub
-    }
-    
  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
-		
-		
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String user = request.getParameter("username");
 		String password = request.getParameter("password");
