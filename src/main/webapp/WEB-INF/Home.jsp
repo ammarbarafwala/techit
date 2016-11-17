@@ -159,7 +159,7 @@
 		
 		
 		
-		<div id="rv">
+		<div id="rv" class="pre-scrollable contrainer">
 		<div id="accordion">
 			<c:forEach items ="${tickets}" var="item">
 					<h3 ><span class="pull-left">${ item.user }: ${ item.details } </span> <span class="pull-right">STATUS: ${item.progress } </span>
@@ -199,7 +199,7 @@
 						<c:when test="${sessionScope.user eq item.user and item.progress eq 'OPEN'}">
 															<!--  Cancel  -->
 								<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal${item.id}">Cancel</button>
-															<!--   Edit   -->                                    
+															<!--   Edit   -->              
 								<a href= "EditTicket?id=${item.id}" class="navbar-btn btn btn-default">Edit</a>
 						</c:when>
 						

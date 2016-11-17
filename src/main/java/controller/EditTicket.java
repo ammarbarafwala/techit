@@ -62,13 +62,19 @@ public class EditTicket extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+
+		int id = Integer.parseInt(request.getParameter("id"));
+		Ticket ticket = getTicket(id);
+		
 		if (request.getSession().getAttribute("user") == null) {
 			response.sendRedirect("Login");
 		}
+		else if(!ticket.getUser().equals(request.getSession().getAttribute("user"))){
+			request.setAttribute("errorMessage", "Invalid ticket request!");
+			request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
+		}
 		else{
 			RetrieveData rd = new RetrieveData();
-			int id = Integer.parseInt(request.getParameter("id"));
-			Ticket ticket = getTicket(id);
 			System.out.println(ticket.getEmail());
 			request.setAttribute("unitList", rd.getAllUnits());
 			request.setAttribute("ticket", ticket);

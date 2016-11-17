@@ -117,7 +117,7 @@
 				<div class="form-group col-xs-10 col-md-10">
 					<label for="details">Details: <font color="red">*</font></label>
 					<textarea class="form-control" rows="10" id="details"
-						name="details" ">${ticket.details}</textarea>
+						name="details" >${ticket.details}</textarea>
 				</div>
 				<div class="form-group col-xs-10 col-md-10">
 					<b>NOTE: <font color="red">*</font> means that the field is

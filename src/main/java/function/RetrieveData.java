@@ -46,9 +46,9 @@ public class RetrieveData {
 				pstmt.setInt(1, unit_id);
 			} 
 			else if (position == 2) { // Technician
-				search_user = " select t.id, t.username, t.userFirstName, t.userLastname, t.phone, t.email, t.Progress, t.unitId, t.details, t.startDate, t.endDate,"
+				search_user = "select t.id, t.username, t.userFirstName, t.userLastname, t.phone, t.email, t.Progress, t.unitId, t.details, t.startDate, t.endDate,"
 						+ " t.lastUpdated, t.ticketLocation from tickets t left join assignments u on t.id = u.ticketId"
-						+ "where t.username = ? or u.technicianUser = ? order by t.lastUpdated desc";
+						+ " where t.username = ? or u.technicianUser = ? order by t.lastUpdated desc";
 
 				pstmt = c.prepareStatement(search_user);
 				pstmt.setString(1, username);

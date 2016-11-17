@@ -16,7 +16,14 @@ public class Home extends HttpServlet {
 		
 		if (request.getSession().getAttribute("user") == null) {
 			request.getRequestDispatcher("/Login").forward(request, response);
-		} else {
+		}else if(request.getSession().getAttribute("firstname").toString().isEmpty() 
+				|| request.getSession().getAttribute("lastname").toString().isEmpty()  
+				|| request.getSession().getAttribute("email").toString().isEmpty()  
+				|| request.getSession().getAttribute("phoneNumber").toString().isEmpty())
+		{
+			response.sendRedirect("FirstLoginUpdate");
+		}
+		else {
 			request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 		}
 	}

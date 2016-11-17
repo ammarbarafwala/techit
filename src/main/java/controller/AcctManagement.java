@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,13 +21,8 @@ import org.apache.commons.dbutils.DbUtils;
 public class AcctManagement extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	public AcctManagement() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		request.setAttribute("positionList", Arrays.asList("USER", "TECHNICIAN", "SUPERVISING TECHNICIAN", "SYSTEM ADMINISTRATOR"));
 		request.getRequestDispatcher("/WEB-INF/AcctManagement.jsp").forward(request, response);
 	}
 
@@ -45,10 +42,14 @@ public class AcctManagement extends HttpServlet {
 
 			if(firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phoneNumber.isEmpty() || Position.isEmpty() || username.isEmpty())
 			{
+
+				request.setAttribute("positionList", Arrays.asList("USER", "TECHNICIAN", "SUPERVISING TECHNICIAN", "SYSTEM ADMINISTRATOR"));
 				request.setAttribute("errorMessage", "Some fields are missing!");
 				request.getRequestDispatcher("/WEB-INF/AcctManagement.jsp").forward(request, response);
 			}
 			else if( phoneNumber.length() < 14){
+
+				request.setAttribute("positionList", Arrays.asList("USER", "TECHNICIAN", "SUPERVISING TECHNICIAN", "SYSTEM ADMINISTRATOR"));
 				request.setAttribute("errorMessage", "Incorrect phone number format!");
 				request.getRequestDispatcher("/WEB-INF/AcctManagement.jsp").forward(request, response);
 
@@ -56,6 +57,22 @@ public class AcctManagement extends HttpServlet {
 			else{
 				Connection c = null;
 				PreparedStatement pstmt2 = null;
+				
+				int position;
+				
+				if(Position.equals("SYSTEM ADMINISTRATOR")){
+					position = 0;
+				}
+				else if(Position.equals("SUPERVISING TECHNICIAN")){
+					position = 1;
+				}
+				else if(Position.equals("TECHNICIAN")){
+					position = 2;
+				}
+				else{
+					position = 3;
+				}
+				
 				try
 				{
 					String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
@@ -71,7 +88,7 @@ public class AcctManagement extends HttpServlet {
 					pstmt2.setString(4, username);
 					pstmt2.setString(5, phoneNumber);
 					pstmt2.setString(6, email);
-					pstmt2.setInt(7, Integer.parseInt(Position));
+					pstmt2.setInt(7, position);
 					pstmt2.execute();
 
 					pstmt2.close();

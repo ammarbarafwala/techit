@@ -146,7 +146,12 @@ ul.tab li a:focus, .active {
 				</div>
 				<div class="form-group col-xs-5 col-md-5">
 					<label for="Position">Position <font color="red">*</font>
-					</label> <input type="text" class="form-control" name="Position">
+					<select class="selectpicker" id="Position" name="Position">
+						<c:forEach items="${positionList }" var="position">
+							<option value="${position}">${position}</option>
+						</c:forEach>
+					</select>
+					</label>
 				</div>
 				<div class="form-group col-xs-10 col-md-10">
 					<b>NOTE: <font color="red">*</font> means that the field is
