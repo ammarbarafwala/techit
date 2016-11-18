@@ -57,11 +57,15 @@
 					 	<label for="phoneNumber">Phone Number <font color="red">*</font></label>
 					    <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" value="${phoneNumber}" >
 					 </div>
+					 
 					 <div class="form-group col-xs-10 col-md-10">
 				 		<b>NOTE: <font color="red">*</font> means that the field is required.</b>
 				 	</div>
+				 	
+				 	<div class="col-xs-10 col-md-10">
 					 	<button class="btn btn-lg btn-primary btn-block" name="FirstLoginUpdate"
 							value="FirstLoginUpdate" type="submit">Confirm</button>
+					</div>
 
 				</form>
 			</div>

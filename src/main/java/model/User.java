@@ -154,6 +154,27 @@ public class User {
 	public int getStatus() {
 		return status.getValue();
 	}
+	
+	public String getStatusString(){
+		String status = "";
+		switch(getStatus()){
+		case 0:
+			status = "SYSTEM ADMINISTRATOR";
+			break;
+		case 1:
+			status = "SUPERVISING TECHNICIAN";
+			break;
+		case 2:
+			status = "TECHNICIAN";
+			break;
+		case 3:
+		default:
+			status = "USER";
+			break;
+		}
+		
+		return status;
+	}
 
 	public String toString(){
 		return "First name: " + this.getFirstName() + "\n"

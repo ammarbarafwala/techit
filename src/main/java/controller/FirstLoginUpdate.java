@@ -37,7 +37,6 @@ public class FirstLoginUpdate extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		String firstName = request.getParameter("firstName").replace(" ", "");
 		String lastName = request.getParameter("lastName").replace(" ", "");
 		String email = request.getParameter("email").replace(" ", "");
@@ -120,11 +119,11 @@ public class FirstLoginUpdate extends HttpServlet {
 			if(request.getSession().getAttribute("errorMessage")!= null){
 				request.removeAttribute("errorMessage");
 			}
-			request.getSession().setAttribute("lastName", lastName);
-			request.getSession().setAttribute("firstName", firstName);
+			request.getSession().setAttribute("lastname", lastName);
+			request.getSession().setAttribute("firstname", firstName);
 			request.getSession().setAttribute("email", email);
 			request.getSession().setAttribute("phoneNumber", phoneNumber);
-			request.getRequestDispatcher("/Home").forward(request, response);
+			response.sendRedirect("Home");
 		}
 	}
 

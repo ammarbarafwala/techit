@@ -166,9 +166,9 @@ public class RetrieveData {
 				String ticketLocation = rs.getString("ticketLocation");
 				String completionDetails = "";
 
-				Ticket newTicket = new Ticket(id, usernameRequestor, userFirstName, userLastName, getTechnicians(id), phone, email,
+				Ticket newTicket = new Ticket(id, usernameRequestor, userFirstName, userLastName, getTechnicians(c, id), phone, email,
 						currentProgress, unitId, details, startDate, endDate, lastUpdated, lastUpdatedTime,
-						ticketLocation, getTicketUpdates(id), completionDetails);
+						ticketLocation, getTicketUpdates(c, id), completionDetails);
 
 				tickets.add(newTicket);
 			}
@@ -183,6 +183,109 @@ public class RetrieveData {
 		}
 
 		return tickets;
+	}
+	
+	public User getUser(int userId){
+		User user = null;
+		
+		Connection c = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try{
+			c = DriverManager.getConnection(url, db_user, db_pass);
+			String getUser = "select * from users where id = ?";
+			pstmt = c.prepareStatement(getUser);
+			pstmt.setInt(1, userId);
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()){
+				user = new User(rs.getInt("id"), rs.getString("firstname"), rs.getString("lastname"),
+						rs.getString("username"), rs.getString("phone"), rs.getString("email"),
+						rs.getInt("position"), rs.getInt("unit_id"));
+			}
+			
+			pstmt.close();
+			rs.close();
+			c.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
+		}
+		return user;
+	}
+	
+	public List<User> getAllUsers(){
+		List<User> users = new ArrayList<User>();
+		
+		String getUser = "";
+		Connection c = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try{
+			c = DriverManager.getConnection(url, db_user, db_pass);
+			
+			getUser = "select * from users";
+			pstmt = c.prepareStatement(getUser);
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()){
+				users.add(new User(rs.getInt("id"), rs.getString("firstname"), rs.getString("lastname"),
+						rs.getString("username"), rs.getString("phone"), rs.getString("email"),
+						rs.getInt("position"), rs.getInt("unit_id")));
+			}
+			
+			pstmt.close();
+			rs.close();
+			c.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
+		}
+		return users;
+	}
+	
+	public List<Update> getTicketUpdates(Connection c, int ticketId){
+		List<Update> updates = new ArrayList<Update>();
+		
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try{
+			String search_update = "select * from updates where ticketId = ? order by modifiedDate desc";
+			pstmt = c.prepareStatement(search_update);
+			pstmt.setInt(1, ticketId);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+
+				int id = rs.getInt("id");
+				int tId = rs.getInt("ticketId");
+				String modifier = rs.getString("modifier");
+				String modifierDetails = rs.getString("updateDetails");
+				String modifiedDate = rs.getTimestamp("modifiedDate").toString();
+
+				Update updt = new Update(id, tId, modifier, modifierDetails, modifiedDate);
+				updates.add(updt);
+			}
+			
+			pstmt.close();
+			rs.close();
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+		}
+		finally{
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+		}
+		return updates;
 	}
 
 	public List<Update> getTicketUpdates(int ticketId) throws SQLException {
@@ -222,6 +325,44 @@ public class RetrieveData {
 		}
 
 		return tickets;
+	}
+	
+	public List<User> getTechnicians(Connection c, int ticketId){
+		List<User> userList = new ArrayList<User>();
+
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try{
+			String search_update = "select technicianUser from assignments where ticketId = ?";
+			pstmt = c.prepareStatement(search_update);
+			pstmt.setInt(1, ticketId);
+			rs = pstmt.executeQuery();
+			while (rs.next()) {
+
+				String getUser = "select * from users where username = ?";
+				PreparedStatement pstmt2 = c.prepareStatement(getUser);
+				pstmt2.setString(1, rs.getString("technicianUser").toString());
+				ResultSet rs2 = pstmt2.executeQuery();
+
+				if (rs2.next()) {
+					userList.add(new User(rs2.getInt("id"), rs2.getString("firstname"), rs2.getString("lastname"),
+							rs2.getString("username"), rs2.getString("phone"), rs2.getString("email"),
+							rs2.getInt("position"), rs2.getInt("unit_id")));
+				}
+
+			}
+			
+			pstmt.close();
+			rs.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		finally{
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+		}
+		
+		return userList;
 	}
 	
 	public List<User> getTechnicians(int ticketId) throws SQLException {

@@ -17,11 +17,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.dbutils.DbUtils;
 
+import function.RetrieveData;
+
 @WebServlet("/AcctManagement")
 public class AcctManagement extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		RetrieveData rd = new RetrieveData();
+		request.setAttribute("userList", rd.getAllUsers());
 		request.setAttribute("positionList", Arrays.asList("USER", "TECHNICIAN", "SUPERVISING TECHNICIAN", "SYSTEM ADMINISTRATOR"));
 		request.getRequestDispatcher("/WEB-INF/AcctManagement.jsp").forward(request, response);
 	}

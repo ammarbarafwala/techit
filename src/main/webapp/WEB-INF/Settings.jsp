@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html lang='en'>
@@ -7,7 +8,7 @@
 <title>Account Management</title>
 <meta charset="utf-8">
 <meta name="viewport" http-equiv="Content-Type"
-	content="width=device-width,initial-scale=1" charset=ISO-8859-1">
+	content="width=device-width,initial-scale=1" charset="ISO-8859-1">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -33,7 +34,7 @@
 <body onload="onLoadUp()">
 	<nav class='navbar navbar-default'>
 		<div class='navbar-header'>
-			<a class='navbar-brand' href='#'>TechIT</a>
+			<a class='navbar-brand' href='Home'>TechIT</a>
 			<p class='navbar-text'>Signed in as ${sessionScope.firstname}
 				${sessionScope.lastname }</p>
 
@@ -58,26 +59,106 @@
 		</ul>
 	</div>
 	-->
-	<form action="Settings" method="post">
-		<div>
-			<div class="form-group col-xs-10 col-md-10">
-				<label for="email">Email <font color="red">*</font></label> <input
-					type="text" class="form-control" name="email" value="${email}">
-			</div>
-			<div class="form-group col-xs-10 col-md-10">
-				<label for="phoneNumber">Phone Number <font color="red">*</font></label>
-				<input type="text" class="form-control" id="phoneNumber"
-					name="phoneNumber" value="${phoneNumber}">
-			</div>
-			<div class="form-group col-xs-10 col-md-10">
-				<input type="submit" id="Save" name="Save" value="Save" />
+	
+	<c:if test="${!empty fn:trim(errorMessage)}">
+		<div class="alert alert-danger" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			${ errorMessage }
+		</div>
+	</c:if>
+	<c:if test="${!empty fn:trim(successMessage)}">
+		<div class="alert alert-success" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			${ successMessage }
+		</div>
+	</c:if>
+	
+		<div class="row">
+			<div class="col-sm-offset-2">
+				<c:choose>
+					<c:when test="${not adminModify}">
+					
+						<form action="Settings" method="post">
+							<input type="hidden" name="adminModify" value="false">
+							<div class="form-group col-xs-5 col-md-5" >
+								<label for="firstName">First Name <font color="red">*</font> </label>
+							    <input type="text" class="form-control" name="firstName" value="${sessionScope.firstname}" disabled>
+							</div>
+							 
+							 <div class="form-group col-xs-5 col-md-5">
+							    <label for="lastName">Last Name <font color="red">*</font></label>
+							    <input type="text" class="form-control" name="lastName" value="${sessionScope.lastname}" disabled>
+							</div>
+						
+							<div class="form-group col-xs-10 col-md-10">
+								<label for="email">Email <font color="red">*</font></label> 
+								<input type="text" class="form-control" name="email" value="${email}">
+							</div>
+							
+							<div class="form-group col-xs-10 col-md-10">
+								<label for="phoneNumber">Phone Number <font color="red">*</font></label>
+								<input type="text" class="form-control" id="phoneNumber" name="phoneNumber" value="${phoneNumber}">
+							</div>
+							
+							<div class="col-xs-10 col-md-10">
+							 	<button class="btn btn-lg btn-primary btn-block" name="Save" value="Save" type="submit">Confirm</button>
+							</div>
+
+	<!-- 					<div class="form-group col-xs-10 col-md-10">
+							<input type="submit" id="Save" name="Save" value="Save" />
+						</div> -->
+						</form>
+					</c:when>
+					
+					<c:otherwise>
+					
+						<form action="Settings" method="post">
+							<input type="hidden" name="adminModify" value="true">
+							<input type="hidden" name="userId" value="${editUser.id}">
+							<div class="form-group col-xs-5 col-md-5" >
+								<label for="firstName">First Name <font color="red">*</font> </label>
+							    <input type="text" class="form-control" name="firstName" value="${editUser.firstName}" disabled>
+							</div>
+							 
+							 <div class="form-group col-xs-5 col-md-5">
+							    <label for="lastName">Last Name <font color="red">*</font></label>
+							    <input type="text" class="form-control" name="lastName" value="${editUser.lastName}" disabled>
+							</div>
+						
+							<div class="form-group col-xs-10 col-md-10">
+								<label for="email">Email <font color="red">*</font></label> 
+								<input type="text" class="form-control" name="email" value="${editUser.email}">
+							</div>
+							
+							<div class="form-group col-xs-10 col-md-10">
+								<label for="phoneNumber">Phone Number <font color="red">*</font></label>
+								<input type="text" class="form-control" id="phoneNumber" name="phoneNumber" value="${editUser.phoneNumber}">
+							</div>
+							
+							<div class="form-group col-xs-10 col-md-10">
+								<label for="phoneNumber">Position <font color="red">*</font></label>
+								<select class="selectpicker" id="position" name="position">
+									<option value="${editUser.statusString}">${editUser.statusString}</option>
+									<c:forEach items="${positionList}" var="currPosition">
+										<c:if test="${editUser.statusString ne currPosition}">
+											<option value="${currPosition}">${currPosition}</option>
+										</c:if>
+									</c:forEach>
+								</select>
+							</div>
+							
+							<div class="col-xs-10 col-md-10">
+							 	<button class="btn btn-lg btn-primary btn-block" name="Save" value="Save" type="submit">Confirm</button>
+							</div>
+						</form>
+						
+					</c:otherwise>
+				</c:choose>
 			</div>
 		</div>
-
-	</form>
-
-
-
-
 </body>
 </html>

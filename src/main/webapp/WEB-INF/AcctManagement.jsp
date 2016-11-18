@@ -1,22 +1,26 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html>
 <html lang='en'>
 <head>
-<title>Account Management</title>
-<meta charset="utf-8">
-<meta name="viewport" http-equiv="Content-Type" content="width=device-width,initial-scale=1" charset=ISO-8859-1>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/jquery-ui.css' />">
-<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/home.css' />">
+	<title>Account Management</title>
+	<meta charset="utf-8">
+	<meta name="viewport" http-equiv="Content-Type" content="width=device-width,initial-scale=1" charset=ISO-8859-1>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/jquery-ui.css' />">
+	<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/home.css' />">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 
 	<script type="text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" ></script>
 	<script type="text/javascript" src="<c:url value='/resources/scripts/jquery-3.1.1.min.js' />"></script>
 	<script type="text/javascript" src="<c:url value='/resources/scripts/jquery-ui.js' />"></script>
 	<script type="text/javascript" src="<c:url value='/resources/scripts/mask.js' />"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/dataTables.bootstrap.min.js"></script>
 	<script type="text/javascript">
 		jQuery(function($) {
 			$("#phoneNumber").mask("(999) 999-9999");
@@ -24,19 +28,13 @@
 		jQuery('.phoneNumber').keyup(function() {
 			this.value = this.value.replace(/[^0-9\.]/g, '');
 		});
+		$(document).ready(function() {
+			  $('#users').dataTable();
+			});
 	</script>
 
 </head>
-<div class="col-md-2" id="line-left">
-	<ul class="nav nav-pills nav-stacked pull-right">
-		<li class="active"><a href="#">Home</a></li>
-		<li><a href="Add">Add</a></li>
-		<li><a href="#"> ${sessionScope.emailId} </a></li>
-		<li><a href="#"> ${sessionScope.distinguishedName} </a></li>
-		<li><a href="#">Add</a></li>
-	</ul>
-
-	<style>
+<style>
 ul.tab {
 	list-style-type: none;
 	margin: 0;
@@ -80,11 +78,11 @@ ul.tab li a:focus, .active {
 	border-top: none;
 }
 </style>
-</div>
+
 <body onload="onLoadUp()">
 	<nav class='navbar navbar-default'>
 		<div class='navbar-header'>
-			<a class='navbar-brand' href='#'>TechIT</a>
+			<a class='navbar-brand' href='Home'>TechIT</a>
 			<p class='navbar-text'>Signed in as ${sessionScope.firstname}
 				${sessionScope.lastname }</p>
 
@@ -98,6 +96,24 @@ ul.tab li a:focus, .active {
 		</div>
 	</nav>
 
+	<c:if test="${!empty fn:trim(errorMessage)}">
+		<div class="alert alert-danger" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			${ errorMessage }
+		</div>
+	</c:if>
+	<c:if test="${!empty fn:trim(successMessage)}">
+		<div class="alert alert-success" role="alert">
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+			${ successMessage }
+		</div>
+	</c:if>
+
+
 	<!--  Side Navigation Bar not needed right now...
 	-->
 
@@ -110,7 +126,35 @@ ul.tab li a:focus, .active {
 
 	<div id="Search" class="tabcontent">
 		<h3>Search User</h3>
-		<p>You Are Going To Search For a User</p>
+		<table class="table table-striped table-bordered table-hover" id="users">
+			<thead class="thead-inverse">
+				<tr>
+					<th>Edit</th>
+					<th>User name</th>
+					<th>First Name</th>
+					<th>Last Name</th>
+					<th>Phone Number</th>
+					<th>Email</th>
+					<th>Position</th>
+					<th>Unit</th>
+				</tr>
+			</thead>
+			
+			<tbody>
+				<c:forEach items ="${userList}" var="user">
+					<tr>
+						<td><a href="Settings?id=${user.id}"class="navbar-btn btn btn-default">Edit</a></td>
+						<td>${user.username}</td>
+						<td>${user.firstName}</td>
+						<td>${user.lastName}</td>
+						<td>${user.phoneNumber}</td>
+						<td>${user.email}</td>
+						<td>${user.statusString}</td>
+						<td>${user.unitId}</td>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
 	</div>
 
 	<div id="New" class="tabcontent">
@@ -158,7 +202,7 @@ ul.tab li a:focus, .active {
 						required.
 					</b>
 				</div>
-				<div class="form-group col-xs-10 col-md-10"" style="color: #FF0000;">${errorMessage}</div>
+				<div class="form-group col-xs-10 col-md-10" style="color: #FF0000;">${errorMessage}</div>
 				<div class="form-group col-xs-10 col-md-10">
 					<input type="submit" id="Create" name="Create" value="Create" />
 				</div>

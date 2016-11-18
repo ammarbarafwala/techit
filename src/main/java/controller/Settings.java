@@ -6,6 +6,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,6 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.dbutils.DbUtils;
+
+import function.RetrieveData;
+import function.StringFilter;
+import model.User;
 
 /**
  * Servlet implementation class AcctManagement
@@ -26,75 +31,160 @@ public class Settings extends HttpServlet {
 		if(request.getSession().getAttribute("user") == null){
 			response.sendRedirect("Home");
 		}
+		else{
+			if(request.getParameter("id") != null )
+			{
+				if(Integer.parseInt(request.getSession().getAttribute("position").toString()) != 0){
+					request.setAttribute("errorMessage", "Invalid request!");
+					request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
+				}
+				else{
+					RetrieveData rd = new RetrieveData();
+					request.setAttribute("adminModify", true);
+					request.setAttribute("editUser", rd.getUser(Integer.parseInt(request.getParameter("id"))));
+					request.setAttribute("positionList", Arrays.asList("USER", "TECHNICIAN", "SUPERVISING TECHNICIAN", "SYSTEM ADMINISTRATOR"));
+					request.getRequestDispatcher("/WEB-INF/Settings.jsp").forward(request, response);
+				}
+			}
+			else{
+				request.setAttribute("adminModify", false);
+				request.getRequestDispatcher("/WEB-INF/Settings.jsp").forward(request, response);
+			}
+		}
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String email = request.getParameter("email");
-		String pnumber = request.getParameter("phoneNumber");
-		String save = request.getParameter("Save");
-		System.out.println(save);
-
-		if(email.isEmpty() || pnumber.isEmpty())
+		StringFilter sf = new StringFilter();
+		String adminModify = sf.filterNull(request.getParameter("adminModify"));
+		String email = sf.filterNull(request.getParameter("email"));
+		String pnumber = sf.filterNull(request.getParameter("phoneNumber"));
+		RetrieveData rd = new RetrieveData();
+		
+		if( email.isEmpty() || pnumber.isEmpty() || ( pnumber.length() < 14 ) )
 		{
+			if(adminModify.equals("true"))
+			{
+				request.setAttribute("adminModify", true);
+				request.setAttribute("email", email);
+				request.setAttribute("phoneNumber", pnumber);
+				request.setAttribute("errorMessage", "Some fields are missing!");
 
-			request.getSession().setAttribute("email", email);
-			request.getSession().setAttribute("phoneNumber", pnumber);
-			request.getSession().setAttribute("errorMessage", "Some fields are missing!");
-			request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
-		}
-		else if( pnumber.length() < 14){
-			request.getSession().setAttribute("email", email);
-			request.getSession().setAttribute("phoneNumber", pnumber);
-			request.getSession().setAttribute("errorMessage", "Incorrect phone number format!");
-			request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
-
+				request.setAttribute("editUser", rd.getUser(Integer.parseInt(request.getParameter("userId"))));
+				request.setAttribute("positionList", Arrays.asList("USER", "TECHNICIAN", "SUPERVISING TECHNICIAN", "SYSTEM ADMINISTRATOR"));
+				request.getRequestDispatcher("/WEB-INF/Settings.jsp").forward(request, response);
+			}
+			else{
+				request.setAttribute("adminModify", false);
+				request.setAttribute("email", email);
+				request.setAttribute("phoneNumber", pnumber);
+				request.setAttribute("errorMessage", "Some fields are missing!");
+				request.getRequestDispatcher("/WEB-INF/Settings.jsp").forward(request, response);
+			}
 		}
 		else{
+
 			Connection c = null;
 			PreparedStatement pstmt = null;
 			ResultSet rs = null;
-			try
-			{
-				String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-				String db_user = "cs4961stu01";
-				String db_pass = ".XCGG1Bc";
+			
 
-				c = DriverManager.getConnection(url, db_user, db_pass);
-				String search_user = "select * from users where username = ?";
-				pstmt = c.prepareStatement( search_user );
-				pstmt.setString( 1, request.getSession().getAttribute("user").toString() );
-
-				rs = pstmt.executeQuery();
-
-				if(rs.next())
+			String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
+			String db_user = "cs4961stu01";
+			String db_pass = ".XCGG1Bc";
+			
+			if(adminModify.equals("true")){ // Admin modifying a user's account information
+				User editUser = rd.getUser(Integer.parseInt(request.getParameter("userId")));
+				if(editUser.getEmail().equals(email) 
+						&& editUser.getPhoneNumber().equals(pnumber)
+						&& editUser.getStatusString().equals(request.getParameter("position")))
 				{
-					String update_user = "update users set email = ?, phone = ? where username = ?";
-					PreparedStatement pstmt2 = c.prepareStatement(update_user);
-					pstmt2.setString(1, email);
-					pstmt2.setString(2, pnumber);
-					pstmt2.setString(3, request.getSession().getAttribute("user").toString());
-					pstmt2.executeUpdate();
+					request.setAttribute("userList", rd.getAllUsers());
+					request.setAttribute("positionList", Arrays.asList("USER", "TECHNICIAN", "SUPERVISING TECHNICIAN", "SYSTEM ADMINISTRATOR"));
+					request.setAttribute("successMessage", "No changes were made because there were no differences!");
+					request.getRequestDispatcher("/WEB-INF/AcctManagement.jsp").forward(request, response);
 				}
-				
-				pstmt.close();
-				rs.close();
-				c.close();
-				
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}finally
-			{
-				DbUtils.closeQuietly(pstmt);
-				DbUtils.closeQuietly(rs);
-				DbUtils.closeQuietly(c);
+				else{
+					try
+					{
+						String newPosition = request.getParameter("position");
+						int position;
+						
+						if(newPosition.equals("SYSTEM ADMINISTRATOR")){
+							position = 0;
+						}
+						else if(newPosition.equals("SUPERVISING TECHNICIAN")){
+							position = 1;
+						}
+						else if(newPosition.equals("TECHNICIAN")){
+							position = 2;
+						}
+						else{
+							position = 3;
+						}
+						
+						c = DriverManager.getConnection(url, db_user, db_pass);
+						String updateQuery = "update users set email = ?, phone = ?, position = ? where username = ?";
+						pstmt = c.prepareStatement( updateQuery );
+						pstmt.setString(1, email);
+						pstmt.setString(2, pnumber);
+						pstmt.setInt(3, position);
+						pstmt.setString(4, editUser.getUsername());
+						pstmt.executeUpdate();
+						
+						pstmt.close();
+						c.close();
+						
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}finally
+					{
+						DbUtils.closeQuietly(pstmt);
+						DbUtils.closeQuietly(rs);
+						DbUtils.closeQuietly(c);
+					}
+		
+					request.setAttribute("userList", rd.getAllUsers());
+					request.setAttribute("positionList", Arrays.asList("USER", "TECHNICIAN", "SUPERVISING TECHNICIAN", "SYSTEM ADMINISTRATOR"));
+					request.setAttribute("successMessage", "Successfully modified " + editUser.getFirstName() + " " + editUser.getLastName() + " account information!");
+					request.getRequestDispatcher("/WEB-INF/AcctManagement.jsp").forward(request, response);
+				}
 			}
-			if(request.getSession().getAttribute("errorMessage")!= null){
-				request.removeAttribute("errorMessage");
+			else{	// User changing their own account information
+				if(request.getSession().getAttribute("email").equals(email) 
+						&& request.getSession().getAttribute("phoneNumber").equals(pnumber)){
+					
+					request.setAttribute("successMessage", "No changes were made because there were no differences!");
+					request.getRequestDispatcher("/WEB-INF/Settings.jsp").forward(request, response);
+				}
+				else{
+					try{
+						c = DriverManager.getConnection(url, db_user, db_pass);
+						String updateQuery = "update users set email = ?, phone = ? where username = ?";
+						pstmt = c.prepareStatement(updateQuery);
+						pstmt.setString(1, email);
+						pstmt.setString(2, pnumber);
+						pstmt.setString(3, request.getSession().getAttribute("user").toString());
+						pstmt.executeUpdate();
+						
+						pstmt.close();
+						c.close();
+						
+					} catch (SQLException e) {
+						e.printStackTrace();
+					}finally
+					{
+						DbUtils.closeQuietly(pstmt);
+						DbUtils.closeQuietly(rs);
+						DbUtils.closeQuietly(c);
+					}
+					
+					request.getSession().setAttribute("email", email);
+					request.getSession().setAttribute("phoneNumber", pnumber);
+					request.setAttribute("successMessage", "Successfully modified account information!");
+					request.getRequestDispatcher("/WEB-INF/Settings.jsp").forward(request, response);
+					
+				}
 			}
-
-			request.getSession().setAttribute("email", email);
-			request.getSession().setAttribute("phoneNumber", pnumber);
-			request.getRequestDispatcher("/Home").forward(request, response);
 		}
 
 	}
