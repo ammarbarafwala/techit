@@ -27,6 +27,7 @@ public class AcctManagement extends HttpServlet {
 		RetrieveData rd = new RetrieveData();
 		request.setAttribute("userList", rd.getAllUsers());
 		request.setAttribute("positionList", Arrays.asList("USER", "TECHNICIAN", "SUPERVISING TECHNICIAN", "SYSTEM ADMINISTRATOR"));
+		request.setAttribute("unitList", rd.getAllUnits());		
 		request.getRequestDispatcher("/WEB-INF/AcctManagement.jsp").forward(request, response);
 	}
 
@@ -43,6 +44,7 @@ public class AcctManagement extends HttpServlet {
 			String email = request.getParameter("email").replace(" ", "");
 			String phoneNumber = request.getParameter("phoneNumber");
 			String Position = request.getParameter("Position").replace(" ", ""); 
+			int UnitId = Integer.parseInt(request.getParameter("units").toString());
 
 			if(firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phoneNumber.isEmpty() || Position.isEmpty() || username.isEmpty())
 			{
@@ -84,7 +86,7 @@ public class AcctManagement extends HttpServlet {
 					String db_pass = ".XCGG1Bc";
 
 					c = DriverManager.getConnection(url, db_user, db_pass);
-					String insert_user = "insert into users (firstname, lastname, pass, username, phone, email, position) values(?, ?, ?, ?, ?, ?, ?)";
+					String insert_user = "insert into users (firstname, lastname, pass, username, phone, email, position, unit_id) values(?, ?, ?, ?, ?, ?, ?,?)";
 					pstmt2 = c.prepareStatement(insert_user);
 					pstmt2.setString(1, firstName);
 					pstmt2.setString(2, lastName);
@@ -93,6 +95,8 @@ public class AcctManagement extends HttpServlet {
 					pstmt2.setString(5, phoneNumber);
 					pstmt2.setString(6, email);
 					pstmt2.setInt(7, position);
+					pstmt2.setInt(8, UnitId);
+
 					pstmt2.execute();
 
 					pstmt2.close();

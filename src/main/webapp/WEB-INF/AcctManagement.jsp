@@ -122,6 +122,8 @@ ul.tab li a:focus, .active {
 			onclick="adminaction(event, 'Search')">Search User</a></li>
 		<li><a href="javascript:void(0)" class="tablinks"
 			onclick="adminaction(event, 'New')">New User</a></li>
+		<li><a href="javascript:void(0)" class="tablinks"
+			onclick="adminaction(event, 'Unit')">New Unit</a></li>
 	</ul>
 
 	<div id="Search" class="tabcontent">
@@ -196,6 +198,53 @@ ul.tab li a:focus, .active {
 						</c:forEach>
 					</select>
 					</label>
+				</div>
+				<div class="form-group col-xs-5 col-md-5">
+					<label for="Unit">Unit <font color="red">*</font>
+					<select class="selectpicker" id="units" name="units" >
+						<c:forEach items="${unitList}" var="unit">
+							<option value="${unit.id}">${unit.name}</option>
+						</c:forEach>
+					</select>
+					</label>
+				</div>
+				<div class="form-group col-xs-10 col-md-10">
+					<b>NOTE: <font color="red">*</font> means that the field is
+						required.
+					</b>
+				</div>
+				<div class="form-group col-xs-10 col-md-10" style="color: #FF0000;">${errorMessage}</div>
+				<div class="form-group col-xs-10 col-md-10">
+					<input type="submit" id="Create" name="Create" value="Create" />
+				</div>
+
+			</form>
+		</div>
+	</div>
+	<div id="Unit" class="tabcontent">
+		<h3>New Unit</h3>
+		<div class="row">
+			<form action="CreateUnit" method="post">
+				<div class="form-group col-xs-5 col-md-5">
+					<label for="unitName">Unit Name <font color="red">*</font>
+					</label> <input type="text" class="form-control" name="unitName">
+				</div>
+				<div class="form-group col-xs-5 col-md-5">
+					<label for="phoneNumber">Phone Number <font color="red">*</font></label>
+					<input type="text" class="form-control" id="phoneNumber"
+						name="phoneNumber">
+				</div>
+				<div class="form-group col-xs-5 col-md-5">
+					<label for="location">Location <font color="red">*</font></label> <input
+						type="text" class="form-control" name="location">
+				</div>
+				<div class="form-group col-xs-5 col-md-5">
+					<label for="email">Email <font color="red">*</font></label> <input
+						type="text" class="form-control" name="email">
+				</div>
+				<div class="form-group col-xs-5 col-md-5">
+					<label for="description">Description <font color="red">*</font></label> <input
+						type="text" class="form-control" name="description">
 				</div>
 				<div class="form-group col-xs-10 col-md-10">
 					<b>NOTE: <font color="red">*</font> means that the field is
