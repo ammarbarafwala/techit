@@ -12,6 +12,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 
 import external.ActiveDirectory;
 import function.LoginFunction;
@@ -29,15 +30,24 @@ public class Login extends HttpServlet {
 		String user = request.getParameter("username");
 		String password = request.getParameter("password");
 		LoginFunction lf = new LoginFunction();
-		RetrieveData rd = new RetrieveData();
-
+		RetrieveData rd = null;
     	int check = 4;
-    	
-		try {
-			check = lf.checkSystemAccount(user, password);
-		} catch (SQLException sqle) {
+    	try{
+			if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
+				DataSource ds = (DataSource)request.getServletContext().getAttribute("dbSource");
+				rd = new RetrieveData(ds);
+				check = lf.checkSystemAccountDBSource(ds, user, password);
+			}
+			else{
+				rd = new RetrieveData();
+				check = lf.checkSystemAccount(user, password);
+				System.out.println("Login location");
+			}
+    	} catch (SQLException sqle) {
+			System.out.print(sqle.toString());
 			request.setAttribute("errorMessage", "Something went wrong, please try again later!");
 			request.getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
+			return;
 		}
     	/*
     	 * 		0 -- User doesn't exist in the database
@@ -71,13 +81,6 @@ public class Login extends HttpServlet {
 			}
     	}
     	else{
-			try {
-				check = lf.checkSystemAccount(user, password);
-			} catch (SQLException sqle) {
-				request.setAttribute("errorMessage", "Something went wrong, please try again later!");
-				request.getRequestDispatcher("/WEB-INF/Login.jsp").forward(request, response);
-			}
-			
 			String domain = "ad.calstatela.edu";
 	        String choice = "username";
 	
@@ -144,10 +147,7 @@ public class Login extends HttpServlet {
 	        				response.sendRedirect("Home");
 	        			}
 	            	}
-	            	
-	            	
-	            }
-	            else{
+	            	}else{
 	            		// This is when check = 0, 1, or 2
 	        			result.close();
 		            	activeDirectory.closeLdapConnection();
@@ -163,7 +163,7 @@ public class Login extends HttpServlet {
 	        	 * 
 	        	 */
 	        	activeDirectory.closeLdapConnection();
-	
+	            
 	    		if(check == 0 || check == 1)	
 	    		{
 	    			if(e instanceof NamingException)
@@ -187,8 +187,8 @@ public class Login extends HttpServlet {
 	    		}
 
     		}
-        }
+			
+    	}
 	}
-
 }
 	

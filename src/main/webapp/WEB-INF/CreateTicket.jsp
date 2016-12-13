@@ -11,7 +11,7 @@
 	<!-- STYLESHEET -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/jquery-ui.css' />">
-	<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/home.css' />">
+	<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/navbar.css' />">
 	
 	<!-- SCRIPTS -->
 	
@@ -107,7 +107,7 @@
 									<button type="button" class="close" data-dismiss="modal">&times;</button>
 									<h4 class="modal-title">Units</h4>
 								</div>
-								<div class="modal-body">\
+								<div class="modal-body">
 									<c:forEach items="${unitList}" var="unit">
 										<p><strong>${unit.name}: </strong> ${unit.description}</p>
 									</c:forEach>

@@ -5,17 +5,23 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
+import javax.mail.Session;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.DbUtils;
 
 import function.RetrieveData;
+import function.SendEmail;
 
 @WebServlet("/AssignTechnician")
 public class AssignTechnician extends HttpServlet {
@@ -28,7 +34,13 @@ public class AssignTechnician extends HttpServlet {
 			response.sendRedirect("Home");
 		}
 		else {
-			RetrieveData rd = new RetrieveData();
+			RetrieveData rd = null;
+			if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
+				rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
+			}
+			else{
+				rd = new RetrieveData();
+			}
 			
 			int unitId = Integer.parseInt(request.getSession().getAttribute("unit_id").toString());
 			int ticketId = Integer.parseInt(request.getParameter("id"));
@@ -50,13 +62,9 @@ public class AssignTechnician extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String[] technicians = request.getParameterValues("tech");
 		
-		String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-		String db_user = "cs4961stu01";
-		String db_pass = ".XCGG1Bc";
-		
 		String ticketProgress = request.getParameter("ticket_progress");
 		int ticketId = Integer.parseInt(request.getParameter("ticket_id")); 
-		RetrieveData rd = new RetrieveData();
+		RetrieveData rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
 		Map<String, Boolean> techVerify = rd.getTechId(ticketId);
 		
 		Connection c = null;
@@ -64,10 +72,20 @@ public class AssignTechnician extends HttpServlet {
 		PreparedStatement pstmt2 = null;
 		PreparedStatement pstmt3 = null;
 		try{
-			c = DriverManager.getConnection(url, db_user, db_pass);
+			if(Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString()))
+			{
+				c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
+			}
+			else{
+				String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
+				String db_user = "cs4961stu01";
+				String db_pass = ".XCGG1Bc";
+
+				c = DriverManager.getConnection(url, db_user, db_pass);
+			}
 			String insert_tech = "insert into assignments (ticketId, technicianUser) values (?, ?)";
 			boolean insert = false;
-            
+			List<String> techs = new ArrayList<String>();
 			for( String tech : technicians ){
 				if(!techVerify.containsKey(tech)){
 					insert = true;
@@ -76,6 +94,8 @@ public class AssignTechnician extends HttpServlet {
 		            pstmt.setString(2, tech);
 		            pstmt.executeUpdate();
 		            pstmt.close();
+		            
+		            techs.add(rd.getEmailFromUsername(tech));
 				}
 			}
 			
@@ -95,6 +115,7 @@ public class AssignTechnician extends HttpServlet {
 				pstmt2.executeUpdate();
 				
 				pstmt2.close();
+				
 				// Update ticket table
 				if(ticketProgress.equals("OPEN")){
 					String ticket_update = "update tickets set lastUpdated = ?, Progress = ? where id = ?";
@@ -115,6 +136,28 @@ public class AssignTechnician extends HttpServlet {
 				}
 				
 				c.close();
+				
+				//Email the technicians
+				if(techs.size() > 0) {
+					final List<String> allEmails = techs;
+					final String emailSubject = "You have been assigned to ticket #" + ticketId;
+					final String emailDetails = "You have been assigned to ticket #" + ticketId +
+							"\n" + rd.getTicket(ticketId).toString();
+					
+					new Thread(new Runnable(){
+						public void sendEmail(){
+						SendEmail se = new SendEmail();
+						se.sendMultipleEmail( (Session) getServletContext().getAttribute("session"),
+								(Properties) getServletContext().getAttribute("properties"),
+								getServletContext().getAttribute("email").toString(),
+								allEmails, emailSubject, emailDetails);
+						}
+						public void run(){
+							this.sendEmail();
+						}
+					}).start();
+					
+				}
 				request.getSession().setAttribute("tickets", rd.getUserTicket(request.getSession().getAttribute("user").toString(), 
 						Integer.parseInt(request.getSession().getAttribute("position").toString()), 
 						Integer.parseInt(request.getSession().getAttribute("unit_id").toString())));

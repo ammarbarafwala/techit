@@ -11,6 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.DbUtils;
 
@@ -38,11 +39,18 @@ public class CreateUnit extends HttpServlet {
 		Connection c = null;
 		PreparedStatement pstmt = null;
 		try {
-			String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-			String db_user = "cs4961stu01";
-			String db_pass = ".XCGG1Bc";
+			if(Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString()))
+			{
+				c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
+			}
+			else{
+				String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
+				String db_user = "cs4961stu01";
+				String db_pass = ".XCGG1Bc";
 
-			c = DriverManager.getConnection(url, db_user, db_pass);
+				c = DriverManager.getConnection(url, db_user, db_pass);
+			}
+			
 			String createTicket = "insert into units (unitName,phone,location,email, description) values (?,?,?,?,?)";
 			pstmt = c.prepareStatement(createTicket);
 			pstmt.setString(1, unitName);

@@ -70,6 +70,8 @@ public class Ticket {
 			Date startDate, Date endDate, Date lastUpdated, String lastUpdatedTime, String ticketLocation, List<Update> updates, String completionDetails) {
 		this.id = id;
 		this.username = username;
+		this.userFirstName = firstName;
+		this.userLastName = lastName;
 		this.technicians = technician;
 		this.phone = phone;
 		this.email = email;
@@ -307,6 +309,13 @@ public class Ticket {
 		this.unitId = unitId;
 	}
 
+	public String toString(){
+		return "Ticket #: " + this.id + "\n"
+				+ "Requestor's Name: " + this.userFirstName + " " 
+				+ this.userLastName + "\n" 
+				+ "Location: " + this.ticketLocation +"\n"
+				+ "Details: " + this.details;
+	}
 	
 	
 }

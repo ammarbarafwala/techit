@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.apache.commons.dbutils.DbUtils;
 
 import model.Ticket;
@@ -19,10 +21,60 @@ import model.Update;
 import model.User;
 
 public class RetrieveData {
-	private final String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-	private final String db_user = "cs4961stu01";
-	private final String db_pass = ".XCGG1Bc";
+	
+	private DataSource datasource;
+	private final String dbUrl = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
+	private final String dbUser = "cs4961stu01";
+	private final String dbPass = ".XCGG1Bc"; 
+	
+	public RetrieveData(){ // Constructor meant for localhosts
+		this.datasource = null;
+	}
+	public RetrieveData(DataSource datasource){
+		this.datasource = datasource;
+	}
 
+	public Ticket getFullTicket(int id){
+		Ticket ticket = null;
+		Connection c = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
+			
+			String search_user = "select * from tickets where id = ?";
+			pstmt = c.prepareStatement(search_user);
+			pstmt.setInt(1, id);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+
+				ticket = new Ticket(rs.getInt("id"), rs.getString("username"), rs.getString("userFirstName"),
+						rs.getString("userLastName"), getTechnicians(id) ,rs.getString("phone"), rs.getString("email"),rs.getInt("Progress"),
+						rs.getInt("unitId"), rs.getString("details"), rs.getDate("startDate"), rs.getDate("endDate"),rs.getDate("lastUpdated"), 
+						rs.getTime("lastUpdated").toString(), rs.getString("ticketLocation"), getTicketUpdates(id), "");
+				
+			}
+			pstmt.close();
+			rs.close();
+			c.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
+		}
+
+		return ticket;
+	}
+	
 	public List<Ticket> getUserTicket(String username, int position, int unit_id) throws SQLException {
 
 		List<Ticket> tickets = new ArrayList<Ticket>();
@@ -33,7 +85,12 @@ public class RetrieveData {
 		ResultSet rs = null;
 		try {
 
-			c = DriverManager.getConnection(url, db_user, db_pass);
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
 
 			if (position == 0) { // System Administrator
 				search_user = "select * from tickets order by lastUpdated desc";
@@ -108,8 +165,12 @@ public class RetrieveData {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			c = DriverManager.getConnection(url, db_user, db_pass);
-			
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
 
 			if (position == 0) { // System Administrator
 				search_user = "select * from tickets where CONCAT_WS('', username, userFirstName, userLastName, phone, email, Progress, unitId, "
@@ -166,9 +227,9 @@ public class RetrieveData {
 				String ticketLocation = rs.getString("ticketLocation");
 				String completionDetails = "";
 
-				Ticket newTicket = new Ticket(id, usernameRequestor, userFirstName, userLastName, getTechnicians(c, id), phone, email,
+				Ticket newTicket = new Ticket(id, usernameRequestor, userFirstName, userLastName, getTechnicians(id), phone, email,
 						currentProgress, unitId, details, startDate, endDate, lastUpdated, lastUpdatedTime,
-						ticketLocation, getTicketUpdates(c, id), completionDetails);
+						ticketLocation, getTicketUpdates(id), completionDetails);
 
 				tickets.add(newTicket);
 			}
@@ -193,7 +254,13 @@ public class RetrieveData {
 		ResultSet rs = null;
 		
 		try{
-			c = DriverManager.getConnection(url, db_user, db_pass);
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
+			
 			String getUser = "select * from users where id = ?";
 			pstmt = c.prepareStatement(getUser);
 			pstmt.setInt(1, userId);
@@ -227,7 +294,12 @@ public class RetrieveData {
 		ResultSet rs = null;
 		
 		try{
-			c = DriverManager.getConnection(url, db_user, db_pass);
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
 			
 			getUser = "select * from users";
 			pstmt = c.prepareStatement(getUser);
@@ -252,7 +324,7 @@ public class RetrieveData {
 		return users;
 	}
 	
-	public List<Update> getTicketUpdates(Connection c, int ticketId){
+/*	public List<Update> getTicketUpdates(Connection c, int ticketId){
 		List<Update> updates = new ArrayList<Update>();
 		
 		PreparedStatement pstmt = null;
@@ -287,7 +359,7 @@ public class RetrieveData {
 		}
 		return updates;
 	}
-
+*/
 	public List<Update> getTicketUpdates(int ticketId) throws SQLException {
 
 		List<Update> tickets = new ArrayList<Update>();
@@ -297,7 +369,12 @@ public class RetrieveData {
 		ResultSet rs = null;
 		
 		try {
-			c = DriverManager.getConnection(url, db_user, db_pass);
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
 
 			String search_update = "select * from updates where ticketId = ? order by modifiedDate desc";
 			pstmt = c.prepareStatement(search_update);
@@ -327,7 +404,7 @@ public class RetrieveData {
 		return tickets;
 	}
 	
-	public List<User> getTechnicians(Connection c, int ticketId){
+	/*public List<User> getTechnicians(Connection c, int ticketId){
 		List<User> userList = new ArrayList<User>();
 
 		PreparedStatement pstmt = null;
@@ -364,7 +441,7 @@ public class RetrieveData {
 		
 		return userList;
 	}
-	
+*/	
 	public List<User> getTechnicians(int ticketId) throws SQLException {
 		List<User> userList = new ArrayList<User>();
 
@@ -372,8 +449,13 @@ public class RetrieveData {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
-			c = DriverManager.getConnection(url, db_user, db_pass);
-
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
+			
 			String search_update = "select technicianUser from assignments where ticketId = ?";
 			pstmt = c.prepareStatement(search_update);
 			pstmt.setInt(1, ticketId);
@@ -414,7 +496,13 @@ public class RetrieveData {
 		ResultSet rs = null;
 		
 		try{
-			c = DriverManager.getConnection(url, db_user, db_pass);
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
+			
 			pstmt = c.prepareStatement(search_technician);
 			pstmt.setInt(1, ticketId);
 			
@@ -451,7 +539,13 @@ public class RetrieveData {
 		ResultSet rs = null;
 		
 		try {
-			c = DriverManager.getConnection(url, db_user, db_pass);
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
+			
 			search_user = "select * from tickets where id = ?";
 			pstmt = c.prepareStatement(search_user);
 			pstmt.setInt(1, ticketId);
@@ -502,7 +596,13 @@ public class RetrieveData {
 		ResultSet rs = null;
 		
 		try {
-			c = DriverManager.getConnection(url, db_user, db_pass);
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
+			
 			search_user = "select * from users where position = ? and unit_id = ?";
 			pstmt = c.prepareStatement(search_user);
 			pstmt.setInt(1, 2); // Can change this later if its not only technicians
@@ -542,8 +642,13 @@ public class RetrieveData {
 		String getUnit = "select * from units";
 		
 		try{
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
 			
-			c = DriverManager.getConnection(url, db_user, db_pass);
 			ptsmt = c.prepareStatement(getUnit);
 			rs = ptsmt.executeQuery();
 			
@@ -572,6 +677,118 @@ public class RetrieveData {
 		
 		return unitList;
 		
+	}
+	
+	public List<String> getSupervisorEmails(int unitId){
+		List<String> emails = new ArrayList<String>();
+		String getEmail = "select email from users where unit_id = ? and position = ? ";
+
+		Connection c = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try{
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
+			pstmt = c.prepareStatement(getEmail);
+			pstmt.setInt(1, unitId);
+			pstmt.setInt(2, 1);
+			rs = pstmt.executeQuery();
+			
+			while(rs.next()){
+				emails.add(rs.getString("email"));
+			}
+			
+			rs.close();
+			pstmt.close();
+			c.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
+		}
+		return emails;
+	}
+	
+	public String getRequestorEmailFromTicket(int ticketId){
+		String email = "";
+		Connection c = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		String emailQuery = "select email from users where username = (select username from tickets where id = ?)";
+		
+		
+		try{
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
+			pstmt = c.prepareStatement(emailQuery);
+			pstmt.setInt(1, ticketId);
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()){
+				email = rs.getString("email");
+			}
+			
+			rs.close();
+			pstmt.close();
+			c.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
+		}
+		
+		return email;
+	}
+	
+	public String getEmailFromUsername(String username){
+		String email = "";
+		Connection c = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		String emailQuery = "select email from users where username = ?";
+		
+		try{
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
+			pstmt = c.prepareStatement(emailQuery);
+			pstmt.setString(1, username);
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()){
+				email = rs.getString("email");
+			}
+			
+			rs.close();
+			pstmt.close();
+			c.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
+		}
+		
+		return email;
 	}
 
 }

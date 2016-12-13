@@ -11,8 +11,10 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- STYLESHEET -->
 	<link rel="stylesheet" href=" <c:url value='/resources/mythemes/css/jquery-ui.css' />">
-	<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/home.css' />">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/home.css' />">
+	<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/navbar.css' />">
+	
 	<!-- SCRIPTS -->
 	<script type="text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" ></script>
 	<script type="text/javascript" src="<c:url value='/resources/scripts/jquery-3.1.1.min.js' />"></script>
@@ -75,6 +77,29 @@
 			}
 		}
 	};
+	
+	function validateForm(){
+		var input = document.forms["rejectForm"]["rejectInput"].value;
+		if(input == '' || input == null){
+			alert("Please input a reason for the decline.");
+			event.preventDefault();
+		}
+	}
+	
+	function cleanInput(type, id){
+		if(type == "reject"){
+			if(document.forms["rejectForm"]["rejectInput"].value != '' && document.forms["rejectForm"]["rejectInput"].value != null){
+				document.forms["rejectForm"]["rejectInput"].value = '';
+			}
+
+			document.forms["rejectForm"]["cancelBt"].value = id;
+		}
+		else{
+
+			document.forms["cancelForm"]["cancelBt"].value = id;
+		}
+		
+	}
 	</script>
 	<style>
 		form{
@@ -101,18 +126,71 @@
 		</div>
 	</nav>
 	
-	<!--  Side Navigation Bar not needed right now...
-	<div class="col-md-2" id="line-left">
-		<ul class="nav nav-pills nav-stacked pull-right">
-			<li class="active"><a href="#">Home</a></li>
-			<li><a href="Add">Add</a></li>
-			<li><a href="#"> ${sessionScope.emailId} </a></li>
-			<li><a href="#"> ${sessionScope.distinguishedName} </a></li>
-			<li><a href="#">Add</a></li>
-		</ul>
+		<!-- Cancel Modal Pop up -->
+	<div class="modal fade" id="myModalCancel" role="dialog" >
+		<div class="modal-dialog">
+			<div class="modal-content">
+			
+				<!-- Modal header -->
+				
+				<div class="modal-header" id="cancelModalHeader">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">Ticket Cancellation Confirmation</h4>
+				</div>
+				
+				<!-- Modal Body Content -->
+				
+				<div class="modal-body" id="cancelModalBody">
+					<p>Are you sure you want to cancel this ticket?</p>
+				</div>
+				
+				<!-- Modal Footer & Button options -->
+			
+				<div class="modal-footer">
+					<form class="Cancel" name="cancelForm" action="Cancel" method="post">
+						<button type="button" class="btn btn-danger" data-dismiss="modal"> No </button>
+						<button type="submit" class="btn btn-success" name="cancelBt" id="cancelBt" value="${item.id}"> Yes </button>
+					</form>
+					
+				</div>
+			
+			</div>
+		</div>
 	</div>
 	
-	-->
+	<!-- Reject Modal Pop up -->
+	<div class="modal fade" id="myModalReject" role="dialog" >
+		<div class="modal-dialog">
+			<div class="modal-content">
+			
+				<!-- Modal header -->
+				
+				<div class="modal-header" id="rejectModalHeader">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">Ticket Decline Confirmation</h4>
+				</div>
+				
+				
+				<form class="Cancel" name="rejectForm" onsubmit="validateForm();" action="Cancel" method="post">
+					<!-- Modal Body Content -->
+					<div class="modal-body" id="rejectModalBody">
+						<p>Are you sure you want to decline this ticket?</p>
+						<p>Please input the reason for decline: </p>
+						<textarea class="form-control" rows="2" style="width:100%" name="rejectInput" id="rejectInput"></textarea>
+					</div>
+					
+					<!-- Modal Footer & Button options -->
+				
+					<div class="modal-footer" id="rejectModalFooter">
+							<button type="button" class="btn btn-danger" data-dismiss="modal"> No </button>
+							<button type="submit" class="btn btn-success" name="cancelBt" id="cancelBt" value="${item.id}"> Yes </button>
+						
+						
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 	
 	<!-- ALERT MESSAGES SECTION -->
 	<c:if test="${!empty fn:trim(errorMessage)}">
@@ -134,7 +212,7 @@
 	
 	<!-- This section holds the tabs and ticket view for the users. -->
 	
-	<div class="text-center col-lg-12" style="text-align: center">
+	<div class="text-center col-lg-12" style="text-align: center;">
 		<!-- Contains the Create Ticket button, and search capabilities -->
 		<div class="container-fluid">
 			<span class="pull-left">
@@ -160,9 +238,7 @@
 
 		<!-- ------------------------------------------------ RECENT TICKETS SECTION ----------------------------------------------- -->
 		
-		
-		
-		<div id="rv" class="contrainer">
+<div id="rv" class="contrainer">
 		<div id="accordion">
 			<c:forEach items ="${tickets}" var="item">
 					<h3 ><span class="pull-left">${ item.user }: ${ item.details } </span> <span class="pull-right">STATUS: ${item.progress } </span>
@@ -186,6 +262,7 @@
 							</c:when>
 						</c:choose>
 					</p>
+					<hr>
 					<div class="container">
 						<c:if test="${item.progress ne 'OPEN' and item.numOfUpdates > 0}">
 						<p><b>Updates</b><br></p>
@@ -211,13 +288,13 @@
 					<c:choose>
 						<c:when test="${(sessionScope.user eq item.user and item.progress eq 'OPEN') or sessionScope.position == 0}">
 															<!--  Cancel  -->
-								<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal${item.id}">Cancel</button>
+								<button type="button" class="btn btn-default" onClick="cleanInput('cancel', ${item.id})" data-toggle="modal" data-target="#myModalCancel">Cancel</button>
 															<!--   Edit   -->              
 								<a href= "EditTicket?id=${item.id}" class="navbar-btn btn btn-default">Edit</a>
 						</c:when>
 						
 						<c:when test="${ sessionScope.position == 1 and item.progress eq 'OPEN' and sessionScope.user ne item.user }">
-								<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal${item.id}">Reject</button>
+								<button type="button" class="btn btn-default" onClick="cleanInput('reject', ${item.id})" data-toggle="modal" data-target="#myModalReject">Reject</button>
 						</c:when>
 					</c:choose>
    
@@ -227,53 +304,6 @@
 					<c:if test="${sessionScope.position <= 1 and item.progress ne 'COMPLETED' and item.progress ne 'CLOSED'}">
 						<a href="AssignTechnician?id=${item.id}&prog=${item.progress}" type="button" class="navbar-btn btn btn-default" >Assign Technician</a> 
 					</c:if>
-					
-							<!-- Modal Pop up -->
-							<div class="modal fade" id="myModal${item.id}" role="dialog" >
-								<div class="modal-dialog">
-									<div class="modal-content">
-									
-										<!-- Modal header -->
-										
-										<div class="modal-header">
-											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-											<c:choose>
-												<c:when test="${sessionScope.position > 1 and item.progress eq 'OPEN' }">
-													<h4 class="modal-title" id="myModalLabel">Ticket Cancellation Confirmation</h4>
-												</c:when>
-												<c:when test="${sessionScope.position <= 1 and item.progress eq 'OPEN'}" >
-													<h4 class="modal-title" id="myModalLabel">Ticket Rejection Confirmation</h4>
-												</c:when>
-											</c:choose>
-										</div>
-										
-										<!-- Modal Body Content -->
-										
-										<div class="modal-body">
-											<c:choose>
-												<c:when test="${sessionScope.position > 1 }">
-													<p>Are you sure you want to cancel this ticket?</p>
-												</c:when>
-												<c:otherwise>
-													<p>Are you sure you want to reject this ticket?</p>
-												</c:otherwise>
-											</c:choose>
-										</div>
-										
-										<!-- Modal Footer & Button options -->
-									
-										<div class="modal-footer">
-											<form class="Cancel" action="Cancel" method="post">
-												<button type="button" class="btn btn-danger" data-dismiss="modal"> No </button>
-												<button type="submit" class="btn btn-success" name="cancelBt" value="${item.id}"> Yes </button>
-											</form>
-											
-										</div>
-									
-									</div>
-								</div>
-							</div>
-
 					</div>
 			</c:forEach>
 		</div>
@@ -305,6 +335,7 @@
 										</c:when>
 									</c:choose>
 								</p>
+								<hr>
 					<div class="container">
 						<c:if test="${item.progress ne 'OPEN' and item.numOfUpdates > 0}">
 							<p><b>Updates</b><br></p>
@@ -329,13 +360,13 @@
 					<c:choose>
 						<c:when test="${(sessionScope.user eq item.user and item.progress eq 'OPEN') or sessionScope.position == 0}">
 															<!--  Cancel  -->
-								<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal2${item.id}">Cancel</button>
+								<button type="button" class="btn btn-default" onClick="cleanInput('cancel', ${item.id})" data-toggle="modal" data-target="#myModalCancel">Cancel</button>
 															<!--   Edit   -->                                    
 								<a href= "EditTicket?id=${item.id}" class="navbar-btn btn btn-default">Edit</a>
 						</c:when>
 						
 						<c:when test="${ sessionScope.position == 1 and item.progress eq 'OPEN' and sessionScope.user ne item.user }">
-								<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal2${item.id}">Reject</button>
+								<button type="button" class="btn btn-default" onClick="cleanInput('reject', ${item.id})" data-toggle="modal" data-target="#myModalReject">Reject</button>
 						</c:when>
 					</c:choose>
 
@@ -345,52 +376,6 @@
 					<c:if test="${sessionScope.position <= 1 and item.progress ne 'COMPLETED' and item.progress ne 'CLOSED'}">
 							<a href="AssignTechnician?id=${item.id}&prog=${item.progress}" type="button" class="navbar-btn btn btn-default" >Assign Technician</a> 
 					</c:if>
-					
-							<!-- Modal Pop up -->
-							<div class="modal fade" id="myModal2${item.id}" role="dialog" >
-								<div class="modal-dialog">
-									<div class="modal-content">
-									
-										<!-- Modal header -->
-										
-										<div class="modal-header">
-											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-											<c:choose>
-												<c:when test="${sessionScope.position > 1 and item.progress eq 'OPEN' }">
-													<h4 class="modal-title" id="myModalLabel">Ticket Cancellation Confirmation</h4>
-												</c:when>
-												<c:when test="${sessionScope.position <= 1 and item.progress eq 'OPEN'}" >
-													<h4 class="modal-title" id="myModalLabel">Ticket Rejection Confirmation</h4>
-												</c:when>
-											</c:choose>
-										</div>
-										
-										<!-- Modal Body Content -->
-										
-										<div class="modal-body">
-											<c:choose>
-												<c:when test="${sessionScope.position > 1 }">
-													<p>Are you sure you want to cancel this ticket?</p>
-												</c:when>
-												<c:otherwise>
-													<p>Are you sure you want to reject this ticket?</p>
-												</c:otherwise>
-											</c:choose>
-										</div>
-										
-										<!-- Modal Footer & Button options -->
-									
-										<div class="modal-footer">
-											<form class="Cancel" action="Cancel" method="post">
-												<button type="button" class="btn btn-danger" data-dismiss="modal"> No </button>
-												<button type="submit" class="btn btn-success" name="cancelBt" value="${item.id}"> Yes </button>
-											</form>
-											
-										</div>
-									
-									</div>
-								</div>
-							</div>
 							</div>
 						</c:when>
 					</c:choose>
@@ -432,6 +417,7 @@
 							</c:choose>
 							
 							</p>
+							<hr>
 						<div class="container">
 							<c:if test="${item.progress ne 'OPEN' and item.numOfUpdates > 0}">
 								<p><b>Updates</b><br></p>

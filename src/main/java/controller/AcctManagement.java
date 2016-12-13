@@ -4,16 +4,15 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.DbUtils;
 
@@ -24,7 +23,13 @@ public class AcctManagement extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		RetrieveData rd = new RetrieveData();
+		RetrieveData rd = null;
+		if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
+			rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
+		}
+		else{
+			rd = new RetrieveData();
+		}
 		request.setAttribute("userList", rd.getAllUsers());
 		request.setAttribute("positionList", Arrays.asList("USER", "TECHNICIAN", "SUPERVISING TECHNICIAN", "SYSTEM ADMINISTRATOR"));
 		request.setAttribute("unitList", rd.getAllUnits());		
@@ -33,7 +38,7 @@ public class AcctManagement extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		String Create = request.getParameter("Create");
+		//String Create = request.getParameter("Create");
 		String Search = request.getParameter("Search");
 		if(Search == null)
 		{
@@ -81,11 +86,17 @@ public class AcctManagement extends HttpServlet {
 				
 				try
 				{
-					String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-					String db_user = "cs4961stu01";
-					String db_pass = ".XCGG1Bc";
-
-					c = DriverManager.getConnection(url, db_user, db_pass);
+					if(Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString()))
+					{
+						c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
+					}
+					else{
+						String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
+						String db_user = "cs4961stu01";
+						String db_pass = ".XCGG1Bc";
+	
+						c = DriverManager.getConnection(url, db_user, db_pass);
+					}
 					String insert_user = "insert into users (firstname, lastname, pass, username, phone, email, position, unit_id) values(?, ?, ?, ?, ?, ?, ?,?)";
 					pstmt2 = c.prepareStatement(insert_user);
 					pstmt2.setString(1, firstName);

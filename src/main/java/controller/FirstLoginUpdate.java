@@ -12,6 +12,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.DbUtils;
 
@@ -66,11 +67,17 @@ public class FirstLoginUpdate extends HttpServlet {
 			ResultSet rs = null;
 			try
 			{
-				String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-				String db_user = "cs4961stu01";
-				String db_pass = ".XCGG1Bc";
-				
-				c = DriverManager.getConnection(url, db_user, db_pass);
+				if(Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString()))
+				{
+					c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
+				}
+				else{
+					String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
+					String db_user = "cs4961stu01";
+					String db_pass = ".XCGG1Bc";
+
+					c = DriverManager.getConnection(url, db_user, db_pass);
+				}
 				String search_user = "select * from users where username = ?";
 	            pstmt = c.prepareStatement( search_user );
 	            pstmt.setString( 1, request.getSession().getAttribute("user").toString() );

@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 
 import function.RetrieveData;
 
@@ -20,7 +21,13 @@ public class Search extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		int position = Integer.parseInt(request.getSession().getAttribute("position").toString());
-		RetrieveData rd = new RetrieveData();
+		RetrieveData rd = null;
+		if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
+			rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
+		}
+		else{
+			rd = new RetrieveData();
+		}
 		
 		if(request.getParameter("searchBtn").toString().equals("Search")){
 			String term = request.getParameter("search");

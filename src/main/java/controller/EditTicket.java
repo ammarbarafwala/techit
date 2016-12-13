@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -12,6 +11,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.DbUtils;
 
@@ -22,63 +22,38 @@ import model.Ticket;
 public class EditTicket extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	private Ticket getTicket(Integer id) throws ServletException {
-		Ticket ticket = null;
-		Connection c = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		try {
-			String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-			String db_user = "cs4961stu01";
-			String db_pass = ".XCGG1Bc";
-
-			c = DriverManager.getConnection(url, db_user, db_pass);
-			String search_user = "select * from tickets where id = ?";
-			pstmt = c.prepareStatement(search_user);
-			pstmt.setInt(1, id);
-			rs = pstmt.executeQuery();
-			if (rs.next()) {
-
-				ticket = new Ticket(rs.getInt("id"), rs.getString("username"), rs.getString("userFirstName"),
-						rs.getString("userLastName"), rs.getString("phone"), rs.getString("email"), rs.getInt("unitId"),
-						rs.getString("details"), rs.getDate("startDate"), rs.getDate("lastUpdated"),
-						rs.getString("ticketLocation"));
-			}
-			pstmt.close();
-			rs.close();
-			c.close();
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			DbUtils.closeQuietly(pstmt);
-			DbUtils.closeQuietly(rs);
-			DbUtils.closeQuietly(c);
-		}
-
-		return ticket;
-
-	}
-
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		int id = Integer.parseInt(request.getParameter("id"));
-		Ticket ticket = getTicket(id);
-		
-		if (request.getSession().getAttribute("user") == null) {
-			response.sendRedirect("Login");
-		}
-		else if(!ticket.getUser().equals(request.getSession().getAttribute("user"))){
-			request.setAttribute("errorMessage", "Invalid ticket request!");
-			request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
+		RetrieveData rd = null;
+		if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
+			rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
 		}
 		else{
-			RetrieveData rd = new RetrieveData();
-			System.out.println(ticket.getEmail());
-			request.setAttribute("unitList", rd.getAllUnits());
-			request.setAttribute("ticket", ticket);
-			request.getRequestDispatcher("/WEB-INF/EditTicket.jsp").forward(request, response);
+			rd = new RetrieveData();
+		}
+		Ticket ticket = null;
+		try {
+			ticket = rd.getTicket(id);
+			if (request.getSession().getAttribute("user") == null) {
+				response.sendRedirect("Login");
+			}
+			else if(!ticket.getUser().equals(request.getSession().getAttribute("user"))){
+				request.setAttribute("errorMessage", "Invalid ticket request!");
+				request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
+			}
+			else{
+				System.out.println(ticket.getEmail());
+				request.setAttribute("unitList", rd.getAllUnits());
+				request.setAttribute("ticket", ticket);
+				request.getRequestDispatcher("/WEB-INF/EditTicket.jsp").forward(request, response);
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+			request.setAttribute("errorMessage", "Something went wrong when getting the ticket, please try again later!");
+			request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 		}
 	}
 
@@ -97,8 +72,13 @@ public class EditTicket extends HttpServlet {
 		int units = Integer.parseInt(request.getParameter("units"));
 		int id = Integer.parseInt(request.getParameter("id"));
 		
-
-		RetrieveData rd = new RetrieveData();
+		RetrieveData rd = null;
+		if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
+			rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
+		}
+		else{
+			rd = new RetrieveData();
+		}
 		
 		// java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
 		if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phoneNumber.isEmpty() || details.isEmpty()
@@ -129,11 +109,17 @@ public class EditTicket extends HttpServlet {
 			Connection c = null;
 			PreparedStatement pstmt = null;
 			try {
-				String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-				String db_user = "cs4961stu01";
-				String db_pass = ".XCGG1Bc";
+				if(Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString()))
+				{
+					c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
+				}
+				else{
+					String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
+					String db_user = "cs4961stu01";
+					String db_pass = ".XCGG1Bc";
 
-				c = DriverManager.getConnection(url, db_user, db_pass);
+					c = DriverManager.getConnection(url, db_user, db_pass);
+				}
 				String createTicket = "update tickets set userFirstName = ? , userLastName =? , phone =? , email = ?, details = ?, lastUpdated = NOW() ,ticketLocation = ?, unitId =? where id =?";
 				pstmt = c.prepareStatement(createTicket);
 				pstmt.setString(1, firstName);

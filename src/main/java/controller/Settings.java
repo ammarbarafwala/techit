@@ -13,6 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 
 import org.apache.commons.dbutils.DbUtils;
 
@@ -39,7 +40,13 @@ public class Settings extends HttpServlet {
 					request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 				}
 				else{
-					RetrieveData rd = new RetrieveData();
+					RetrieveData rd = null;
+					if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
+						rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
+					}
+					else{
+						rd = new RetrieveData();
+					}
 					request.setAttribute("adminModify", true);
 					request.setAttribute("editUser", rd.getUser(Integer.parseInt(request.getParameter("id"))));
 					request.setAttribute("positionList", Arrays.asList("USER", "TECHNICIAN", "SUPERVISING TECHNICIAN", "SYSTEM ADMINISTRATOR"));
@@ -58,7 +65,13 @@ public class Settings extends HttpServlet {
 		String adminModify = sf.filterNull(request.getParameter("adminModify"));
 		String email = sf.filterNull(request.getParameter("email"));
 		String pnumber = sf.filterNull(request.getParameter("phoneNumber"));
-		RetrieveData rd = new RetrieveData();
+		RetrieveData rd = null;
+		if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
+			rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
+		}
+		else{
+			rd = new RetrieveData();
+		}
 		
 		if( email.isEmpty() || pnumber.isEmpty() || ( pnumber.length() < 14 ) )
 		{
@@ -86,11 +99,6 @@ public class Settings extends HttpServlet {
 			Connection c = null;
 			PreparedStatement pstmt = null;
 			ResultSet rs = null;
-			
-
-			String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-			String db_user = "cs4961stu01";
-			String db_pass = ".XCGG1Bc";
 			
 			if(adminModify.equals("true")){ // Admin modifying a user's account information
 				User editUser = rd.getUser(Integer.parseInt(request.getParameter("userId")));
@@ -122,7 +130,17 @@ public class Settings extends HttpServlet {
 							position = 3;
 						}
 						
-						c = DriverManager.getConnection(url, db_user, db_pass);
+						if(Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString()))
+						{
+							c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
+						}
+						else{
+							String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
+							String db_user = "cs4961stu01";
+							String db_pass = ".XCGG1Bc";
+
+							c = DriverManager.getConnection(url, db_user, db_pass);
+						}
 						String updateQuery = "update users set email = ?, phone = ?, position = ? where username = ?";
 						pstmt = c.prepareStatement( updateQuery );
 						pstmt.setString(1, email);
@@ -158,7 +176,17 @@ public class Settings extends HttpServlet {
 				}
 				else{
 					try{
-						c = DriverManager.getConnection(url, db_user, db_pass);
+						if(Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString()))
+						{
+							c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
+						}
+						else{
+							String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
+							String db_user = "cs4961stu01";
+							String db_pass = ".XCGG1Bc";
+
+							c = DriverManager.getConnection(url, db_user, db_pass);
+						}
 						String updateQuery = "update users set email = ?, phone = ? where username = ?";
 						pstmt = c.prepareStatement(updateQuery);
 						pstmt.setString(1, email);

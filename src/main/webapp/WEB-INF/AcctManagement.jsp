@@ -11,7 +11,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/jquery-ui.css' />">
-	<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/home.css' />">
+	<link rel="stylesheet" href="<c:url value='/resources/mythemes/css/navbar.css' />">
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/css/dataTables.bootstrap.min.css" rel="stylesheet" />
 
 	<script type="text/javascript" src = "https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" ></script>
@@ -31,6 +31,13 @@
 		$(document).ready(function() {
 			  $('#users').dataTable();
 			});
+		
+		jQuery(function($) {
+			$("#phoneNumber2").mask("(999) 999-9999");
+		});
+		jQuery('.phoneNumber2').keyup(function() {
+			this.value = this.value.replace(/[^0-9\.]/g, '');
+		});
 	</script>
 
 </head>
@@ -230,9 +237,9 @@ ul.tab li a:focus, .active {
 					</label> <input type="text" class="form-control" name="unitName">
 				</div>
 				<div class="form-group col-xs-5 col-md-5">
-					<label for="phoneNumber">Phone Number <font color="red">*</font></label>
-					<input type="text" class="form-control" id="phoneNumber"
-						name="phoneNumber">
+					<label for="phoneNumber2">Phone Number <font color="red">*</font></label>
+					<input type="text" class="form-control" id="phoneNumber2"
+						name="phoneNumber2">
 				</div>
 				<div class="form-group col-xs-5 col-md-5">
 					<label for="location">Location <font color="red">*</font></label> <input
