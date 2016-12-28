@@ -162,6 +162,8 @@ public class Settings extends HttpServlet {
 					}
 		
 					request.setAttribute("userList", rd.getAllUsers());
+					request.setAttribute("unitList", rd.getAllUnits());
+
 					request.setAttribute("positionList", Arrays.asList("USER", "TECHNICIAN", "SUPERVISING TECHNICIAN", "SYSTEM ADMINISTRATOR"));
 					request.setAttribute("successMessage", "Successfully modified " + editUser.getFirstName() + " " + editUser.getLastName() + " account information!");
 					request.getRequestDispatcher("/WEB-INF/AcctManagement.jsp").forward(request, response);

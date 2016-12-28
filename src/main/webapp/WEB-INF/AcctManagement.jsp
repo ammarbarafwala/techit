@@ -31,7 +31,9 @@
 		$(document).ready(function() {
 			  $('#users').dataTable();
 			});
-		
+		$(document).ready(function() {
+			  $('#unitsTable').dataTable();
+			});
 		jQuery(function($) {
 			$("#phoneNumber2").mask("(999) 999-9999");
 		});
@@ -129,6 +131,8 @@ ul.tab li a:focus, .active {
 			onclick="adminaction(event, 'Search')">Search User</a></li>
 		<li><a href="javascript:void(0)" class="tablinks"
 			onclick="adminaction(event, 'New')">New User</a></li>
+		<li><a href="javascript:void(0)" class="tablinks"
+			onclick="adminaction(event, 'SearchUnit')">Search Unit</a></li>
 		<li><a href="javascript:void(0)" class="tablinks"
 			onclick="adminaction(event, 'Unit')">New Unit</a></li>
 	</ul>
@@ -228,6 +232,34 @@ ul.tab li a:focus, .active {
 			</form>
 		</div>
 	</div>
+	</div><div id="SearchUnit" class="tabcontent">
+		<h3>Search User</h3>
+		<table class="table table-striped table-bordered table-hover" id="unitsTable">
+			<thead class="thead-inverse">
+				<tr>
+					<th>Edit</th>
+					<th>Unit name</th>
+					<th>Phone</th>
+					<th>Location</th>
+					<th>Email</th>
+					<th>Description</th>
+				</tr>
+			</thead>
+			
+			<tbody>
+				<c:forEach items ="${unitList}" var="unit">
+					<tr>
+						<td><a href="EditUnit?id=${unit.id}"class="navbar-btn btn btn-default">Edit</a></td>
+						<td>${unit.name}</td>
+						<td>${unit.phone}</td>
+						<td>${unit.location}</td>
+						<td>${unit.email}</td>
+						<td>${unit.description}</td>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
+	</div>
 	<div id="Unit" class="tabcontent">
 		<h3>New Unit</h3>
 		<div class="row">
@@ -237,16 +269,16 @@ ul.tab li a:focus, .active {
 					</label> <input type="text" class="form-control" name="unitName">
 				</div>
 				<div class="form-group col-xs-5 col-md-5">
-					<label for="phoneNumber2">Phone Number <font color="red">*</font></label>
+					<label for="phoneNumber2">Phone Number <font color="black">(optional)</font></label>
 					<input type="text" class="form-control" id="phoneNumber2"
 						name="phoneNumber2">
 				</div>
 				<div class="form-group col-xs-5 col-md-5">
-					<label for="location">Location <font color="red">*</font></label> <input
+					<label for="location">Location <font color="black">(optional)</font></label> <input
 						type="text" class="form-control" name="location">
 				</div>
 				<div class="form-group col-xs-5 col-md-5">
-					<label for="email">Email <font color="red">*</font></label> <input
+					<label for="email">Email <font color="black">(optional)</font></label> <input
 						type="text" class="form-control" name="email">
 				</div>
 				<div class="form-group col-xs-5 col-md-5">

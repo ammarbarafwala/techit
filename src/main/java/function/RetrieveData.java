@@ -284,6 +284,43 @@ public class RetrieveData {
 		}
 		return user;
 	}
+	public Unit getUnit(int unitId){
+		Unit unit = null;
+		
+		Connection c = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try{
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
+			
+			String getUser = "select * from units where id = ?";
+			pstmt = c.prepareStatement(getUser);
+			pstmt.setInt(1, unitId);
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()){
+				unit = new Unit(rs.getInt("id"), rs.getString("unitName"), rs.getString("phone"),
+						rs.getString("location"), rs.getString("email"), rs.getString("description"));
+			}
+			
+			pstmt.close();
+			rs.close();
+			c.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
+		}
+		return unit;
+	}
 	
 	public List<User> getAllUsers(){
 		List<User> users = new ArrayList<User>();

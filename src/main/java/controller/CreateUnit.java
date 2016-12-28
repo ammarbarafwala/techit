@@ -30,12 +30,20 @@ public class CreateUnit extends HttpServlet {
 
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String unitName = request.getParameter("unitName");
+		
+		
+		String unitName = request.getParameter("unitName").replace(" ", "");
 		String phone = request.getParameter("phoneNumber");
-		String location =  request.getParameter("location");
-		String email = request.getParameter("email");
-		String description = request.getParameter("description");
-			
+		String location =  request.getParameter("location").replace(" ", "");
+		String email = request.getParameter("email").replace(" ", "");
+		String description = request.getParameter("description").replace(" ", "");
+		if(unitName.isEmpty() || description.isEmpty())
+		{	
+			request.setAttribute("errorMessage", "Some fields are missing!");
+			request.getRequestDispatcher("/WEB-INF/AcctManagement.jsp").forward(request, response);
+		}
+		else
+		{
 		Connection c = null;
 		PreparedStatement pstmt = null;
 		try {
@@ -70,7 +78,7 @@ public class CreateUnit extends HttpServlet {
 		}
 		
 		response.sendRedirect("Home");
-
+		}
 	}
 
 }
