@@ -1,6 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<<<<<<< HEAD
 <merger version="3"><dataSet config="main"><source path="C:\Users\Brandon\techIt\platforms\android\CordovaLib\assets"/><source path="C:\Users\Brandon\techIt\platforms\android\CordovaLib\build\generated\assets\shaders\debug"/></dataSet><dataSet config="debug"><source path="C:\Users\Brandon\techIt\platforms\android\CordovaLib\src\debug\assets"/></dataSet></merger>
-=======
-<merger version="3"><dataSet config="main"><source path="C:\Users\Vanarid\techitApp\platforms\android\CordovaLib\assets"/><source path="C:\Users\Vanarid\techitApp\platforms\android\CordovaLib\build\generated\assets\shaders\debug"/></dataSet><dataSet config="debug"><source path="C:\Users\Vanarid\techitApp\platforms\android\CordovaLib\src\debug\assets"/></dataSet></merger>
->>>>>>> 0588fb3ca46ff5809e0c775408e6d61524491642

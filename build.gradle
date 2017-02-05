@@ -183,11 +183,7 @@ android {
         abortOnError false;
     }
 
-<<<<<<< HEAD
     compileSdkVersion 24
-=======
-    compileSdkVersion 23
->>>>>>> 0588fb3ca46ff5809e0c775408e6d61524491642
     buildToolsVersion '25.0.1'
 
     if (Boolean.valueOf(cdvBuildMultipleApks)) {
@@ -264,7 +260,6 @@ dependencies {
     releaseCompile project(path: 'CordovaLib', configuration: 'release')
     // SUB-PROJECT DEPENDENCIES END
     compile 'com.android.support:appcompat-v7:23.4.0'
-<<<<<<< HEAD
     compile "org.apache.httpcomponents:httpmime:4.2.3"
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
     compile group: 'com.google.code.gson', name: 'gson', version: '2.3.1'
@@ -272,8 +267,6 @@ dependencies {
 
 android{
     useLibrary  'org.apache.http.legacy'
-=======
->>>>>>> 0588fb3ca46ff5809e0c775408e6d61524491642
 }
 
 def promptForReleaseKeyPassword() {

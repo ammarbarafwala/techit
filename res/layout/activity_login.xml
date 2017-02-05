@@ -9,36 +9,25 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-<<<<<<< HEAD
     android:background="#FFFFFF"
     tools:context="io.cordova.techit.io.cordova.techit.Login">
-=======
-    tools:context="io.cordova.hellocordova.Login">
->>>>>>> 0588fb3ca46ff5809e0c775408e6d61524491642
 
     <TextView
         android:text="Username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/textView4"
-<<<<<<< HEAD
         android:layout_above="@+id/usernameField"
         android:layout_centerHorizontal="true"
         android:textStyle="normal|bold"
         android:textColor="@android:color/black"
         />
 
-=======
-        android:layout_above="@+id/editText4"
-        android:layout_centerHorizontal="true"
-        android:textStyle="normal|bold" />
->>>>>>> 0588fb3ca46ff5809e0c775408e6d61524491642
 
     <TextView
         android:text="Password"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-<<<<<<< HEAD
         android:layout_above="@+id/passwordField"
         android:layout_alignLeft="@+id/textView4"
         android:layout_alignStart="@+id/textView4"
@@ -46,30 +35,16 @@
         android:textStyle="normal|bold"
         android:textColor="@android:color/black"
         />
-=======
-        android:layout_above="@+id/editText5"
-        android:layout_alignLeft="@+id/textView4"
-        android:layout_alignStart="@+id/textView4"
-        android:id="@+id/textView5"
-        android:textStyle="normal|bold" />
->>>>>>> 0588fb3ca46ff5809e0c775408e6d61524491642
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:ems="10"
-<<<<<<< HEAD
         android:id="@+id/usernameField"
         android:textColor="@android:color/black"
         android:textAlignment="center"
         android:layout_above="@+id/passwordField"
-=======
-        android:id="@+id/editText4"
-        android:textColor="@android:color/black"
-        android:textAlignment="center"
-        android:layout_above="@+id/editText5"
->>>>>>> 0588fb3ca46ff5809e0c775408e6d61524491642
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="62dp"
         android:backgroundTint="@android:color/holo_orange_light"
@@ -82,20 +57,11 @@
         android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:ems="10"
-<<<<<<< HEAD
         android:layout_above="@+id/logonButton"
         android:layout_alignLeft="@+id/usernameField"
         android:layout_alignStart="@+id/usernameField"
         android:layout_marginBottom="18dp"
         android:id="@+id/passwordField"
-=======
-        android:layout_above="@+id/button2"
-        android:layout_alignLeft="@+id/editText4"
-        android:layout_alignStart="@+id/editText4"
-        android:layout_marginBottom="18dp"
-        android:id="@+id/editText5"
-        android:text="password"
->>>>>>> 0588fb3ca46ff5809e0c775408e6d61524491642
         android:textAlignment="center"
         android:background="@android:color/holo_orange_light"
         android:textSize="24sp" />
@@ -105,28 +71,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="68dp"
-<<<<<<< HEAD
         android:id="@+id/logonButton"
-=======
-        android:id="@+id/button2"
->>>>>>> 0588fb3ca46ff5809e0c775408e6d61524491642
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-<<<<<<< HEAD
         app:srcCompat="@drawable/techitlogo"
         android:id="@+id/imageView"
         android:scaleType="fitStart"
         android:layout_above="@+id/logonButton"
-=======
-        app:srcCompat="@drawable/TechITLOGO_3"
-        android:layout_marginBottom="22dp"
-        android:id="@+id/imageView4"
-        android:layout_above="@+id/textView4"
->>>>>>> 0588fb3ca46ff5809e0c775408e6d61524491642
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
