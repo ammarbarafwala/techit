@@ -26,6 +26,7 @@ public class EditTicket extends HttpServlet {
 			throws ServletException, IOException {
 
 		int id = Integer.parseInt(request.getParameter("id"));
+		int position = (int) request.getSession().getAttribute("position");
 		RetrieveData rd = null;
 		if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
 			rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
@@ -39,7 +40,7 @@ public class EditTicket extends HttpServlet {
 			if (request.getSession().getAttribute("user") == null) {
 				response.sendRedirect("Login");
 			}
-			else if(!ticket.getUser().equals(request.getSession().getAttribute("user"))){
+			else if(!ticket.getUser().equals(request.getSession().getAttribute("user")) && !(position <= 1)){
 				request.setAttribute("errorMessage", "Invalid ticket request!");
 				request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 			}
