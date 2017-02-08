@@ -39,6 +39,21 @@
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:layout_above="@+id/logonButton"
+        android:layout_alignLeft="@+id/usernameField"
+        android:layout_alignStart="@+id/usernameField"
+        android:layout_marginBottom="18dp"
+        android:id="@+id/passwordField"
+        android:textAlignment="center"
+        android:background="@android:color/holo_orange_light"
+        android:textSize="24sp"
+        android:textColor="@android:color/black" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:ems="10"
         android:id="@+id/usernameField"
@@ -51,20 +66,6 @@
         android:background="@android:color/holo_orange_light"
         android:textSize="24sp"
         tools:maxHeight="@android:dimen/notification_large_icon_height" />
-
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword"
-        android:ems="10"
-        android:layout_above="@+id/logonButton"
-        android:layout_alignLeft="@+id/usernameField"
-        android:layout_alignStart="@+id/usernameField"
-        android:layout_marginBottom="18dp"
-        android:id="@+id/passwordField"
-        android:textAlignment="center"
-        android:background="@android:color/holo_orange_light"
-        android:textSize="24sp" />
 
     <Button
         android:text="LOGIN"
