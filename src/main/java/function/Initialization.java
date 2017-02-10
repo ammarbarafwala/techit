@@ -33,9 +33,12 @@ public class Initialization implements ServletContextListener {
 			}
 		});
 		
+		String domain = sce.getServletContext().getInitParameter("domain");
+		
 		sce.getServletContext().setAttribute("properties", props);
 		sce.getServletContext().setAttribute("session", session);
 		sce.getServletContext().setAttribute("email", user);
+		sce.getServletContext().setAttribute("domain", domain);
 		// ------------- DataSource setup -------------------
 		
 		Boolean onServer = Boolean.valueOf(sce.getServletContext().getInitParameter("onServer"));

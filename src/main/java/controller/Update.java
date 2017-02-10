@@ -145,6 +145,7 @@ public class Update extends HttpServlet {
 				
 				Ticket ticket = rd.getTicket(ticketId);
 
+				String domain = request.getServletContext().getAttribute("domain").toString();
 				if(newProg.equals("COMPLETED")){				
 					List<String> emails = rd.getSupervisorEmails(ticket.getUnitId());
 					String requestorEmail = rd.getRequestorEmailFromTicket(ticketId);
@@ -152,7 +153,7 @@ public class Update extends HttpServlet {
 					
 					final List<String> allEmails = emails;
 					final String emailSubject = "Ticket #" + ticketId + " has been completed.";
-					final String emailDetails = "The following ticket has been completed: " + "\n" + ticket.toString();
+					final String emailDetails = "The following ticket has been completed: " + "\n" + ticket.toString() + "\n" + domain + "Details?id=" + ticketId;
 					
 					new Thread(new Runnable(){
 						public void sendEmail(){
@@ -171,10 +172,11 @@ public class Update extends HttpServlet {
 					String requestorEmail = rd.getRequestorEmailFromTicket(ticketId);
 					emails.add(requestorEmail);
 					
+					
 					final List<String> allEmails = emails;
 					final String emailSubject = "Ticket #" + ticketId + " has been closed.";
 					final String emailDetails = "The following ticket has been closed: " + "\n" + ticket.toString()
-					+ "\nUpdate Message: " + updateMessage;
+					+ "\nUpdate Message: " + updateMessage + "\n" + domain + "Details?id=" + ticketId;
 					
 					new Thread(new Runnable(){
 						public void sendEmail(String emailDetails){

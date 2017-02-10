@@ -137,12 +137,15 @@ public class AssignTechnician extends HttpServlet {
 				
 				c.close();
 				
+				String domain = request.getServletContext().getAttribute("domain").toString();
+				
 				//Email the technicians
 				if(techs.size() > 0) {
 					final List<String> allEmails = techs;
 					final String emailSubject = "You have been assigned to ticket #" + ticketId;
 					final String emailDetails = "You have been assigned to ticket #" + ticketId +
-							"\n" + rd.getTicket(ticketId).toString();
+							"\n" + rd.getTicket(ticketId).toString()
+							+ "\n" + domain + "Details?id=" + ticketId;
 					
 					new Thread(new Runnable(){
 						public void sendEmail(){

@@ -5,7 +5,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
+import javax.mail.Session;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -16,6 +18,7 @@ import javax.sql.DataSource;
 import org.apache.commons.dbutils.DbUtils;
 
 import function.RetrieveData;
+import function.SendEmail;
 import model.Ticket;
 
 @WebServlet("/EditTicket")
@@ -25,21 +28,22 @@ public class EditTicket extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		int id = Integer.parseInt(request.getParameter("id"));
-		RetrieveData rd = null;
-		if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
-			rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
-		}
-		else{
-			rd = new RetrieveData();
-		}
-		Ticket ticket = null;
 		try {
+			int id = Integer.parseInt(request.getParameter("id"));
+			RetrieveData rd = null;
+			if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
+				rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
+			}
+			else{
+				rd = new RetrieveData();
+			}
+			Ticket ticket = null;
+			
 			ticket = rd.getTicket(id);
 			if (request.getSession().getAttribute("user") == null) {
 				response.sendRedirect("Login");
 			}
-			else if(!ticket.getUser().equals(request.getSession().getAttribute("user"))){
+			else if(!ticket.getUser().equals(request.getSession().getAttribute("user")) && !( (int) request.getSession().getAttribute("position") <= 1)){
 				request.setAttribute("errorMessage", "Invalid ticket request!");
 				request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 			}
@@ -53,6 +57,10 @@ public class EditTicket extends HttpServlet {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			request.setAttribute("errorMessage", "Something went wrong when getting the ticket, please try again later!");
+			request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
+		} catch (Exception e){
+			e.printStackTrace();
+			request.setAttribute("errorMessage", "Invalid request! Please try again later! ");
 			request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 		}
 	}
@@ -108,6 +116,7 @@ public class EditTicket extends HttpServlet {
 		} else {
 			Connection c = null;
 			PreparedStatement pstmt = null;
+			PreparedStatement pstmt2 = null;
 			try {
 				if(Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString()))
 				{
@@ -132,16 +141,55 @@ public class EditTicket extends HttpServlet {
 				pstmt.setInt(8, id);
 				pstmt.executeUpdate();
 				pstmt.close();
-				c.close();
+
 
 				request.getSession().setAttribute("tickets",
 						rd.getUserTicket(request.getSession().getAttribute("user").toString(),
 								Integer.parseInt(request.getSession().getAttribute("position").toString()),
 								Integer.parseInt(request.getSession().getAttribute("unit_id").toString())));
+				
+				java.util.Date dt = new java.util.Date();
+				java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String currentTime = sdf.format(dt);
+				
+				String insertUpdate = "insert into updates (ticketId, modifier, updateDetails, modifiedDate) values (?, ?, ?, ?)";
+				pstmt2 = c.prepareStatement(insertUpdate);
+				pstmt2.setInt(1, id);
+				pstmt2.setString(2, request.getSession().getAttribute("user").toString());
+				pstmt2.setString(3, "User has edited the ticket's details.");
+				pstmt2.setString(4, currentTime);
+				pstmt2.executeUpdate();
 
+				pstmt2.close();
+				c.close();
+				
+				//Sending emails
+				
+				Ticket ticket = rd.getTicket(id);
+				String domain = request.getServletContext().getAttribute("domain").toString();
+				
+				List<String> emails = rd.getSupervisorEmails(ticket.getUnitId());
+				final List<String> allEmails = emails;
+				final String emailSubject = "Ticket #" + id + " has been edited.";
+				final String emailDetails = "The following ticket has been edited by the requestor: " + "\n" + ticket.toString() 
+				+ "\n" + domain + "Details?id=" + id;
+				
+				new Thread(new Runnable(){
+					public void sendEmail(){
+					SendEmail se = new SendEmail();
+					se.sendMultipleEmail( (Session) getServletContext().getAttribute("session"),
+							getServletContext().getAttribute("email").toString(),
+							allEmails, emailSubject, emailDetails);
+					}
+					public void run(){
+						this.sendEmail();
+					}
+				}).start();
+				
 			} catch (SQLException e) {
 				e.printStackTrace();
 			} finally {
+				DbUtils.closeQuietly(pstmt2);
 				DbUtils.closeQuietly(pstmt);
 				DbUtils.closeQuietly(c);
 			}

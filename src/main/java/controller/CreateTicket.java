@@ -124,12 +124,14 @@ public class CreateTicket extends HttpServlet {
 				request.removeAttribute("errorMessage");
 			}
 			
+			String domain = request.getServletContext().getAttribute("domain").toString();
 
 			final String emailDetails = "Ticket Creator: " + firstName + " " + lastName + "\n "
 					+ "Phone number: " + phoneNumber + "\n"
 					+ "Email: " + email + "\n"
-					+ "Location: " + location + "\n"
-					+ "Details: " + details;
+					+ "Location of Problem: " + location + "\n"
+					+ "Details: " + details + "\n"
+					+ domain + "Home";
 			
 			final List<String> emails = rd.getSupervisorEmails(units);
 			

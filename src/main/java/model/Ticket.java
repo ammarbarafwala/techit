@@ -317,5 +317,13 @@ public class Ticket {
 				+ "Details: " + this.details;
 	}
 	
+	public boolean isTechnician(String username){
+		for(int i = 0; i < this.technicians.size(); i ++){
+			if(this.technicians.get(i).getUsername().equals(username)){
+				return true;
+			}
+		}
+		return false;
+	}
 	
 }

@@ -55,8 +55,8 @@
 			<b>Requester:</b> ${ticket.user }	<br>
 			<b>Phone:</b> ${ticket.phone }<br>
 			<b>Email:</b> ${ticket.email }<br>
-			<b>Date Commissioned:</b> ${ticket.startDate }<br>
-			<b>Location:</b> ${ticket.ticketLocation }<br>
+			<b>Date Submitted:</b> ${ticket.startDate }<br>
+			<b>Location of Problem:</b> ${ticket.ticketLocation }<br>
 			<b>Details:</b> ${ticket.details }	 <br><br>
 		</div>
 		<div id="updates" class="col-md-5 text-center pull-right">

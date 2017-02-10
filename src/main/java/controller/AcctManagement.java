@@ -48,7 +48,7 @@ public class AcctManagement extends HttpServlet {
 			String password = request.getParameter("password").replace(" ", ""); 
 			String email = request.getParameter("email").replace(" ", "");
 			String phoneNumber = request.getParameter("phoneNumber");
-			String Position = request.getParameter("Position").replace(" ", ""); 
+			String Position = request.getParameter("Position"); 
 			int UnitId = Integer.parseInt(request.getParameter("units").toString());
 
 			if(firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phoneNumber.isEmpty() || Position.isEmpty() || username.isEmpty())

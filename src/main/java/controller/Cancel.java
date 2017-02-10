@@ -77,6 +77,9 @@ public class Cancel extends HttpServlet {
         	Ticket ticket = rd.getTicket(id);
         	System.out.println(ticket==null);
         	System.out.println(rejected);
+        	
+        	String domain = request.getServletContext().getAttribute("domain").toString();
+        	
             if(rejected.isEmpty()){
             	// This means that the user canceled the ticket
             	insertUpdate = c.prepareStatement(insertQuery);
@@ -86,8 +89,11 @@ public class Cancel extends HttpServlet {
             	insertUpdate.setString(4, currentTime);
             	insertUpdate.executeUpdate();
             	
+            	
+            	
             	final String subjectDetails = "Ticket #" + id + " was canceled by the requestor.";
-            	final String emailDetails = "The following ticket was canceled by the requestor. \n" + ticket.toString() + "\n";
+            	final String emailDetails = "The following ticket was canceled by the requestor. \n" + ticket.toString() + "\n" 
+            			+ "\n" + domain + "Details?id=" + id;
             	final List<String> requestorEmail = rd.getSupervisorEmails(ticket.getUnitId());
             	if(requestorEmail.size() > 0){
 	            	new Thread(new Runnable(){
@@ -115,7 +121,7 @@ public class Cancel extends HttpServlet {
             	
             	final String subjectDetails = "Your ticket #" + id + " was declined by a supervisor.";
             	final String emailDetails = "Your following ticket was declined by a supervisor. \n" + ticket.toString() + "\n"
-            			+"Reason: " + rejected;
+            			+"Reason: " + rejected + "\n" + domain + "Details?id=" + id;
             	final String requestorEmail = sf.filterNull(rd.getRequestorEmailFromTicket(id));
             	if(!requestorEmail.isEmpty()){
 	            	new Thread(new Runnable(){
