@@ -107,6 +107,9 @@ public class Login extends AppCompatActivity {
             output.setText("There was a problem connecting to the Sever");
         }
         else{
+            progressDialog.setIndeterminate(false);
+            progressDialog.hide();
+
             try{
                 String result = convertStreamToString(in);
                 responseData = new JSONObject(result);
@@ -146,7 +149,7 @@ public class Login extends AppCompatActivity {
                 }
 
                 finish();
-                System.out.println("Username is..." + responseData.get("user"));
+                //System.out.println("Username is..." + responseData.get("user"));
 
             }catch(Exception e){
                 output.setText("There was a problem connecting to the Sever");
