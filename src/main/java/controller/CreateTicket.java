@@ -44,7 +44,7 @@ public class CreateTicket extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
+		int id = 0;
 		RetrieveData rd = null;
 		if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
 			rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
@@ -152,7 +152,13 @@ public class CreateTicket extends HttpServlet {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			response.sendRedirect("Home");
+			id = rd.getID(user,details,location);
+			if(id > 0)
+			{
+			
+			response.sendRedirect("Details?id=" + id);
+			}
+			else response.sendRedirect("Home");
 		}
 	}
 }

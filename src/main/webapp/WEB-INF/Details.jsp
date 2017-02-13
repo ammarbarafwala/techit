@@ -197,6 +197,47 @@ ul.tab li a:focus, .active {
 		</div>
 	</div>
 
+	<!-- Email Modal Pop up -->
+	<c:if test="${Emailmodal}">
+	<div class="modal fade" id="myModalEmail" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal header -->
+
+				<div class="modal-header" id="EmailModalHeader">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">Email Confirmation</h4>
+				</div>
+
+
+				<form class="Email" name="EmailForm" onsubmit="validateForm();"
+					action="Details" method="post">
+					<!-- Modal Body Content -->
+					<div class="modal-body" id="EmailModalBody">
+						<p>You should receive an Email shortly</p>
+						
+					</div>
+
+					<!-- Modal Footer & Button options -->
+
+					<div class="modal-footer" id="rejectModalFooter">
+						<button type="button" class="btn btn-danger" data-dismiss="modal">
+							No</button>
+						<button type="submit" class="btn btn-success" name="EmailBt"
+							id="EmailBt" value="true">ok</button>
+
+
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	</c:if>
+
+
+
 	<!-- ALERT MESSAGES SECTION -->
 	<c:if test="${!empty fn:trim(errorMessage)}">
 		<div class="alert alert-danger" role="alert">
@@ -218,13 +259,34 @@ ul.tab li a:focus, .active {
 	</c:if>
 
 	<div class="container">
+		<table class="table table-bordered">
 
 
-		<b>Requester:</b> ${ticket.user } <br> <b>Phone:</b>
-		${ticket.phone }<br> <b>Email:</b> ${ticket.email }<br> <b>Date
-			Commissioned:</b> ${ticket.startDate }<br> <b>Location:</b>
-		${ticket.ticketLocation }<br> <b>Details:</b> ${ticket.details }
-		<br> <br>
+			<tr>
+				<td><b>Requester:</b></td>
+				<td>${ticket.user }</td>
+			</tr>
+			<tr>
+				<td><b>Phone:</b></td>
+				<td>${ticket.phone }</td>
+			</tr>
+			<tr>
+				<td><b>Email:</b></td>
+				<td>${ticket.email }</td>
+			</tr>
+			<tr>
+				<td><b>Date Commissioned:</b></td>
+				<td>${ticket.startDate }</td>
+			</tr>
+			<tr>
+				<td><b>Location:</b></td>
+				<td>${ticket.ticketLocation }</td>
+			</tr>
+			<tr>
+				<td><b>Details:</b></td>
+				<td>${ticket.details }</td>
+			</tr>
+		</table>
 
 
 		<c:choose>
@@ -296,7 +358,8 @@ ul.tab li a:focus, .active {
 					class="navbar-btn btn btn-default">Edit</a>
 			</c:when>
 
-			<c:when test="${ sessionScope.position == 1 and ticket.progress eq 'OPEN'  and sessionScope.user ne ticket.user}">
+			<c:when
+				test="${ sessionScope.position == 1 and ticket.progress eq 'OPEN'  and sessionScope.user ne ticket.user}">
 				<button type="button" class="btn btn-default"
 					onClick="cleanInput('reject', ${ticket.id})" data-toggle="modal"
 					data-target="#myModalReject">Reject</button>

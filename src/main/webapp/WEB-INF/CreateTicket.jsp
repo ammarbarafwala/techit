@@ -86,7 +86,7 @@
 
 
 				<div class="form-group col-xs-5 col-md-5">
-					<label for="location">Location: <font color="red">*</font></label>
+					<label for="location">Location of problem <font color="red">*</font></label>
 					<input type="text" class="form-control" id="location"
 						name="location" value="${location}">
 				</div>

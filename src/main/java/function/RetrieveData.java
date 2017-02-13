@@ -75,6 +75,46 @@ public class RetrieveData {
 		return ticket;
 	}
 	
+	public int getID(String username, String details, String location){
+		int id = 0;
+		Connection c = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		try {
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
+			
+			String search_user = "select id from tickets where username = ? and details = ? and ticketLocation = ?";
+			pstmt = c.prepareStatement(search_user);
+			pstmt.setString(1, username);
+			pstmt.setString(2, details);
+			pstmt.setString(3, location);
+			rs = pstmt.executeQuery();
+			if (rs.next()) {
+
+				id = rs.getInt("id");
+				
+			}
+			pstmt.close();
+			rs.close();
+			c.close();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
+		}
+
+		return id;
+	}
+	
 	public List<Ticket> getUserTicket(String username, int position, int unit_id) throws SQLException {
 
 		List<Ticket> tickets = new ArrayList<Ticket>();

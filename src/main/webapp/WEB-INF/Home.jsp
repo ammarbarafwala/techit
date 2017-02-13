@@ -30,21 +30,17 @@
 	src="<c:url value='/resources/scripts/jquery-ui.js' />"></script>
 <script
 	src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.12/js/dataTables.bootstrap.min.js"></script>
 <script type="text/javascript">
-	$(function() {
-
-		$("#accordion").accordion({
-			collapsible : true,
-			heightStyle : "content"
-		});
-		$("#accordion_2").accordion({
-			collapsible : true,
-			heightStyle : "content"
-		});
-		$("#accordion_3").accordion({
-			collapsible : true,
-			heightStyle : "content"
-		});
+	$(document).ready(function() {
+		$('#recent1').dataTable();
+	});
+	$(document).ready(function() {
+		$('#active1').dataTable();
+	});
+	$(document).ready(function() {
+		$('#completed1').dataTable();
 	});
 
 	function onLoadUp() {
@@ -110,9 +106,8 @@
 	}
 </script>
 <style>
-.table th {
-   text-align: center;   
-}
+
+
 form {
 	display: inline;
 }
@@ -147,7 +142,7 @@ form {
 		<!-- Contains the Create Ticket button, and search capabilities -->
 		<div class="container-fluid">
 			<span class="pull-left"> <a href="CreateTicket"
-				class="btn btn-default">Compose</a>
+				class="btn btn-default">Create Ticket</a>
 			</span>
 
 			<form action="Search" method="post">
@@ -174,10 +169,10 @@ form {
 
 		<!-- ------------------------------------------------ RECENT TICKETS SECTION ----------------------------------------------- -->
 
-
+<br>
 		<div id="rv">
-			<table class="table table-bordered">
-				<thead>
+			<table class="table table-striped table-bordered table-hover" id="recent1">
+				<thead class="thead-inverse">
 					<tr>
 						<th>Ticket Number</th>
 						<th>Requester Name</th>
@@ -207,8 +202,8 @@ form {
 
 		<!-- ------------------------------------------------- ACTIVE TICKETS SECTION ----------------------------------------------- -->
 		<div id="av">
-			<table class="table table-bordered">
-				<thead>
+			<table class="table table-striped table-bordered table-hover" id="active1">
+				<thead class="thead-inverse">
 					<tr>
 						<th>Ticket Number</th>
 						<th>Requester Name</th>
@@ -248,8 +243,8 @@ form {
 
 
 		<div id="cv">
-			<table class="table table-bordered">
-				<thead >
+			<table class="table table-striped table-bordered table-hover" id="completed1">
+				<thead class="thead-inverse">
 					<tr>
 						<th>Ticket Number</th>
 						<th>Requester Name</th>
