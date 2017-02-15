@@ -29,6 +29,9 @@ public class FirstLoginUpdate extends HttpServlet {
 		if (request.getSession().getAttribute("user") == null) {
 			request.getRequestDispatcher("/Login").forward(request, response);
 		} else {
+			if(request.getAttribute("referred") != null){
+				request.setAttribute("referred", request.getAttribute("referred").toString());
+			}
 			request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
 		}
 		//request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
@@ -42,6 +45,10 @@ public class FirstLoginUpdate extends HttpServlet {
 		String lastName = request.getParameter("lastName").replace(" ", "");
 		String email = request.getParameter("email").replace(" ", "");
 		String phoneNumber = request.getParameter("phoneNumber");
+		String department = "";
+		if(!request.getParameter("department").isEmpty()){
+			department = request.getParameter("department");
+		}
 		
 		if(firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || phoneNumber.isEmpty())
 		{
@@ -50,6 +57,7 @@ public class FirstLoginUpdate extends HttpServlet {
 			request.getSession().setAttribute("email", email);
 			request.getSession().setAttribute("phoneNumber", phoneNumber);
 			request.getSession().setAttribute("errorMessage", "Some fields are missing!");
+			request.getSession().setAttribute("department", department);
 			request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
 		}
 		else if( phoneNumber.length() < 14){
@@ -57,7 +65,9 @@ public class FirstLoginUpdate extends HttpServlet {
 			request.getSession().setAttribute("firstName", firstName);
 			request.getSession().setAttribute("email", email);
 			request.getSession().setAttribute("phoneNumber", phoneNumber);
+			request.getSession().setAttribute("department", department);
 			request.getSession().setAttribute("errorMessage", "Incorrect phone number format!");
+
 			request.getRequestDispatcher("/WEB-INF/FirstLoginUpdate.jsp").forward(request, response);
 			
 		}
@@ -72,11 +82,11 @@ public class FirstLoginUpdate extends HttpServlet {
 					c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
 				}
 				else{
-					String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-					String db_user = "cs4961stu01";
-					String db_pass = ".XCGG1Bc";
+					String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+					String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+					String dbPass = request.getServletContext().getAttribute("dbPass").toString();
 
-					c = DriverManager.getConnection(url, db_user, db_pass);
+					c = DriverManager.getConnection(dbURL, dbUser, dbPass);
 				}
 				String search_user = "select * from users where username = ?";
 	            pstmt = c.prepareStatement( search_user );
@@ -130,7 +140,17 @@ public class FirstLoginUpdate extends HttpServlet {
 			request.getSession().setAttribute("firstname", firstName);
 			request.getSession().setAttribute("email", email);
 			request.getSession().setAttribute("phoneNumber", phoneNumber);
-			response.sendRedirect("Home");
+			request.getSession().setAttribute("department", department);
+			
+			
+			if(request.getSession().getAttribute("dReferred") != null){
+				int id = Integer.parseInt(request.getSession().getAttribute("dReferred").toString());
+				request.getSession().removeAttribute("dReferred");
+				response.sendRedirect("Details?id="+id);
+			}
+			else{
+				response.sendRedirect("Home");
+			}
 		}
 	}
 

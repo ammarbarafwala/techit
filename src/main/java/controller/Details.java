@@ -26,12 +26,16 @@ public class Details extends HttpServlet {
 				rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
 			}
 			else{
-				rd = new RetrieveData();
+				String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+				String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+				String dbPass = request.getServletContext().getAttribute("dbPass").toString();
+				rd = new RetrieveData(dbURL, dbUser, dbPass);
 			}
 			Ticket ticket = null;
 			
 			ticket = rd.getTicket(id);
 			if (request.getSession().getAttribute("user") == null ) {
+				request.getSession().setAttribute("dReferred", id);
 				response.sendRedirect("Login");
 			}
 			else if(!ticket.getUser().equals(request.getSession().getAttribute("user").toString()) 
@@ -44,6 +48,10 @@ public class Details extends HttpServlet {
 				System.out.println(ticket.getEmail());
 				request.setAttribute("unitList", rd.getAllUnits());
 				request.setAttribute("ticket", ticket);
+				if(request.getSession().getAttribute("pSuccessMessage") != null){
+					request.setAttribute("successMessage", request.getSession().getAttribute("pSuccessMessage").toString());
+					request.getSession().removeAttribute("pSuccessMessage");
+				}
 				request.getRequestDispatcher("/WEB-INF/Details.jsp").forward(request, response);
 			}
 			

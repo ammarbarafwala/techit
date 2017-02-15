@@ -39,7 +39,10 @@ public class AssignTechnician extends HttpServlet {
 				rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
 			}
 			else{
-				rd = new RetrieveData();
+				String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+				String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+				String dbPass = request.getServletContext().getAttribute("dbPass").toString();
+				rd = new RetrieveData(dbURL, dbUser, dbPass);
 			}
 			
 			int unitId = Integer.parseInt(request.getSession().getAttribute("unit_id").toString());
@@ -64,7 +67,16 @@ public class AssignTechnician extends HttpServlet {
 		
 		String ticketProgress = request.getParameter("ticket_progress");
 		int ticketId = Integer.parseInt(request.getParameter("ticket_id")); 
-		RetrieveData rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
+		RetrieveData rd = null;
+		if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
+			rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
+		}
+		else{
+			String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+			String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+			String dbPass = request.getServletContext().getAttribute("dbPass").toString();
+			rd = new RetrieveData(dbURL, dbUser, dbPass);
+		}
 		Map<String, Boolean> techVerify = rd.getTechId(ticketId);
 		
 		Connection c = null;
@@ -77,11 +89,11 @@ public class AssignTechnician extends HttpServlet {
 				c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
 			}
 			else{
-				String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-				String db_user = "cs4961stu01";
-				String db_pass = ".XCGG1Bc";
+				String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+				String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+				String dbPass = request.getServletContext().getAttribute("dbPass").toString();
 
-				c = DriverManager.getConnection(url, db_user, db_pass);
+				c = DriverManager.getConnection(dbURL, dbUser, dbPass);
 			}
 			String insert_tech = "insert into assignments (ticketId, technicianUser) values (?, ?)";
 			boolean insert = false;
@@ -142,10 +154,19 @@ public class AssignTechnician extends HttpServlet {
 				//Email the technicians
 				if(techs.size() > 0) {
 					final List<String> allEmails = techs;
-					final String emailSubject = "You have been assigned to ticket #" + ticketId;
-					final String emailDetails = "You have been assigned to ticket #" + ticketId +
-							"\n" + rd.getTicket(ticketId).toString()
+					final String requestorEmail = rd.getRequestorEmailFromTicket(ticketId);
+					final String emailSubject = "TECHIT - You have been assigned to ticket #" + ticketId;
+					final String emailDetails = "You have been assigned to ticket #" + ticketId 
+							+ "\n" + rd.getTicket(ticketId).toString()
+							+ "\n=================================================\n"
 							+ "\n" + domain + "Details?id=" + ticketId;
+					
+					final String requestorEmailSubject = "TECHIT - Technician has been assigned to your ticket #" + ticketId;
+					final String requestorEmailDetails = "Technician has been assigned to the following ticket: "
+							+ "\n" + rd.getTicket(ticketId).toString()
+							+ "\n=================================================\n"
+							+ "\n" + domain + "Details?id=" + ticketId;
+					final String emailFrom = request.getServletContext().getAttribute("email").toString();
 					
 					new Thread(new Runnable(){
 						public void sendEmail(){
@@ -154,6 +175,8 @@ public class AssignTechnician extends HttpServlet {
 								(Properties) getServletContext().getAttribute("properties"),
 								getServletContext().getAttribute("email").toString(),
 								allEmails, emailSubject, emailDetails);
+						
+						se.sendEmail((Session) getServletContext().getAttribute("session"), emailFrom, requestorEmail, requestorEmailSubject, requestorEmailDetails);
 						}
 						public void run(){
 							this.sendEmail();
@@ -164,8 +187,8 @@ public class AssignTechnician extends HttpServlet {
 				request.getSession().setAttribute("tickets", rd.getUserTicket(request.getSession().getAttribute("user").toString(), 
 						Integer.parseInt(request.getSession().getAttribute("position").toString()), 
 						Integer.parseInt(request.getSession().getAttribute("unit_id").toString())));
-				request.setAttribute("successMessage", "Technicians have been successfully assigned to the ticket!");
-				request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
+				request.getSession().setAttribute("pSuccessMessage", "Technicians have been successfully assigned to the ticket!");
+				response.sendRedirect("Details?id="+ticketId);
 			}
 		}catch(Exception e){
 			request.setAttribute("errorMessage", "Something went wrong when getting the technicians, please try again later.");

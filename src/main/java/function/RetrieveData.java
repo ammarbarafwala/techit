@@ -23,12 +23,16 @@ import model.User;
 public class RetrieveData {
 	
 	private DataSource datasource;
-	private final String dbUrl = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-	private final String dbUser = "cs4961stu01";
-	private final String dbPass = ".XCGG1Bc"; 
+	private String dbUrl = "";
+	private String dbUser = "";
+	private String dbPass = ""; 
 	
-	public RetrieveData(){ // Constructor meant for localhosts
+	public RetrieveData(String dbURL, String dbUser, String dbPass){ // Constructor meant for localhosts
 		this.datasource = null;
+		this.dbUrl= dbURL;
+		this.dbUser = dbUser;
+		this.dbPass = dbPass;
+		
 	}
 	public RetrieveData(DataSource datasource){
 		this.datasource = datasource;
@@ -54,10 +58,10 @@ public class RetrieveData {
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
 
-				ticket = new Ticket(rs.getInt("id"), rs.getString("username"), rs.getString("userFirstName"),
-						rs.getString("userLastName"), getTechnicians(id) ,rs.getString("phone"), rs.getString("email"),rs.getInt("Progress"),
-						rs.getInt("unitId"), rs.getString("details"), rs.getDate("startDate"), rs.getDate("endDate"),rs.getDate("lastUpdated"), 
-						rs.getTime("lastUpdated").toString(), rs.getString("ticketLocation"), getTicketUpdates(id), "");
+				ticket = new Ticket(rs.getInt("id"), rs.getString("username"), rs.getString("userFirstName"), rs.getString("userLastName"), getTechnicians(id) 
+						,rs.getString("phone"), rs.getString("email"), rs.getString("department"),rs.getInt("Progress"), rs.getInt("priority"), rs.getInt("unitId"), rs.getString("details"), 
+						rs.getDate("startDate"), rs.getDate("endDate"),rs.getDate("lastUpdated"), rs.getTime("lastUpdated").toString(), rs.getString("ticketLocation"), 
+						getTicketUpdates(id), "");
 				
 			}
 			pstmt.close();
@@ -103,8 +107,8 @@ public class RetrieveData {
 				pstmt.setInt(1, unit_id);
 			} 
 			else if (position == 2) { // Technician
-				search_user = "select t.id, t.username, t.userFirstName, t.userLastname, t.phone, t.email, t.Progress, t.unitId, t.details, t.startDate, t.endDate,"
-						+ " t.lastUpdated, t.ticketLocation from tickets t left join assignments u on t.id = u.ticketId"
+				search_user = "select t.id, t.username, t.userFirstName, t.userLastname, t.phone, t.email, t.department, t.Progress, t.priority,"
+						+ " t.unitId, t.details, t.startDate, t.endDate, t.lastUpdated, t.ticketLocation from tickets t left join assignments u on t.id = u.ticketId"
 						+ " where t.username = ? or u.technicianUser = ? order by t.lastUpdated desc";
 
 				pstmt = c.prepareStatement(search_user);
@@ -128,7 +132,10 @@ public class RetrieveData {
 				String userLastName = rs.getString("userLastName");
 				String phone = rs.getString("phone");
 				String email = rs.getString("email");
+				//String department = rs.getString("department");
+				String department = "";
 				int currentProgress = rs.getInt("Progress");
+				int priority = rs.getInt("priority");
 				int unitId = rs.getInt("unitId");
 				String details = rs.getString("details");
 				Date startDate = rs.getDate("startDate");
@@ -138,8 +145,8 @@ public class RetrieveData {
 				String ticketLocation = rs.getString("ticketLocation");
 				String completionDetails = "";
 
-				Ticket newTicket = new Ticket(id, usernameRequestor, userFirstName, userLastName, getTechnicians(id), phone, email,
-						currentProgress, unitId, details, startDate, endDate, lastUpdated, lastUpdatedTime,
+				Ticket newTicket = new Ticket(id, usernameRequestor, userFirstName, userLastName, getTechnicians(id), phone, email, department,
+						currentProgress, priority, unitId, details, startDate, endDate, lastUpdated, lastUpdatedTime,
 						ticketLocation, getTicketUpdates(id), completionDetails);
 
 				tickets.add(newTicket);
@@ -217,7 +224,9 @@ public class RetrieveData {
 				String userLastName = rs.getString("userLastName");
 				String phone = rs.getString("phone");
 				String email = rs.getString("email");
+				String department = rs.getString("department");
 				int currentProgress = rs.getInt("Progress");
+				int priority = rs.getInt("priority");
 				int unitId = rs.getInt("unitId");
 				String details = rs.getString("details");
 				Date startDate = rs.getDate("startDate");
@@ -227,8 +236,8 @@ public class RetrieveData {
 				String ticketLocation = rs.getString("ticketLocation");
 				String completionDetails = "";
 
-				Ticket newTicket = new Ticket(id, usernameRequestor, userFirstName, userLastName, getTechnicians(id), phone, email,
-						currentProgress, unitId, details, startDate, endDate, lastUpdated, lastUpdatedTime,
+				Ticket newTicket = new Ticket(id, usernameRequestor, userFirstName, userLastName, getTechnicians(id), phone, email, department,
+						currentProgress, priority, unitId, details, startDate, endDate, lastUpdated, lastUpdatedTime,
 						ticketLocation, getTicketUpdates(id), completionDetails);
 
 				tickets.add(newTicket);
@@ -269,7 +278,7 @@ public class RetrieveData {
 			if(rs.next()){
 				user = new User(rs.getInt("id"), rs.getString("firstname"), rs.getString("lastname"),
 						rs.getString("username"), rs.getString("phone"), rs.getString("email"),
-						rs.getInt("position"), rs.getInt("unit_id"));
+						rs.getString("department"),rs.getInt("position"), rs.getInt("unit_id"));
 			}
 			
 			pstmt.close();
@@ -345,7 +354,7 @@ public class RetrieveData {
 			while(rs.next()){
 				users.add(new User(rs.getInt("id"), rs.getString("firstname"), rs.getString("lastname"),
 						rs.getString("username"), rs.getString("phone"), rs.getString("email"),
-						rs.getInt("position"), rs.getInt("unit_id")));
+						rs.getString("department"),rs.getInt("position"), rs.getInt("unit_id")));
 			}
 			
 			pstmt.close();
@@ -507,8 +516,10 @@ public class RetrieveData {
 				if (rs2.next()) {
 					userList.add(new User(rs2.getInt("id"), rs2.getString("firstname"), rs2.getString("lastname"),
 							rs2.getString("username"), rs2.getString("phone"), rs2.getString("email"),
-							rs2.getInt("position"), rs2.getInt("unit_id")));
+							rs2.getString("department"),rs2.getInt("position"), rs2.getInt("unit_id")));
 				}
+				rs2.close();
+				pstmt2.close();
 
 			}
 			pstmt.close();
@@ -595,7 +606,9 @@ public class RetrieveData {
 				String userLastName = rs.getString("userLastName");
 				String phone = rs.getString("phone");
 				String email = rs.getString("email");
+				String department = rs.getString("department");
 				int currentProgress = rs.getInt("Progress");
+				int priority = rs.getInt("priority");
 				int unitId = rs.getInt("unitId");
 				String details = rs.getString("details");
 				Date startDate = rs.getDate("startDate");
@@ -605,8 +618,8 @@ public class RetrieveData {
 				String ticketLocation = rs.getString("ticketLocation");
 				String completionDetails = "";
 
-				tk = new Ticket(id, usernameRequestor, userFirstName, userLastName, getTechnicians(id), phone, email,
-						currentProgress, unitId, details, startDate, endDate, lastUpdated, lastUpdatedTime,
+				tk = new Ticket(id, usernameRequestor, userFirstName, userLastName, getTechnicians(id), phone, email, department,
+						currentProgress, priority, unitId, details, startDate, endDate, lastUpdated, lastUpdatedTime,
 						ticketLocation, getTicketUpdates(id), completionDetails);
 			}
 			pstmt.close();
@@ -650,7 +663,7 @@ public class RetrieveData {
 			while(rs.next()){
 				tchl.add(new User(rs.getInt("id"), rs.getString("firstname"), rs.getString("lastname"),
 						rs.getString("username"), rs.getString("phone"), rs.getString("email"),
-						rs.getInt("position"), rs.getInt("unit_id")));
+						rs.getString("department"),rs.getInt("position"), rs.getInt("unit_id")));
 				
 			}
 			pstmt.close();
@@ -826,6 +839,43 @@ public class RetrieveData {
 		}
 		
 		return email;
+	}
+	
+	public int getTicketIdFromUsernameUsingTime(String username){
+		int id = 0;
+		Connection c = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		
+		String query = "select id from tickets where username = ? and Progress = 0 order by lastUpdated desc";
+		
+		try{
+			if(this.datasource == null){
+				c = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPass);
+			}
+			else{
+				c = this.datasource.getConnection();
+			}
+			
+			pstmt = c.prepareStatement(query);
+			pstmt.setString(1, username);
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()){
+				id = rs.getInt("id");
+			}
+			
+			rs.close();
+			pstmt.close();
+			c.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}finally{
+			DbUtils.closeQuietly(pstmt);
+			DbUtils.closeQuietly(rs);
+			DbUtils.closeQuietly(c);
+		}
+		return id;
 	}
 
 }

@@ -17,7 +17,7 @@ public class Initialization implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent sce){
 		// ------------- Email SMTP Setup -------------------
 		final String user = "techit.csula@gmail.com";
-		final String pass = ".Im0nx.W";
+		final String pass = ".XCGG1Bc";
 		
 		Properties props = new Properties();
 		props.put("mail.smtp.auth", "true");
@@ -42,6 +42,7 @@ public class Initialization implements ServletContextListener {
 		// ------------- DataSource setup -------------------
 		
 		Boolean onServer = Boolean.valueOf(sce.getServletContext().getInitParameter("onServer"));
+		System.out.println(onServer);
 		if(onServer){
 			try{
 				InitialContext enc = new InitialContext();
@@ -58,7 +59,11 @@ public class Initialization implements ServletContextListener {
 			}
 			log.debug("Initialization succeeded.");
 		}
-		
+		else{
+			sce.getServletContext().setAttribute("dbURL", String.valueOf(sce.getServletContext().getInitParameter("dbURL")));
+			sce.getServletContext().setAttribute("dbUser", String.valueOf(sce.getServletContext().getInitParameter("dbUser")));
+			sce.getServletContext().setAttribute("dbPass", String.valueOf(sce.getServletContext().getInitParameter("dbPass")));
+		}
 		sce.getServletContext().setAttribute("onServer", onServer);
 		System.out.println("System Initialized!");
 	}

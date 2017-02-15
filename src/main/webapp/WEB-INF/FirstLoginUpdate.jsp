@@ -59,6 +59,11 @@
 					 </div>
 					 
 					 <div class="form-group col-xs-10 col-md-10">
+					 	<label for="department">Department (Optional) </label>
+					    <input type="text" class="form-control" name="department" value="${department}">
+					 </div>
+					 
+					 <div class="form-group col-xs-10 col-md-10">
 				 		<b>NOTE: <font color="red">*</font> means that the field is required.</b>
 				 	</div>
 				 	

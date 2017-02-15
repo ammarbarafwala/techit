@@ -52,11 +52,11 @@ public class CreateUnit extends HttpServlet {
 				c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
 			}
 			else{
-				String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-				String db_user = "cs4961stu01";
-				String db_pass = ".XCGG1Bc";
+				String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+				String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+				String dbPass = request.getServletContext().getAttribute("dbPass").toString();
 
-				c = DriverManager.getConnection(url, db_user, db_pass);
+				c = DriverManager.getConnection(dbURL, dbUser, dbPass);
 			}
 			
 			String createTicket = "insert into units (unitName,phone,location,email, description) values (?,?,?,?,?)";

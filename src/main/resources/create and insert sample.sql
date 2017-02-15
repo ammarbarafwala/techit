@@ -1,4 +1,3 @@
-use cs4961stu01;
 drop table if exists users;
 drop table if exists updates;
 drop table if exists tickets;
@@ -12,6 +11,7 @@ lastname varchar(20) not null,
 username varchar(20) unique not null,
 pass varchar(255) default "",
 phone varchar(15) default "",
+department varchar(255) default "",
 email varchar(255) default "",
 position int default 2,
 unit_id int default 0
@@ -37,7 +37,9 @@ userFirstName varchar(20) not null,
 userLastName varchar(20) not null,
 phone varchar(15) not null,
 email varchar(50) not null,
+department varchar(255) default "",
 Progress int default 0,
+priority int default 0,
 unitId int not null,
 details TEXT not null,
 startDate DATETIME,
@@ -72,4 +74,6 @@ values (1, "bung@calstatela.edu", "Brandon", "Ung", "(626) 202-6423", "bung@cals
 insert into tickets (username, userFirstName, userLastName, phone, email, Progress, unitId, details, startDate, lastUpdated, ticketLocation) 
 values ("bung@calstatela.edu", "Brandon", "Ung", "(626) 202-6423", "bung@calstatela.edu", 0, 2, "A computer broke and will not turn on.", "2016-10-13 03:14:07", "2016-10-13 00:00:01", "Engineering and Technology: B9");
 
-insert into units (id, unitName, phone, location, email, description) values (1, "TechOps Test", "(555) 555-5555", "Hydrogen Station", "techops@test.com","Technical Operations Unit");
+insert into units (id, unitName, phone, location, email, description) values (1, "TechOPs", "(555) 555-5555", "Hydrogen Station", "techops@test.com","TechOP, or Technical Operations, is a unit that belongs to ECST. The unit's 
+jurisdiction falls under the area of the Engineering department and are responsible for assisting them. Some example of their services are replacing/creating parts for ECST's senior design
+project for students, running the hydrogen station, and technological related issues within ECST.");

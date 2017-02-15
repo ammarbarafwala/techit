@@ -1,4 +1,4 @@
-package model;
+ package model;
 
 public class User {
 
@@ -24,6 +24,8 @@ public class User {
 
 	private String phoneNumber;
 	
+	private String department;
+	
 	private String email;
 	
 	private Position status;
@@ -37,12 +39,12 @@ public class User {
 		this.lastName = lastname;
 		this.userName = username;
 		this.status = Position.USER;
-		this.unitId= 0; 				// User does not belongs to any unit\
+		this.unitId = 0; 				// User does not belongs to any unit\
 	}
 
 	// Full user paramenter constructor
-	public User(int id, String firstname, String lastname, String username, String phone, String email, int position, 
-			int unit_id)
+	public User(int id, String firstname, String lastname, String username, String phone, String email,
+			String department,int position, int unit_id)
 	{
 		this.id = id;
 		this.firstName = firstname;
@@ -111,6 +113,15 @@ public class User {
 		this.phoneNumber = phoneNumber;
 	}
 
+	public String getDepartment() {
+		return this.department;
+	}
+
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+
+	
 	public String getEmailFromUsername() {
 		return userName + "@calstatela.edu"; // Since username has the same
 												// header as email with the

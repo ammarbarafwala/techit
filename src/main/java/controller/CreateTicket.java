@@ -35,7 +35,10 @@ public class CreateTicket extends HttpServlet {
 				rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
 			}
 			else{
-				rd = new RetrieveData();
+				String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+				String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+				String dbPass = request.getServletContext().getAttribute("dbPass").toString();
+				rd = new RetrieveData(dbURL, dbUser, dbPass);
 			}
 			request.setAttribute("unitList", rd.getAllUnits());
 			request.getRequestDispatcher("/WEB-INF/CreateTicket.jsp").forward(request, response);
@@ -50,7 +53,10 @@ public class CreateTicket extends HttpServlet {
 			rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
 		}
 		else{
-			rd = new RetrieveData();
+			String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+			String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+			String dbPass = request.getServletContext().getAttribute("dbPass").toString();
+			rd = new RetrieveData(dbURL, dbUser, dbPass);
 		}
 		
 		String user = request.getSession().getAttribute("user").toString();
@@ -63,6 +69,11 @@ public class CreateTicket extends HttpServlet {
 		String phoneNumber = request.getParameter("phoneNumber");
 		String details = request.getParameter("details");
 		String location = request.getParameter("location");
+		String department = "";
+		if(!request.getParameter("department").isEmpty())
+		{
+			department = request.getParameter("department").toString();
+		}
 		
 		int units = Integer.parseInt(request.getParameter("units"));
 		// java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
@@ -93,22 +104,33 @@ public class CreateTicket extends HttpServlet {
 					c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
 				}
 				else{
-					String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-					String db_user = "cs4961stu01";
-					String db_pass = ".XCGG1Bc";
+					String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+					String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+					String dbPass = request.getServletContext().getAttribute("dbPass").toString();
 
-					c = DriverManager.getConnection(url, db_user, db_pass);
+					c = DriverManager.getConnection(dbURL, dbUser, dbPass);
 				}
-				String createTicket = "insert into tickets (username,userFirstName,userLastName,phone, email,unitId, details,startDate,lastUpdated, ticketLocation) values (?,?,?,?,?,?,?,NOW(),NOW(),?)";
+				
+
+				// Get current time
+				java.util.Date dt = new java.util.Date();
+				java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				String currentTime = sdf.format(dt);
+				// Query
+				String createTicket = "insert into tickets (username,userFirstName,userLastName, phone, email, department, unitId, details,"
+						+ "startDate,lastUpdated, ticketLocation) values (?,?,?,?,?,?,?,?,?,?,?)";
 				pstmt = c.prepareStatement(createTicket);
 				pstmt.setString(1, request.getSession().getAttribute("user").toString());
 				pstmt.setString(2, firstName);
 				pstmt.setString(3, lastName);
 				pstmt.setString(4, phoneNumber);
 				pstmt.setString(5, email);
-				pstmt.setInt(6, units);
-				pstmt.setString(7, details);
-				pstmt.setString(8, location);
+				pstmt.setString(6, department);
+				pstmt.setInt(7, units);
+				pstmt.setString(8, details);
+				pstmt.setString(9, currentTime);
+				pstmt.setString(10, currentTime);
+				pstmt.setString(11, location);
 				pstmt.executeUpdate();
 				
 				pstmt.close();
@@ -126,14 +148,26 @@ public class CreateTicket extends HttpServlet {
 			
 			String domain = request.getServletContext().getAttribute("domain").toString();
 
+			String link = "";
+			
+			int id = rd.getTicketIdFromUsernameUsingTime(request.getSession().getAttribute("user").toString());
+			if(id != 0){
+				link = domain + "Details?id=" + id;
+			}
+			else{
+				link = domain + "Home";
+			}
+			
+			
 			final String emailDetails = "Ticket Creator: " + firstName + " " + lastName + "\n "
 					+ "Phone number: " + phoneNumber + "\n"
 					+ "Email: " + email + "\n"
 					+ "Location of Problem: " + location + "\n"
 					+ "Details: " + details + "\n"
-					+ domain + "Home";
+					+ link;
 			
 			final List<String> emails = rd.getSupervisorEmails(units);
+			final String emailSubject = "TECHIT - Ticket #" + id + " has been created.";
 			
 			if(emails.size() > 0){
 				new Thread(new Runnable(){
@@ -141,7 +175,7 @@ public class CreateTicket extends HttpServlet {
 					SendEmail se = new SendEmail();
 					se.sendMultipleEmail( (Session) getServletContext().getAttribute("session"),
 							getServletContext().getAttribute("email").toString(),
-							emails, "A new ticket has been created.", emailDetails);
+							emails, emailSubject, emailDetails);
 					}
 					public void run(){
 						this.sendEmail();
@@ -154,7 +188,13 @@ public class CreateTicket extends HttpServlet {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			response.sendRedirect("Home");
+			if(id != 0){
+				request.getSession().setAttribute("pSuccessMessage", "Successfully created a new ticket!");
+				response.sendRedirect("Details?id="+id);
+			}
+			else{
+				response.sendRedirect("Home");
+			}
 		}
 	}
 }

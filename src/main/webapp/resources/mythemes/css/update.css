@@ -34,6 +34,26 @@
 	transition: all .5s;
 }
 
+th{
+	text-align:center;
+}
+
+.main{
+	background: #D3D3D3;
+	border: 1px solid;
+	border-spacing: 5px;
+	border-color: white;
+	border-radius: 20px 0 0 20px;
+	padding: 5px 10px 5px 10px;
+}
+
+.sub{
+	word-wrap: break-word;
+	word-break: break-all;
+	white-space: normal;
+	padding: 5px 10px 5px 10px;
+}
+
 .btn-primary.btn-outline{
 	color: #428bca;
 }

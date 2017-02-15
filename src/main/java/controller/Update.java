@@ -41,7 +41,10 @@ public class Update extends HttpServlet {
 				rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
 			}
 			else{
-				rd = new RetrieveData();
+				String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+				String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+				String dbPass = request.getServletContext().getAttribute("dbPass").toString();
+				rd = new RetrieveData(dbURL, dbUser, dbPass);
 			}
 			request.setAttribute("ticket", rd.getFullTicket(ticketId));
 			request.setAttribute("ticketProg", progName);
@@ -62,7 +65,10 @@ public class Update extends HttpServlet {
 			rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
 		}
 		else{
-			rd = new RetrieveData();
+			String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+			String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+			String dbPass = request.getServletContext().getAttribute("dbPass").toString();
+			rd = new RetrieveData(dbURL, dbUser, dbPass);
 		}
 		
 		if(!updateMessage.isEmpty())
@@ -85,11 +91,11 @@ public class Update extends HttpServlet {
 					c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
 				}
 				else{
-					String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-					String db_user = "cs4961stu01";
-					String db_pass = ".XCGG1Bc";
+					String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+					String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+					String dbPass = request.getServletContext().getAttribute("dbPass").toString();
 
-					c = DriverManager.getConnection(url, db_user, db_pass);
+					c = DriverManager.getConnection(dbURL, dbUser, dbPass);
 				}
 				if(!newProg.equals(oldProg)){
 					int status = 0;
@@ -111,8 +117,6 @@ public class Update extends HttpServlet {
 						status = 4;
 						break;
 					}
-					
-					System.out.println("After switch: " + status);
 					
 					String update_ticket = "update tickets set Progress = ?, lastUpdated = ? where id = ?";
 					ptsmt = c.prepareStatement(update_ticket);
@@ -152,8 +156,10 @@ public class Update extends HttpServlet {
 					emails.add(requestorEmail);
 					
 					final List<String> allEmails = emails;
-					final String emailSubject = "Ticket #" + ticketId + " has been completed.";
-					final String emailDetails = "The following ticket has been completed: " + "\n" + ticket.toString() + "\n" + domain + "Details?id=" + ticketId;
+					final String emailSubject = "TECHIT - Ticket #" + ticketId + " has been completed.";
+					final String emailDetails = "The following ticket has been completed: " 
+							+ "\n" + ticket.toString() + "\n" 
+							+ domain + "Details?id=" + ticketId;
 					
 					new Thread(new Runnable(){
 						public void sendEmail(){
@@ -174,9 +180,13 @@ public class Update extends HttpServlet {
 					
 					
 					final List<String> allEmails = emails;
-					final String emailSubject = "Ticket #" + ticketId + " has been closed.";
-					final String emailDetails = "The following ticket has been closed: " + "\n" + ticket.toString()
-					+ "\nUpdate Message: " + updateMessage + "\n" + domain + "Details?id=" + ticketId;
+					final String emailSubject = "TECHIT - Ticket #" + ticketId + " has been closed.";
+					final String emailDetails = "Update Message: " + updateMessage 
+							+ "\n==========================================\n"
+							+ "\nThe following ticket has been closed: " 
+							+ "\n" + ticket.toString()
+							+ "\n==========================================\n"
+							+ "\n" + domain + "Details?id=" + ticketId;
 					
 					new Thread(new Runnable(){
 						public void sendEmail(String emailDetails){
@@ -190,14 +200,35 @@ public class Update extends HttpServlet {
 						}
 					}).start();
 				}
+				else if(!newProg.equals(oldProg)){
+					final String requestorEmail = rd.getRequestorEmailFromTicket(ticketId);
+					final String emailSubject = "TECHIT - Ticket #" + ticketId + " has been updated.";
+					final String emailDetails = "\nUpdate Message: " + updateMessage 
+							+ "\n==========================================\n"
+							+ "\nThe following ticket has been updated: " 
+							+ "\n" + ticket.toString()
+							+ "\n==========================================\n"
+							+ "\n" + domain + "Details?id=" + ticketId;
+					
+					new Thread(new Runnable(){
+						public void sendEmail(String emailDetails){
+						SendEmail se = new SendEmail();
+						se.sendEmail( (Session) getServletContext().getAttribute("session"),
+								getServletContext().getAttribute("email").toString(),
+								requestorEmail, emailSubject, emailDetails);
+						}
+						public void run(){
+							this.sendEmail(emailDetails);
+						}
+					}).start();
+				}
 				
 				request.getSession().setAttribute("tickets", rd.getUserTicket(request.getSession().getAttribute("user").toString(), 
 						Integer.parseInt(request.getSession().getAttribute("position").toString()), 
 						Integer.parseInt(request.getSession().getAttribute("unit_id").toString())));
 				
-				request.setAttribute("successMessage", "Successfully updated!");
-				request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
-				
+				request.getSession().setAttribute("pSuccessMessage", "Successfully updated the ticket!");
+				response.sendRedirect("Details?id="+ticketId);				
 			}catch(Exception e){
 				e.printStackTrace();
 				request.setAttribute("errorMessage", "Something went wrong when updating, please try again later!");

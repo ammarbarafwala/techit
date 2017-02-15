@@ -12,9 +12,10 @@ public class Ticket {
 	private String userLastName;
 	private List<User> technicians;
 	private Progress currentProgress;
+	private Priority currentPriority;
 	private String phone; // Requestor's phone
-	private String email; // Requestor's email. May be different from the User's
-							// login email.
+	private String email; // Requestor's email. May be different from the User's login email.
+	private String department;
 
 	private enum Progress {
 		OPEN(0), INPROGRESS(1), ONHOLD(2), COMPLETED(3), CLOSED(4);
@@ -49,6 +50,38 @@ public class Ticket {
 		}
 
 	};
+	
+	private enum Priority {
+		NA(0), LOW(1), MEDIUM(2), HIGH(3);
+		private int priority;
+		
+		Priority(int priority){
+			this.priority = priority;
+		}
+		
+		public String getPriorityValue(){
+			String priority = "";
+			switch(this.priority){
+			case 0:
+				priority = "NOT ASSIGNED";
+				break;
+			case 1:
+				priority = "LOW";
+				break;
+			case 2:
+				priority = "MEDIUM";
+				break;
+			case 3:
+				priority = "HIGH";
+				break;
+			}
+			return priority;
+		}
+		
+		public int getPriorityNumericValue(){
+			return this.priority;
+		}
+	};
 
 	// Constant values that apply to the status of a project
 	// private Status status; //<-- This was changed into a list of comments
@@ -66,8 +99,9 @@ public class Ticket {
 
 	// Full constructor for every field, probably need when pulling existing
 	// data from database
-	public Ticket(int id, String username, String firstName, String lastName, List<User> technician, String phone, String email, int progress, int unitId, String details,
-			Date startDate, Date endDate, Date lastUpdated, String lastUpdatedTime, String ticketLocation, List<Update> updates, String completionDetails) {
+	public Ticket(int id, String username, String firstName, String lastName, List<User> technician, String phone, String email, String department, int progress, int priority, 
+			int unitId, String details, Date startDate, Date endDate, Date lastUpdated, String lastUpdatedTime, String ticketLocation, List<Update> updates, 
+			String completionDetails) {
 		this.id = id;
 		this.username = username;
 		this.userFirstName = firstName;
@@ -75,6 +109,7 @@ public class Ticket {
 		this.technicians = technician;
 		this.phone = phone;
 		this.email = email;
+		this.department = department;
 
 		switch (progress) {
 		case 0:
@@ -94,6 +129,23 @@ public class Ticket {
 			this.currentProgress = Progress.CLOSED;
 			break;
 		}
+		
+		switch (priority) {
+		case 0:
+		default:
+			this.currentPriority = Priority.NA;
+			break;
+		case 1:
+			this.currentPriority = Priority.LOW;
+			break;
+		case 2:
+			this.currentPriority = Priority.MEDIUM;
+			break;
+		case 3:
+			this.currentPriority = Priority.HIGH;
+			break;
+		}
+		
 		this.unitId = unitId;
 		this.details = details;
 		this.startDate = startDate;
@@ -106,23 +158,41 @@ public class Ticket {
 
 	}
 	// Constructor without updates list and technicians list
-	public Ticket(int id, String username, String userFirstName, String userLastName, String phone, String email, int unitId, String details, Date startDate, Date lastUpdated, String ticketLocation) {
+	public Ticket(int id, String username, String userFirstName, String userLastName, String phone, String email, String department, int priority, int unitId, 
+			String details, Date startDate, Date lastUpdated, String ticketLocation) {
 		this.id = id;
 		this.username = username;
 		this.userFirstName = userFirstName;
 		this.userLastName = userLastName;
 		this.phone = phone;
 		this.email = email;
+		this.department = department;
 		this.unitId = unitId;
 		this.details = details;
 		this.startDate = startDate;
 		this.lastUpdated = lastUpdated;
 		this.ticketLocation = ticketLocation;
+		
+		switch (priority) {
+		case 0:
+		default:
+			this.currentPriority = Priority.NA;
+			break;
+		case 1:
+			this.currentPriority = Priority.LOW;
+			break;
+		case 2:
+			this.currentPriority = Priority.MEDIUM;
+			break;
+		case 3:
+			this.currentPriority = Priority.HIGH;
+			break;
+		}
 	}
 	
 	// Constructor without updates list
-	public Ticket(int id, String username, String userFirstName, String userLastName, String phone, 
-			String email, int unitId, String details, Date startDate, Date lastUpdated, String ticketLocation, List<User> technicianList){
+	public Ticket(int id, String username, String userFirstName, String userLastName, String phone, String email, String department, int priority,
+			int unitId, String details, Date startDate, Date lastUpdated, String ticketLocation, List<User> technicianList){
 		this.id = id;
 		this.username = username;
 		this.userFirstName = userFirstName;
@@ -135,6 +205,23 @@ public class Ticket {
 		this.lastUpdated = lastUpdated;
 		this.ticketLocation = ticketLocation;
 		this.technicians = technicianList;
+		
+		switch (priority) {
+		case 0:
+		default:
+			this.currentPriority = Priority.NA;
+			break;
+		case 1:
+			this.currentPriority = Priority.LOW;
+			break;
+		case 2:
+			this.currentPriority = Priority.MEDIUM;
+			break;
+		case 3:
+			this.currentPriority = Priority.HIGH;
+			break;
+		}
+		this.department = department;
 	}
 	
 	public String getUserFirstName() {
@@ -154,7 +241,7 @@ public class Ticket {
 	}
 	
 	public int getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(int id) {
@@ -206,6 +293,14 @@ public class Ticket {
 	public String getDetails() {
 		return details;
 	}
+	
+	public String getDepartment(){
+		return this.department;
+	}
+	
+	public void setDepartment(String department){
+		this.department = department;
+	}
 
 	public void setDetails(String details) {
 		this.details = details;
@@ -227,12 +322,12 @@ public class Ticket {
 		this.endDate = endDate;
 	}
 	
-	public Date getLastUpdate() {
+	public Date getLastUpdated() {
 		return lastUpdated;
 	}
 
-	public void setLastUpdate(Date lastUpdate) {
-		this.lastUpdated = lastUpdate;
+	public void setLastUpdated(Date lastUpdated) {
+		this.lastUpdated = lastUpdated;
 	}
 
 	public String getLastUpdateTime() {
@@ -268,7 +363,7 @@ public class Ticket {
 	}
 
 	public String getProgress() {
-		return currentProgress.getProgressValue();
+		return this.currentProgress.getProgressValue();
 	}
 
 	public void setProgress(int progress) {
@@ -293,6 +388,33 @@ public class Ticket {
 		}
 	}
 	
+	public String getPriority(){
+		return this.currentPriority.getPriorityValue();
+	}
+	
+	public void setPriority(int priority){
+		switch (priority) {
+		case 0:
+			this.currentPriority = Priority.NA;
+			break;
+		case 1:
+			this.currentPriority = Priority.LOW;
+			break;
+		case 2:
+			this.currentPriority = Priority.MEDIUM;
+			break;
+		case 3:
+			this.currentPriority = Priority.HIGH;
+			break;
+		default: 
+			break;
+		}
+	}
+	
+	public int getPriorityNumeric(){
+		return this.currentPriority.getPriorityNumericValue();
+	}
+	
 	public int getNumOfTechnician(){
 		return this.technicians.size();
 	}
@@ -314,6 +436,7 @@ public class Ticket {
 				+ "Requestor's Name: " + this.userFirstName + " " 
 				+ this.userLastName + "\n" 
 				+ "Location: " + this.ticketLocation +"\n"
+				+ "Department:" + this.department + "\n"
 				+ "Details: " + this.details;
 	}
 	

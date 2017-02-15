@@ -29,6 +29,12 @@ public class Cancel extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// Does nothing, no page
+		if(request.getSession().getAttribute("user")==null){
+			response.sendRedirect("Login");
+		}
+		else{
+			response.sendRedirect("Home");
+		}
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -38,7 +44,10 @@ public class Cancel extends HttpServlet {
 			rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
 		}
 		else{
-			rd = new RetrieveData();
+			String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+			String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+			String dbPass = request.getServletContext().getAttribute("dbPass").toString();
+			rd = new RetrieveData(dbURL, dbUser, dbPass);
 		}
 		StringFilter sf = new StringFilter();
 		String rejected = sf.filterNull(request.getParameter("rejectInput"));
@@ -54,11 +63,11 @@ public class Cancel extends HttpServlet {
 				c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
 			}
 			else{
-				String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-				String db_user = "cs4961stu01";
-				String db_pass = ".XCGG1Bc";
+				String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+				String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+				String dbPass = request.getServletContext().getAttribute("dbPass").toString();
 
-				c = DriverManager.getConnection(url, db_user, db_pass);
+				c = DriverManager.getConnection(dbURL, dbUser, dbPass);
 			}
 			String cancel = "update tickets set Progress = ? where id = ?";
             pstmt = c.prepareStatement( cancel );
@@ -75,8 +84,6 @@ public class Cancel extends HttpServlet {
             // Insert into new update
 
         	Ticket ticket = rd.getTicket(id);
-        	System.out.println(ticket==null);
-        	System.out.println(rejected);
         	
         	String domain = request.getServletContext().getAttribute("domain").toString();
         	
@@ -91,8 +98,9 @@ public class Cancel extends HttpServlet {
             	
             	
             	
-            	final String subjectDetails = "Ticket #" + id + " was canceled by the requestor.";
-            	final String emailDetails = "The following ticket was canceled by the requestor. \n" + ticket.toString() + "\n" 
+            	final String subjectDetails = "TECHIT - Ticket #" + id + " was canceled by the requestor.";
+            	final String emailDetails = "The following ticket was canceled by the requestor. \n" 
+            			+ ticket.toString() + "\n" 
             			+ "\n" + domain + "Details?id=" + id;
             	final List<String> requestorEmail = rd.getSupervisorEmails(ticket.getUnitId());
             	if(requestorEmail.size() > 0){
@@ -119,8 +127,11 @@ public class Cancel extends HttpServlet {
             	insertUpdate.executeUpdate();
             	
             	
-            	final String subjectDetails = "Your ticket #" + id + " was declined by a supervisor.";
-            	final String emailDetails = "Your following ticket was declined by a supervisor. \n" + ticket.toString() + "\n"
+            	final String subjectDetails = "TECHIT - Your ticket #" + id + " was declined by a supervisor.";
+            	final String emailDetails = "Your following ticket was declined by a supervisor. \n" 
+            			+ "========================================\n"
+            			+ ticket.toString() + "\n"
+            			+ "========================================\n"
             			+"Reason: " + rejected + "\n" + domain + "Details?id=" + id;
             	final String requestorEmail = sf.filterNull(rd.getRequestorEmailFromTicket(id));
             	if(!requestorEmail.isEmpty()){
@@ -144,16 +155,19 @@ public class Cancel extends HttpServlet {
 			request.getSession().setAttribute("tickets", rd.getUserTicket(request.getSession().getAttribute("user").toString(), 
 					Integer.parseInt(request.getSession().getAttribute("position").toString()), 
 					Integer.parseInt(request.getSession().getAttribute("unit_id").toString())));
+			
+			request.getSession().setAttribute("pSuccessMessage", "Ticket has closed successfully!");
+			response.sendRedirect("Details?id="+id);
 		}
 		catch(SQLException e){
 			request.setAttribute("errorMessage", "Something went wrong during cancelation, please try again later!");
+			request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 			e.printStackTrace();
 		}finally{
 				DbUtils.closeQuietly(pstmt);
 				DbUtils.closeQuietly(insertUpdate);
 				DbUtils.closeQuietly(c);
 		}
-		request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 	}
 
 }

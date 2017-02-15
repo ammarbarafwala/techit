@@ -39,8 +39,12 @@ public class Login extends HttpServlet {
 				check = lf.checkSystemAccountDBSource(ds, user, password);
 			}
 			else{
-				rd = new RetrieveData();
-				check = lf.checkSystemAccount(user, password);
+				String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+				String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+				String dbPass = request.getServletContext().getAttribute("dbPass").toString();
+				rd = new RetrieveData(dbURL, dbUser, dbPass);
+				
+				check = lf.checkSystemAccount(dbURL, dbUser, dbPass, user, password);
 				System.out.println("Login location");
 			}
     	} catch (SQLException sqle) {
@@ -74,10 +78,20 @@ public class Login extends HttpServlet {
 			
 			if( lf.getSystemAccount().getLastName().isEmpty() || lf.getSystemAccount().getPhoneNumber().isEmpty() || 
 					lf.getSystemAccount().getEmail().isEmpty() ){
-				response.sendRedirect("FirstLoginUpdate");
+				
+					response.sendRedirect("FirstLoginUpdate");
+				
 			}
 			else{
-				response.sendRedirect("Home");
+				if(request.getSession().getAttribute("dReferred") != null){
+						int id = Integer.parseInt(request.getSession().getAttribute("dReferred").toString());
+						request.getSession().removeAttribute("dReferred");
+						response.sendRedirect("Details?id="+id);
+				}
+				else{
+					response.sendRedirect("Home");
+				}
+			
 			}
     	}
     	else{
@@ -129,6 +143,7 @@ public class Login extends HttpServlet {
 	        			request.getSession().setAttribute("email", lf.getSystemAccount().getEmail());
 	        			request.getSession().setAttribute("unit_id", lf.getSystemAccount().getUnitId());
 	        			request.getSession().setAttribute("position", lf.getSystemAccount().getStatus());
+	        			request.getSession().setAttribute("department", lf.getSystemAccount().getDepartment());
 	        			
 	        			result.close();
 		            	activeDirectory.closeLdapConnection();
@@ -141,10 +156,19 @@ public class Login extends HttpServlet {
 	        			
 	        			if( lf.getSystemAccount().getLastName().isEmpty() || lf.getSystemAccount().getPhoneNumber().isEmpty() || 
 	        					lf.getSystemAccount().getEmail().isEmpty() ){
-	        				response.sendRedirect("FirstLoginUpdate");
+
+	        					response.sendRedirect("FirstLoginUpdate");
+	        				
 	        			}
 	        			else{
-	        				response.sendRedirect("Home");
+	        				if(request.getSession().getAttribute("dReferred") != null){
+	    						int id = Integer.parseInt(request.getSession().getAttribute("dReferred").toString());
+	    						request.getSession().removeAttribute("dReferred");
+	    						response.sendRedirect("Details?id="+id);
+		    				}
+		    				else{
+		    					response.sendRedirect("Home");
+		    				}
 	        			}
 	            	}
 	            	}else{

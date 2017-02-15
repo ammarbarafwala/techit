@@ -27,7 +27,7 @@ public class LoginFunction {
 		this.user = null;
 	}
 	
-	public int checkSystemAccount(String user, String password) throws SQLException 
+	public int checkSystemAccount(String dbURL, String dbUser, String dbPass, String user, String password) throws SQLException 
 	{
 		StringFilter sf = new StringFilter();
 		/* This method checks the input information with the one in the database.
@@ -50,13 +50,8 @@ public class LoginFunction {
 		Connection c = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
-		try
-		{
-			String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-			String db_user = "cs4961stu01";
-			String db_pass = ".XCGG1Bc";
-			
-			c = DriverManager.getConnection(url, db_user, db_pass);
+		try{
+			c = DriverManager.getConnection(dbURL, dbUser, dbPass);
 			
 			String search_user = "select * from users where username = ?";
             pstmt = c.prepareStatement( search_user );
@@ -71,6 +66,7 @@ public class LoginFunction {
             		String lastName = sf.filterNull(rs.getString("lastname"));
             		String phoneNumber = sf.filterNull(rs.getString("phone"));
             		String email = sf.filterNull(rs.getString("email"));
+            		String department = sf.filterNull(rs.getString("department"));
             		int position = rs.getInt("position");
             		int unitId = rs.getInt("unit_id");
             		
@@ -81,6 +77,7 @@ public class LoginFunction {
             				user,
             				phoneNumber,
             				email,
+            				department,
             				position,
             				unitId);
             		
@@ -94,8 +91,10 @@ public class LoginFunction {
 	            		String lastName = sf.filterNull(rs.getString("lastname"));
 	            		String phoneNumber = sf.filterNull(rs.getString("phone"));
 	            		String email = sf.filterNull(rs.getString("email"));
+	            		String department = sf.filterNull(rs.getString("department"));
 	            		int position = rs.getInt("position");
 	            		int unitId = rs.getInt("unit_id");
+	            		
 	            		
 	            		this.user = new User(id,
 	            				firstName,
@@ -103,6 +102,7 @@ public class LoginFunction {
 	            				user,
 	            				phoneNumber,
 	            				email,
+	            				department,
 	            				position,
 	            				unitId);
 	            		
@@ -165,6 +165,7 @@ public class LoginFunction {
             		String lastName = sf.filterNull(rs.getString("lastname"));
             		String phoneNumber = sf.filterNull(rs.getString("phone"));
             		String email = sf.filterNull(rs.getString("email"));
+            		String department = sf.filterNull(rs.getString("department"));
             		int position = rs.getInt("position");
             		int unitId = rs.getInt("unit_id");
             		
@@ -175,6 +176,7 @@ public class LoginFunction {
             				user,
             				phoneNumber,
             				email,
+            				department,
             				position,
             				unitId);
             		
@@ -188,8 +190,10 @@ public class LoginFunction {
 	            		String lastName = sf.filterNull(rs.getString("lastname"));
 	            		String phoneNumber = sf.filterNull(rs.getString("phone"));
 	            		String email = sf.filterNull(rs.getString("email"));
+	            		String department = sf.filterNull(rs.getString("department"));
 	            		int position = rs.getInt("position");
 	            		int unitId = rs.getInt("unit_id");
+	            		
 	            		
 	            		this.user = new User(id,
 	            				firstName,
@@ -197,6 +201,7 @@ public class LoginFunction {
 	            				user,
 	            				phoneNumber,
 	            				email,
+	            				department,
 	            				position,
 	            				unitId);
 	            		

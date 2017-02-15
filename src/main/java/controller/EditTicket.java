@@ -35,7 +35,10 @@ public class EditTicket extends HttpServlet {
 				rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
 			}
 			else{
-				rd = new RetrieveData();
+				String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+				String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+				String dbPass = request.getServletContext().getAttribute("dbPass").toString();
+				rd = new RetrieveData(dbURL, dbUser, dbPass);
 			}
 			Ticket ticket = null;
 			
@@ -79,13 +82,20 @@ public class EditTicket extends HttpServlet {
 		String location = request.getParameter("location");
 		int units = Integer.parseInt(request.getParameter("units"));
 		int id = Integer.parseInt(request.getParameter("id"));
+		String department = "";
+		if(!request.getParameter("department").isEmpty()){
+			department = request.getParameter("department");
+		}
 		
 		RetrieveData rd = null;
 		if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
 			rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
 		}
 		else{
-			rd = new RetrieveData();
+			String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+			String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+			String dbPass = request.getServletContext().getAttribute("dbPass").toString();
+			rd = new RetrieveData(dbURL, dbUser, dbPass);
 		}
 		
 		// java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
@@ -123,13 +133,14 @@ public class EditTicket extends HttpServlet {
 					c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
 				}
 				else{
-					String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-					String db_user = "cs4961stu01";
-					String db_pass = ".XCGG1Bc";
+					String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+					String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+					String dbPass = request.getServletContext().getAttribute("dbPass").toString();
 
-					c = DriverManager.getConnection(url, db_user, db_pass);
+					c = DriverManager.getConnection(dbURL, dbUser, dbPass);
 				}
-				String createTicket = "update tickets set userFirstName = ? , userLastName =? , phone =? , email = ?, details = ?, lastUpdated = NOW() ,ticketLocation = ?, unitId =? where id =?";
+				String createTicket = "update tickets set userFirstName = ? , userLastName =? , phone =? , email = ?, details = ?, lastUpdated = NOW() ,"
+						+ "ticketLocation = ?, unitId =?, department = ? where id =?";
 				pstmt = c.prepareStatement(createTicket);
 				pstmt.setString(1, firstName);
 				pstmt.setString(2, lastName);
@@ -138,6 +149,7 @@ public class EditTicket extends HttpServlet {
 				pstmt.setString(5, details);
 				pstmt.setString(6, location);
 				pstmt.setInt(7, units);
+				pstmt.setString(8, department);
 				pstmt.setInt(8, id);
 				pstmt.executeUpdate();
 				pstmt.close();
@@ -170,7 +182,7 @@ public class EditTicket extends HttpServlet {
 				
 				List<String> emails = rd.getSupervisorEmails(ticket.getUnitId());
 				final List<String> allEmails = emails;
-				final String emailSubject = "Ticket #" + id + " has been edited.";
+				final String emailSubject = "TECHIT - Ticket #" + id + " has been edited by the requestor.";
 				final String emailDetails = "The following ticket has been edited by the requestor: " + "\n" + ticket.toString() 
 				+ "\n" + domain + "Details?id=" + id;
 				
@@ -201,7 +213,8 @@ public class EditTicket extends HttpServlet {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			response.sendRedirect("Home");
+			request.getSession().setAttribute("pSuccessMessage", "Ticket has been successfully edited!");
+			response.sendRedirect("Details?id="+id);
 		}
 	}
 

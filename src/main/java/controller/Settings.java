@@ -45,7 +45,10 @@ public class Settings extends HttpServlet {
 						rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
 					}
 					else{
-						rd = new RetrieveData();
+						String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+						String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+						String dbPass = request.getServletContext().getAttribute("dbPass").toString();
+						rd = new RetrieveData(dbURL, dbUser, dbPass);
 					}
 					request.setAttribute("adminModify", true);
 					request.setAttribute("editUser", rd.getUser(Integer.parseInt(request.getParameter("id"))));
@@ -70,7 +73,10 @@ public class Settings extends HttpServlet {
 			rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
 		}
 		else{
-			rd = new RetrieveData();
+			String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+			String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+			String dbPass = request.getServletContext().getAttribute("dbPass").toString();
+			rd = new RetrieveData(dbURL, dbUser, dbPass);
 		}
 		
 		if( email.isEmpty() || pnumber.isEmpty() || ( pnumber.length() < 14 ) )
@@ -135,11 +141,11 @@ public class Settings extends HttpServlet {
 							c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
 						}
 						else{
-							String url = "jdbc:mysql://cs3.calstatela.edu/cs4961stu01";
-							String db_user = "cs4961stu01";
-							String db_pass = ".XCGG1Bc";
+							String dbURL = request.getServletContext().getAttribute("dbURL").toString();
+							String dbUser = request.getServletContext().getAttribute("dbUser").toString();
+							String dbPass = request.getServletContext().getAttribute("dbPass").toString();
 
-							c = DriverManager.getConnection(url, db_user, db_pass);
+							c = DriverManager.getConnection(dbURL, dbUser, dbPass);
 						}
 						String updateQuery = "update users set email = ?, phone = ?, position = ? where username = ?";
 						pstmt = c.prepareStatement( updateQuery );
