@@ -26,6 +26,7 @@ public class FirstLogin extends AppCompatActivity {
     EditText lastName;
     EditText email;
     EditText phoneNumber;
+    EditText department;
     TextView error;
 
     public static final String MyPREFERENCES = "MyPrefs" ;
@@ -46,6 +47,7 @@ public class FirstLogin extends AppCompatActivity {
         lastName = (EditText) findViewById(R.id.LastNameInput);
         email = (EditText) findViewById(R.id.emailInput);
         phoneNumber = (EditText) findViewById(R.id.PhoneNumberInput);
+        department = (EditText) findViewById(R.id.departmentInput);
         error = (TextView) findViewById(R.id.ErrorView);
 
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
@@ -57,8 +59,6 @@ public class FirstLogin extends AppCompatActivity {
         butn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkCredentials();
-
                 verifyValue();
             }
         });
@@ -85,6 +85,9 @@ public class FirstLogin extends AppCompatActivity {
     }
 
     protected void verifyValue(){
+        InputStream ins = null;
+        ins = checkCredentials();
+
         if(inStr == null){
             error.setText("There was a problem connecting! Try again!");
         }
@@ -95,6 +98,13 @@ public class FirstLogin extends AppCompatActivity {
 
                 if(responseData.getBoolean("Valid")){
                     Intent intent = new Intent(this, HomePage.class);
+                    intent.putExtra("firstname", responseData.getString("firstname"));
+                    intent.putExtra("lastname", responseData.getString("lastname"));
+                    intent.putExtra("phoneNumber", responseData.getString("phoneNumber"));
+                    intent.putExtra("email", responseData.getString("email"));
+                    if(!responseData.getString("department").isEmpty()){
+                        intent.putExtra("department", responseData.getString("department"));
+                    }
                     startActivity(intent);
                     finish();
                 }
@@ -113,13 +123,15 @@ public class FirstLogin extends AppCompatActivity {
         }
     }
 
-    protected void checkCredentials(){
-        String fn = firstName.getText().toString();
-        String ln = lastName.getText().toString();
-        String em = email.getText().toString();
-        String pn = phoneNumber.getText().toString();
+    protected InputStream checkCredentials(){
+        String fn = firstName.getText().toString().trim();
+        String ln = lastName.getText().toString().trim();
+        String em = email.getText().toString().trim();
+        String pn = phoneNumber.getText().toString().trim();
+        String dp = department.getText().toString().replace(" ", "");
 
-        final String URL = "http://cs3.calstatela.edu:4046/techit/AndroidLogin?firstName="+fn+"&lastName="+ln+"&email="+em+"&phoneNumber="+pn;
+        final String URL = "http://cs3.calstatela.edu:4046/techit/FirstAndroidLoginUpdate?username="+getIntent().getStringExtra("user")
+                +"&firstName="+fn+"&lastName="+ln+"&email="+em+"&phoneNumber="+pn+"&department="+dp;
         System.out.println("Accessing... " + URL);
 
         Thread log = new Thread(new Runnable() {
@@ -143,15 +155,30 @@ public class FirstLogin extends AppCompatActivity {
                     dataStream.close();
 
                     int responseCode = httpConn.getResponseCode();
+                    responseText = "Response code is..." + responseCode + "; OK Code is..." + HttpURLConnection.HTTP_OK;
                     if (responseCode == HttpURLConnection.HTTP_OK) {
                         System.out.println("RESPONSE CODE: OK");
                         inStr = httpConn.getInputStream();
                     }
+
+                    httpConn.disconnect();
                 }catch(Exception e){
                     e.printStackTrace();
                     System.out.println("Connection Failed!");
                 }
             }
         });
+
+        try{
+            log.start();
+            log.join();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        System.out.println("Connection to " + URL + " closing.");
+
+        System.out.println(responseText);
+        return inStr;
     }
 }

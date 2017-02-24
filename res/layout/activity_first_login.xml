@@ -72,7 +72,8 @@
                 android:background="@android:color/holo_orange_light"
                 android:textSize="18sp"
                 android:layout_marginRight="@android:dimen/app_icon_size"
-                android:layout_weight="0.13" />
+                android:layout_weight="0.13"
+                android:textColor="@android:color/background_dark" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -97,7 +98,8 @@
                 android:id="@+id/LastNameInput"
                 android:background="@android:color/holo_orange_light"
                 android:layout_marginRight="@android:dimen/app_icon_size"
-                android:layout_weight="0.26" />
+                android:layout_weight="0.26"
+                android:textColor="@android:color/background_dark" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -122,7 +124,8 @@
                 android:ems="10"
                 android:id="@+id/emailInput"
                 android:background="@android:color/holo_orange_light"
-                android:layout_marginRight="@android:dimen/app_icon_size" />
+                android:layout_marginRight="@android:dimen/app_icon_size"
+                android:textColor="@android:color/background_dark" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -146,13 +149,38 @@
                 android:ems="10"
                 android:id="@+id/PhoneNumberInput"
                 android:background="@android:color/holo_orange_light"
-                android:layout_marginRight="@android:dimen/app_icon_size" />
+                android:layout_marginRight="@android:dimen/app_icon_size"
+                android:textColor="@android:color/background_dark" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/EmptySpace4"
                 android:textSize="18sp" />
+
+            <TextView
+                android:text="Department (Optional)"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/DepartmentMsg"
+                android:textSize="18sp"
+                android:background="@android:color/background_light"
+                android:textColor="@android:color/background_dark"/>
+
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/department_array"
+                android:id="@+id/department"
+                android:textColor="@android:color/background_dark"
+                android:background="@android:color/holo_orange_light"
+                android:layout_marginRight="@android:dimen/app_icon_size" />
+
+            <TextView
+                android:text="TextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView2" />
 
             <Button
                 android:text="Submit"

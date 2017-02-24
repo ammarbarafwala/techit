@@ -3,4 +3,9 @@
     <string name="app_name">TECHIT</string>
     <string name="launcher_name">@string/app_name</string>
     <string name="activity_name">@string/launcher_name</string>
+
+    <string-array name="department_array">
+        <item>Department of Engineering</item>
+        <item>Department of Computer Science</item>
+    </string-array>
 </resources>

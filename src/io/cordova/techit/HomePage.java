@@ -1,5 +1,6 @@
 package io.cordova.techit;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -20,6 +21,27 @@ import org.json.JSONObject;
 public class HomePage extends AppCompatActivity {
 
     LinearLayout layout;
+    private boolean isTouched = false;
+    private boolean afterTouched = false;
+
+    int id;
+    String technicians;
+    String username;
+    String userFirstName;
+    String userLastName;
+    String phone;
+    String email;
+    String currentProgress;
+    String priority;
+    int unitId;
+    String details;
+    Date startDate;
+    Date endDate;
+    Date lastUpdated;
+    String lastUpdatedTime;
+    String ticketLocation;
+    String completionDetails;
+    String updates;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +56,9 @@ public class HomePage extends AppCompatActivity {
 
         JSONArray ticketJson = new JSONArray();
         try{
-            ticketJson = new JSONArray(ticket);
+            if(ticket != null ){
+                ticketJson = new JSONArray(ticket);
+            }
 
             for(int i = 0; i < ticketJson.length(); i++){
                 JSONObject obj = (JSONObject) ticketJson.get(i);
@@ -45,29 +69,42 @@ public class HomePage extends AppCompatActivity {
                     System.out.println("item: " + key);
                 }*/
 
-                int id = obj.getInt("id");
-                String username = obj.getString("username");
-                String userFirstName = obj.getString("userFirstName");
-                String userLastName = obj.getString("userLastName");
-                String phone = obj.getString("phone");
-                String email = obj.getString("email");
-                String currentProgress = obj.getString("currentProgress");
-                int unitId = obj.getInt("unitId");
-                String details = obj.getString("details");
+                id = obj.getInt("id");
+                JSONArray techList = new JSONArray(obj.getString("technicians"));
+                try{
+                    for(int j = 0; j < techList.length(); j++){
+                        JSONObject techies = (JSONObject) techList.get(i);
+
+                        //System.out.println(techies.toString());
+                    }
+                }catch(Exception e2){
+
+                }
+
+                username = obj.getString("username");
+                userFirstName = obj.getString("userFirstName");
+                userLastName = obj.getString("userLastName");
+                phone = obj.getString("phone");
+                email = obj.getString("email");
+                currentProgress = obj.getString("currentProgress");
+                priority = obj.getString("currentPriority");
+                unitId = obj.getInt("unitId");
+                details = obj.getString("details");
 
                 String string = obj.getString("startDate");
-                DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
-                Date startDate = format.parse(string);
+                DateFormat format = new SimpleDateFormat("MMMM d, yyyy");
+                startDate = format.parse(string);
 
                 string = obj.getString("startDate");
-                Date endDate = format.parse(string);
+                endDate = format.parse(string);
 
                 string = obj.getString("startDate");
-                Date lastUpdated = format.parse(string);
+                lastUpdated = format.parse(string);
 
-                String lastUpdatedTime = obj.getString("lastUpdated");
-                String ticketLocation = obj.getString("ticketLocation");
-                String completionDetails;
+                lastUpdatedTime = obj.getString("lastUpdated");
+                ticketLocation = obj.getString("ticketLocation");
+                completionDetails = obj.getString("completionDetails");
+                updates = obj.getString("updates");
 
                 TextView nBut = new TextView(this);
                 nBut.setText("Ticket ID: " + id + "\n" + details);
@@ -76,11 +113,62 @@ public class HomePage extends AppCompatActivity {
                 nBut.setTextColor(0xff000000);
                 nBut.setPadding(30, 20, 30, 80);
 
-                nBut.setOnTouchListener(new View.OnTouchListener(){
-                    @Override
-                    public boolean onTouch(View arg0, MotionEvent arg1){
+                nBut.setOnClickListener(new View.OnClickListener(){
+                    private int idInner = id;
+                    private String techInner = technicians;
+                    private String usernameInner = username;
+                    private String userFirstNameInner = userFirstName;
+                    private String userLastNameInner = userLastName;
+                    private String phoneNumber = phone;
+                    private String emailInner = email;
+                    private String currentProgessInner = currentProgress;
+                    private String priorityInner = priority;
+                    private int unitIdInner = unitId;
+                    private String detailsInner = details;
+                    private Date sdInner = startDate;
+                    private Date edInner = endDate;
+                    private Date ldInner = lastUpdated;
+                    private String ludInner = lastUpdatedTime;
+                    private String ticketLocationInner = ticketLocation;
+                    private String comDetails = completionDetails;
+                    private String upd = updates;
 
-                        return false;
+                    @Override
+                    public void onClick(View v){
+                        //System.out.println(userFirstName + " " + userLastName + " \nDate:" + startDate + " " + lastUpdatedTime + " \n" + "Prority: " + priority);
+                        Intent intent = new Intent(HomePage.this, DisplayTicket.class);
+
+                        intent.putExtra("id", idInner);
+                        if(!technicians.isEmpty()){
+                            intent.putExtra("technicians", technicians);
+                        }
+                        intent.putExtra("username", usernameInner);
+                        intent.putExtra("userFirstName", userFirstNameInner);
+                        intent.putExtra("userLastName", userLastNameInner);
+                        intent.putExtra("phoneNumber", phoneNumber);
+                        intent.putExtra("email", emailInner);
+                        intent.putExtra("currentProgress", currentProgessInner);
+                        intent.putExtra("priorty", priorityInner);
+                        intent.putExtra("unit_id", unitIdInner);
+                        intent.putExtra("details", detailsInner);
+                        intent.putExtra("startDate", sdInner.toString());
+                        if(getIntent().hasExtra("department")) {
+                            intent.putExtra("department", getIntent().getStringExtra("department"));
+                        }
+                        else{
+                            intent.putExtra("department", "");
+                        }
+                        intent.putExtra("endDate", edInner.toString());
+                        intent.putExtra("lastUpdated", ldInner.toString());
+                        intent.putExtra("lastUpdatedTime", ludInner.toString());
+                        intent.putExtra("ticketLocation", ticketLocationInner);
+                        intent.putExtra("completionDetails", comDetails);
+                        intent.putExtra("updates", upd);
+
+                        //Used to determine what the user can do in the next page.
+                        intent.putExtra("position", getIntent().getStringExtra("position"));
+
+                        startActivity(intent);
                     }
                 });
 
