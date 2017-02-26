@@ -1,0 +1,40 @@
+@CHARSET "UTF-8";
+
+table{
+	table-layout:fixed;
+}
+
+#ticketInfo{
+	padding: 20px 0 20px 20px;
+	box-shadow: -5px 5px 30px 0 #F0F0F0;
+    border-radius: 10px;
+}
+
+#ticketUpdates{
+	padding: 20px 20px 20px 20px;
+	box-shadow: -5px 5px 30px 0 #F0F0F0;
+    border-radius: 10px;
+}
+
+th{
+	text-align: center;
+}
+
+td{
+	max-width: 10%;
+	padding: 5px 10px 5px 10px;
+}
+
+.main{
+	background: #D3D3D3;
+	border: 1px solid;
+	border-spacing: 5px;
+	border-color: white;
+	border-radius: 20px 0 0 20px;
+}
+
+.sub{
+	word-wrap: break-word;
+	word-break: break-all;
+	white-space: normal;
+}
