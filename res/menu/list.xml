@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:title="Sort"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/sortRecent"
+                android:title="Sort by recent" />
+            <item
+                android:id="@+id/sortActive"
+                android:title="Sort by active" />
+
+            <item
+                android:id="@+id/sortCompleted"
+                android:title="Sort by completed" />
+        </menu>
+    </item>
+
+</menu>

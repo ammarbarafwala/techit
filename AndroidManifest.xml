@@ -48,16 +48,25 @@
         </activity>
         <activity
             android:name=".FirstLogin"
-            android:theme="@style/Theme.AppCompat"
-            android:windowSoftInputMode="adjustPan"/>
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".HomePage"
+            android:label="Welcome to TechIT!"
             android:theme="@style/Theme.AppCompat"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".DisplayTicket"
-            android:theme="@style/Theme.AppCompat"
-            android:windowSoftInputMode="adjustPan"/>
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".CreateTicket"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".UpdateTicket"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
     </application>
 
 </manifest>

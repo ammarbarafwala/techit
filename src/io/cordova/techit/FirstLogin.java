@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Spinner;
 
 import org.json.JSONObject;
 
@@ -20,13 +21,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 
 public class FirstLogin extends AppCompatActivity {
     EditText firstName;
     EditText lastName;
     EditText email;
     EditText phoneNumber;
-    EditText department;
+    Spinner department;
     TextView error;
 
     public static final String MyPREFERENCES = "MyPrefs" ;
@@ -47,7 +49,7 @@ public class FirstLogin extends AppCompatActivity {
         lastName = (EditText) findViewById(R.id.LastNameInput);
         email = (EditText) findViewById(R.id.emailInput);
         phoneNumber = (EditText) findViewById(R.id.PhoneNumberInput);
-        department = (EditText) findViewById(R.id.departmentInput);
+        department = (Spinner) findViewById(R.id.department);
         error = (TextView) findViewById(R.id.ErrorView);
 
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
@@ -128,10 +130,16 @@ public class FirstLogin extends AppCompatActivity {
         String ln = lastName.getText().toString().trim();
         String em = email.getText().toString().trim();
         String pn = phoneNumber.getText().toString().trim();
-        String dp = department.getText().toString().replace(" ", "");
+        String dp = department.getSelectedItem().toString();
+        String encodedDP = "";
+        try{
+            encodedDP = URLEncoder.encode(dp, "UTF-8").trim();
+        }catch(Exception e){
+            System.out.println("Could not encode the department!");
+        }
 
         final String URL = "http://cs3.calstatela.edu:4046/techit/FirstAndroidLoginUpdate?username="+getIntent().getStringExtra("user")
-                +"&firstName="+fn+"&lastName="+ln+"&email="+em+"&phoneNumber="+pn+"&department="+dp;
+                +"&firstName="+fn+"&lastName="+ln+"&email="+em+"&phoneNumber="+pn+"&department="+ encodedDP;
         System.out.println("Accessing... " + URL);
 
         Thread log = new Thread(new Runnable() {

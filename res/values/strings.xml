@@ -8,4 +8,11 @@
         <item>Department of Engineering</item>
         <item>Department of Computer Science</item>
     </string-array>
+
+    <string-array name="progress_array">
+        <item>IN PROGRESS</item>
+        <item>ON HOLD</item>
+        <item>COMPLETED</item>
+        <item>CLOSED</item>
+    </string-array>
 </resources>
