@@ -81,19 +81,23 @@
 					<input type="text" class="form-control" id="phoneNumber"
 						name="phoneNumber" value="${phoneNumber}">
 				</div>
-
-
-				 <div class="form-group col-xs-5 col-md-5">
-				 	<label for="department">Department (Optional) </label>
-				    <input type="text" class="form-control" name="department" value="${department}">
-				 </div>
-
-
+				
 				<div class="form-group col-xs-5 col-md-5">
-					<label for="location">Location of Problem: <font color="red">*</font></label>
-					<input type="text" class="form-control" id="location"
-						name="location" value="${location}">
+				 	<label for="department">Department   </label> <br>
+					<select id="department" name ="department">
+					 	<c:forEach items="${departmentList}" var="dVar">
+					 		<c:choose>
+						 	  	<c:when test="${dVar ne sessionScope.department }">
+						 	  		 <option value="${dVar}">${dVar}</option>
+						 	  	</c:when>
+						 	  	<c:otherwise>
+						 	  		<option value="${dVar}" selected>${dVar}</option>
+						 	  	</c:otherwise>
+					 	  	</c:choose>
+						</c:forEach>
+					</select> 
 				</div>
+				
 				<div class="form-group col-xs-5 col-md-5">
 					<label for="units">Units: <font color="red">*</font></label><br>
 					<select class="selectpicker" id="units" name="units">
@@ -124,7 +128,20 @@
 
 						</div>
 					</div>
+				</div>	
+								
+				<div class="form-group col-xs-10 col-md-10">
+					<label for="location">Location of Problem: <font color="red">*</font></label>
+					<input type="text" class="form-control" id="location"
+						name="location" value="${location}">
 				</div>
+				
+				<div class="form-group col-xs-10 col-md-10">
+					<label for="subject">Subject: <font color="red">*</font></label>
+					<input type="text" class="form-control" id="subject"
+						name="subject" value="${subject}">
+				</div>
+				
 				<div class="form-group col-xs-10 col-md-10">
 					<label for="details">Details: <font color="red">*</font></label>
 					<textarea class="form-control" rows="10" id="details" name="details" ></textarea>

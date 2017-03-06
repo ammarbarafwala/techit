@@ -76,7 +76,7 @@
 		</div>
 	</c:if>
 	
-		<div class="row">
+		<div class="container">
 			<div class="col-sm-offset-2">
 				<c:choose>
 					<c:when test="${not adminModify}">
@@ -102,14 +102,27 @@
 								<label for="phoneNumber">Phone Number <font color="red">*</font></label>
 								<input type="text" class="form-control" id="phoneNumber" name="phoneNumber" value="${phoneNumber}">
 							</div>
-							
-							<div class="col-xs-10 col-md-10">
-							 	<button class="btn btn-lg btn-primary btn-block" name="Save" value="Save" type="submit">Confirm</button>
+								
+							<div class="form-group col-xs-10 col-md-10">
+								<label for="department">Department (Optional)</label> 
+								<select id="department" name ="department">
+								 	<c:forEach items="${departmentList}" var="dVar">
+								 		<c:choose>
+									 	  	<c:when test="${dVar ne sessionScope.department }">
+									 	  		 <option value="${dVar}">${dVar}</option>
+									 	  	</c:when>
+									 	  	<c:otherwise>
+									 	  		<option value="${dVar}" selected>${dVar}</option>
+									 	  	</c:otherwise>
+								 	  	</c:choose>
+									</c:forEach>
+								</select> 
 							</div>
-
-	<!-- 					<div class="form-group col-xs-10 col-md-10">
-							<input type="submit" id="Save" name="Save" value="Save" />
-						</div> -->
+							
+							<div class="container form-group text-center col-md-10 col-xs-10">
+								<a class="btn btn-default" type="button" id="hmBtn" href="Home"> <span class="glyphicon glyphicon-home" aria-hidden="true"></span> Back to Home</a>
+							 	<button class="btn btn-primary" name="Save" value="Save" type="submit">Confirm</button>
+							</div>
 						</form>
 					</c:when>
 					
@@ -133,13 +146,30 @@
 								<input type="text" class="form-control" name="email" value="${editUser.email}">
 							</div>
 							
+							
 							<div class="form-group col-xs-10 col-md-10">
 								<label for="phoneNumber">Phone Number <font color="red">*</font></label>
 								<input type="text" class="form-control" id="phoneNumber" name="phoneNumber" value="${editUser.phoneNumber}">
 							</div>
 							
-							<div class="form-group col-xs-10 col-md-10">
-								<label for="phoneNumber">Position <font color="red">*</font></label>
+							<div class="form-group col-xs-5 col-md-5">
+								<label for="department">Department (Optional)</label> 
+								<select id="department" name ="department">
+								 	<c:forEach items="${departmentList}" var="dVar">
+								 		<c:choose>
+									 	  	<c:when test="${dVar ne editUser.department }">
+									 	  		 <option value="${dVar}">${dVar}</option>
+									 	  	</c:when>
+									 	  	<c:otherwise>
+									 	  		<option value="${dVar}" selected>${dVar}</option>
+									 	  	</c:otherwise>
+								 	  	</c:choose>
+									</c:forEach>
+								</select> 
+							</div>
+							
+							<div class="form-group col-xs-5 col-md-5">
+								<label for="phoneNumber">Position <font color="red">*</font></label><br>
 								<select class="selectpicker" id="position" name="position">
 									<option value="${editUser.statusString}">${editUser.statusString}</option>
 									<c:forEach items="${positionList}" var="currPosition">
@@ -150,8 +180,9 @@
 								</select>
 							</div>
 							
-							<div class="col-xs-10 col-md-10">
-							 	<button class="btn btn-lg btn-primary btn-block" name="Save" value="Save" type="submit">Confirm</button>
+							<div class="container form-group text-center col-md-10 col-xs-10">
+								<a class="btn btn-default" type="button" id="hmBtn" href="Home"> <span class="glyphicon glyphicon-home" aria-hidden="true"></span> Back to Home</a>
+							 	<button class="btn btn-primary" name="Save" value="Save" type="submit">Confirm</button>
 							</div>
 						</form>
 						

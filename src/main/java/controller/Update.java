@@ -2,8 +2,8 @@ package controller;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -15,7 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
-import org.apache.commons.dbutils.DbUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import function.RetrieveData;
 import function.SendEmail;
@@ -36,17 +37,9 @@ public class Update extends HttpServlet {
 			List<String> progName = Arrays.asList("IN PROGRESS", "ON HOLD", "COMPLETED", "CLOSED");
 			int ticketId = Integer.parseInt(request.getParameter("id"));
 			String ticketProgress = request.getParameter("prog");
-			RetrieveData rd = null;
-			if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
-				rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
-			}
-			else{
-				String dbURL = request.getServletContext().getAttribute("dbURL").toString();
-				String dbUser = request.getServletContext().getAttribute("dbUser").toString();
-				String dbPass = request.getServletContext().getAttribute("dbPass").toString();
-				rd = new RetrieveData(dbURL, dbUser, dbPass);
-			}
-			request.setAttribute("ticket", rd.getFullTicket(ticketId));
+			RetrieveData rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
+			
+			request.setAttribute("ticket", rd.getTicket(ticketId));
 			request.setAttribute("ticketProg", progName);
 			request.setAttribute("ticket_progress", ticketProgress);
 			request.setAttribute("ticket_id", ticketId);
@@ -60,17 +53,8 @@ public class Update extends HttpServlet {
 		StringFilter sf = new StringFilter();
 		String updateMessage = sf.filterNull(request.getParameter("updateMessage"));
 		
-		RetrieveData rd = null;
-		if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
-			rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
-		}
-		else{
-			String dbURL = request.getServletContext().getAttribute("dbURL").toString();
-			String dbUser = request.getServletContext().getAttribute("dbUser").toString();
-			String dbPass = request.getServletContext().getAttribute("dbPass").toString();
-			rd = new RetrieveData(dbURL, dbUser, dbPass);
-		}
-		
+		RetrieveData rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
+		Logger updateTicketLog = LoggerFactory.getLogger(Update.class);
 		if(!updateMessage.isEmpty())
 		{
 			String newProg = request.getParameter("newProg");
@@ -82,25 +66,10 @@ public class Update extends HttpServlet {
 			java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			String currentTime = sdf.format(dt);
 			
-			Connection c = null;
-			PreparedStatement ptsmt = null;
-			PreparedStatement pstmt2 = null;
-			try{
-				if(Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString()))
-				{
-					c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
-				}
-				else{
-					String dbURL = request.getServletContext().getAttribute("dbURL").toString();
-					String dbUser = request.getServletContext().getAttribute("dbUser").toString();
-					String dbPass = request.getServletContext().getAttribute("dbPass").toString();
-
-					c = DriverManager.getConnection(dbURL, dbUser, dbPass);
-				}
+			try(Connection c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection()){
+				
 				if(!newProg.equals(oldProg)){
 					int status = 0;
-					
-					System.out.println("Before switch: " + status);
 					
 					switch(newProg){
 					case "IN PROGRESS":
@@ -119,33 +88,33 @@ public class Update extends HttpServlet {
 					}
 					
 					String update_ticket = "update tickets set Progress = ?, lastUpdated = ? where id = ?";
-					ptsmt = c.prepareStatement(update_ticket);
-					ptsmt.setInt(1, status);
-					ptsmt.setString(2, currentTime);
-					ptsmt.setInt(3, ticketId);
-					ptsmt.executeUpdate();
-					
+					try(PreparedStatement ptsmt = c.prepareStatement(update_ticket)){
+						ptsmt.setInt(1, status);
+						ptsmt.setString(2, currentTime);
+						ptsmt.setInt(3, ticketId);
+						ptsmt.executeUpdate();
+					}	
 				}
 				else{
 					String update_ticket = "update tickets set lastUpdated = ? where id = ?";
-					ptsmt = c.prepareStatement(update_ticket);
-					ptsmt.setString(1, currentTime);
-					ptsmt.setInt(2, ticketId);
-					ptsmt.executeUpdate();
-					
+					try(PreparedStatement ptsmt = c.prepareStatement(update_ticket)){
+						ptsmt.setString(1, currentTime);
+						ptsmt.setInt(2, ticketId);
+						ptsmt.executeUpdate();
+					}
 				}
 				
 				String insert_update = "insert into updates (ticketId, modifier, updateDetails, modifiedDate) values (?, ?, ?, ?) ";
-				pstmt2 = c.prepareStatement(insert_update);
-				pstmt2.setInt(1, ticketId);
-				pstmt2.setString(2, request.getSession().getAttribute("user").toString());
-				pstmt2.setString(3, updateMessage);
-				pstmt2.setString(4, currentTime);
-				pstmt2.executeUpdate();
+				try(PreparedStatement pstmt2 = c.prepareStatement(insert_update)){
+					pstmt2.setInt(1, ticketId);
+					pstmt2.setString(2, request.getSession().getAttribute("user").toString());
+					pstmt2.setString(3, updateMessage);
+					pstmt2.setString(4, currentTime);
+					pstmt2.executeUpdate();
+				}
 				
-				ptsmt.close();
-				pstmt2.close();
-				c.close();
+				updateTicketLog.info("User " + request.getSession().getAttribute("user").toString() + " has updated"
+						+ " ticket #" + ticketId + ".");
 				
 				Ticket ticket = rd.getTicket(ticketId);
 
@@ -222,28 +191,31 @@ public class Update extends HttpServlet {
 						}
 					}).start();
 				}
-				
 				request.getSession().setAttribute("tickets", rd.getUserTicket(request.getSession().getAttribute("user").toString(), 
 						Integer.parseInt(request.getSession().getAttribute("position").toString()), 
 						Integer.parseInt(request.getSession().getAttribute("unit_id").toString())));
 				
 				request.getSession().setAttribute("pSuccessMessage", "Successfully updated the ticket!");
 				response.sendRedirect("Details?id="+ticketId);				
-			}catch(Exception e){
-				e.printStackTrace();
+			}catch (SQLException e){
+				updateTicketLog.error("SQL Error @ Update (update ticket servlet).", e);
+
 				request.setAttribute("errorMessage", "Something went wrong when updating, please try again later!");
 				request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
-			}finally{
-				DbUtils.closeQuietly(ptsmt);
-				DbUtils.closeQuietly(pstmt2);
-				DbUtils.closeQuietly(c);
+				
+			}catch(Exception e){
+				updateTicketLog.error("Non-SQL Error @ Update (update ticket servlet).", e);
+				
+				request.setAttribute("errorMessage", "Something went wrong when updating, please try again later!");
+				request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 			}
 		}
 		else{
 			List<String> progName = Arrays.asList("IN PROGRESS", "ON HOLD", "COMPLETED", "CLOSED");
 			int ticketId = Integer.parseInt(request.getParameter("ticket_id"));
 			String ticketProgress = request.getParameter("oldProg").toString();
-			request.setAttribute("ticket", rd.getFullTicket(ticketId));
+			
+			request.setAttribute("ticket", rd.getTicket(ticketId));
 			request.setAttribute("ticketProg", progName);
 			request.setAttribute("ticket_progress", ticketProgress);
 			request.setAttribute("ticket_id", ticketId);

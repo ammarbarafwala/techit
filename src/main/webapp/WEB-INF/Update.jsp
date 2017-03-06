@@ -50,66 +50,112 @@
 		</div>
 	</c:if>
 	
-	<div id="ticketInfo" class="col-md-offset-1 col-md-10">
-		<div id="info" class="col-md-5">
-			<table class="col-sm-offset-2">
+	
+	<!-- Ticket information divs -->
+	<div  class="container" id="ticketInfo">
+		<div id="info" class="col-md-5 text-center">
+			<p><b>Details</b><br></p>
+			<table class="col-sm-offset-1 col-md-10">
 				<tr>
 					<td class="main"><b>Ticket ID</b></td>
-					<td class="sub"> ${ticket.id } </td>
+					<td class="main2"><b>Progress</b></td>
 				</tr>
 				<tr>
-					<td class="main"><b>Requester</b></td>
-					<td class="sub"> ${ticket.user } </td>
+					<td class="sub"> ${ticket.id } </td>
+					<c:choose>
+						<c:when test="${ticket.progress eq 'IN PROGRESS' }">
+							<td class="sub" style="background-color: #F5FCA4;"> ${ticket.progress } </td>
+						</c:when>
+						<c:when test="${ticket.progress eq 'COMPLETED' }">
+							<td class="sub" style="background-color: #DFF0D8;"> ${ticket.progress } </td>
+						</c:when>
+						<c:otherwise>
+							<td class="sub"> ${ticket.progress } </td>
+						</c:otherwise>
+					</c:choose>
+				</tr>
+				<tr>
+					<td class="main" colspan="2"><b>Requester</b></td>
+				</tr>
+				<tr>
+					<td class="sub" colspan="2"> ${ticket.userFirstName} ${ticket.userLastName }</td>
 				</tr>
 				<tr>
 					<td class="main"><b>Phone</b></td>
-					<td class="sub">${ticket.phone }</td>
+					<td class="main2"><b>Email</b> </td>
+					
 				</tr>
 				<tr>
-					<td class="main"><b>Email</b> </td>
+					<td class="sub">${ticket.phone }</td>
 					<td class="sub">${ticket.email }</td>
 				</tr>
 				<tr>
 					<td class="main"><b>Date Submitted</b> </td>
-					<td class="sub">${ticket.startDate }</td>
+					<td class="main2"><b>Department</b>
 				</tr>
 				<tr>
-					<td class="main"><b>Department</b>
+					<td class="sub">${ticket.startDate }</td>
 					<td class="sub">${ticket.department }</td>
 				</tr>
 				<tr>
-					<td class="main"><b>Location of Problem</b> </td>
-					<td class="sub">${ticket.ticketLocation }</td>
+					<td class="main3" colspan="2"><b>Location of Problem</b> </td>
 				</tr>
 				<tr>
-					<td class="main"><b>Details</b> </td>
-					<td class="sub">${ticket.details }</td>
+					<td class="sub" colspan="2">${ticket.ticketLocation }</td>
 				</tr>
-			
-			<c:choose>
-				<c:when test="${ticket.numOfTechnician > 0}">
-					<c:set var="counter" value="0" scope="page"/>
-						<tr>
-							<td class="main"><b>Technicians </b></td>
-							<td class="sub">
-							<c:forEach items="${ticket.technicians}" var="technicians">
-								<c:set var="counter" value="${counter+1}" scope="page"/>
-								
-								<c:choose>
-									<c:when test="${counter == ticket.numOfTechnician}">
-										${technicians.firstName} ${technicians.lastName } 
-									</c:when>
-									<c:otherwise>
-										${technicians.firstName} ${technicians.lastName }, 
-									</c:otherwise>
-								</c:choose>
-							</c:forEach>
-							</td>
-						</tr>
-				</c:when>
-			</c:choose>
+				<tr>
+					<td class="main3" colspan="2"><b>Priority</b> </td>
+				</tr>
+				<tr>
+					<c:choose>
+							<c:when test="${ticket.priority eq 'HIGH' }">
+								<td class="sub" style="color: red;" colspan="2">${ticket.priority }</td>
+							</c:when>
+							<c:when test="${ticket.priority eq 'MEDIUM' }">
+								<td class="sub" style="color: orange;" colspan="2">${ticket.priority }</td>
+							</c:when>
+							<c:otherwise>
+								<td class="sub" colspan="2">${ticket.priority }</td>
+							</c:otherwise>
+							
+						</c:choose>
+				</tr>
+				<tr>
+					<td class="main3" colspan="2"><b>Details</b> </td>
+				</tr>
+				<tr>
+					
+					<td class="sub" colspan="2">${ticket.details }</td>
+				</tr>
+				<tr>
+					<c:if test="${ticket.numOfTechnician > 0}">
+						<td class="main3" colspan="2"><b>Technicians </b></td>
+					</c:if>
+				</tr>
+				<c:choose>
+					<c:when test="${ticket.numOfTechnician > 0}">
+						<c:set var="counter" value="0" scope="page"/>
+							<tr>
+								<td class="sub" colspan="2">
+								<c:forEach items="${ticket.technicians}" var="technicians">
+									<c:set var="counter" value="${counter+1}" scope="page"/>
+									
+									<c:choose>
+										<c:when test="${counter == ticket.numOfTechnician}">
+											${technicians.firstName} ${technicians.lastName } 
+										</c:when>
+										<c:otherwise>
+											${technicians.firstName} ${technicians.lastName }, 
+										</c:otherwise>
+									</c:choose>
+								</c:forEach>
+								</td>
+							</tr>
+					</c:when>
+				</c:choose>
 			</table>
 		</div>
+		<div id="verticalLine" class="col-sm-offset-1"></div>
 		<div id="updates" class="col-md-5 text-center pull-right">
 			<p><b>Updates</b><br></p>
 			<table class="table table-striped table-bordered table-hover">
@@ -140,6 +186,7 @@
 		</div>
 	</div>
 	
+	<!-- Update form div -->
 	<div id="updateform" class="col-md-offset-3 col-md-6">
 		<form class="form-inline" action="Update" method="post">
 			<div id="formdiv">
@@ -164,7 +211,7 @@
 				</div>
 
 				<div id="btn" class="text-center">
-					<a class="btn btn-default" type="button" id="hmBtn" href="Home">Cancel Update</a>
+					<a class="btn btn-default" type="button" id="hmBtn" href="Details?id=${ticket.id}">Cancel Update</a>
 					<button class="btn btn-outline btn-primary" name="Update" value="Update" type="submit">Submit</button>
 				</div>
 			</div>

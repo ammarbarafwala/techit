@@ -177,6 +177,7 @@ form {
 					value="Reset" type="submit">Reset</button>
 			</form>
 		</div>
+	
 
 
 
@@ -190,7 +191,6 @@ form {
 
 		<!-- ------------------------------------------------ RECENT TICKETS SECTION ----------------------------------------------- -->
 
-<br>
 		<div id="rv">
 			<table class="table table-striped table-bordered table-hover" id="recent1">
 				<thead>
@@ -209,14 +209,26 @@ form {
 					<c:forEach items="${tickets}" var="item">
 						<tr>
 							<td>${item.id }</td>
-							<td>${item.user }</td>
-							<td>${item.details }</td>
-							<td>${item.startDate }</td>
-							<td>${item.lastUpdated }</td>
-							<td>${item.progress }</td>
+							<td>${item.userFirstName } ${item.userLastName}</td>
+							<td>${item.subject }</td>
+							<td>${item.startDate} ${item.startDateTime}</td>
+							<td>${item.lastUpdated} ${item.lastUpdateTime }</td>
+							
+							<c:choose>
+								<c:when test="${item.progress eq 'COMPLETED' }">
+									<td style="background-color: #DFF0D8;">${item.progress }</td>
+								</c:when>	
+								<c:when test="${item.progress eq 'IN PROGRESS' }">
+									<td style="background-color: #F5FCA4;">${item.progress }</td>
+								</c:when>	
+								<c:otherwise>
+									<td>${item.progress}</td>
+								</c:otherwise>
+							</c:choose>
+							
 							<c:choose>
 								<c:when test="${item.priority eq 'MEDIUM' }">
-									<td style="color: yellow;">${item.priority }</td>
+									<td style="color: orange;">${item.priority }</td>
 								</c:when>
 								
 								<c:when test="${item.priority eq 'HIGH' }">
@@ -258,14 +270,25 @@ form {
 							<c:when test="${item.progress ne 'COMPLETED' and item.progress ne 'CLOSED' }">
 								<tr>
 									<td>${item.id }</td>
-									<td>${item.user }</td>
-									<td>${item.details }</td>
-									<td>${item.startDate }</td>
-									<td>${item.lastUpdated }</td>
-									<td>${item.progress }</td>
+									<td>${item.userFirstName } ${item.userLastName}</td>
+									<td>${item.subject }</td>
+									<td>${item.startDate} ${item.startDateTime}</td>
+									<td>${item.lastUpdated} ${item.lastUpdateTime }</td>
+									<c:choose>
+										<c:when test="${item.progress eq 'COMPLETED' }">
+											<td style="background-color: #DFF0D8;">${item.progress }</td>
+										</c:when>	
+										<c:when test="${item.progress eq 'IN PROGRESS' }">
+											<td style="background-color: #F5FCA4;">${item.progress }</td>
+										</c:when>	
+										<c:otherwise>
+											<td>${item.progress}</td>
+										</c:otherwise>
+									</c:choose>
+									
 									<c:choose>
 										<c:when test="${item.priority eq 'MEDIUM' }">
-											<td style="color: yellow;">${item.priority }</td>
+											<td style="color: orange;">${item.priority }</td>
 										</c:when>
 										
 										<c:when test="${item.priority eq 'HIGH' }">
@@ -314,14 +337,25 @@ form {
 							<c:when test="${item.progress eq 'COMPLETED' or item.progress eq 'CLOSED' }">
 								<tr>
 									<td>${item.id }</td>
-									<td>${item.user }</td>
-									<td>${item.details }</td>
-									<td>${item.startDate }</td>
-									<td>${item.lastUpdated }</td>
-									<td>${item.progress }</td>
+									<td>${item.userFirstName } ${item.userLastName}</td>
+									<td>${item.subject }</td>
+									<td>${item.startDate} ${item.startDateTime}</td>
+									<td>${item.lastUpdated} ${item.lastUpdateTime }</td>
+									<c:choose>
+										<c:when test="${item.progress eq 'COMPLETED' }">
+											<td style="background-color: #DFF0D8;">${item.progress }</td>
+										</c:when>	
+										<c:when test="${item.progress eq 'IN PROGRESS' }">
+											<td style="background-color: #F5FCA4;">${item.progress }</td>
+										</c:when>	
+										<c:otherwise>
+											<td>${item.progress}</td>
+										</c:otherwise>
+									</c:choose>
+									
 									<c:choose>
 										<c:when test="${item.priority eq 'MEDIUM' }">
-											<td style="color: yellow;">${item.priority }</td>
+											<td style="color: orange;">${item.priority }</td>
 										</c:when>
 										
 										<c:when test="${item.priority eq 'HIGH' }">

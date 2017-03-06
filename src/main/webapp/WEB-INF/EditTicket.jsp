@@ -77,17 +77,22 @@
 
 
 				 <div class="form-group col-xs-5 col-md-5">
-				 	<label for="department">Department (Optional) </label>
-				    <input type="text" class="form-control" name="department" value="${ticket.department}">
+				 	<label for="department">Department (Optional) </label> <br>
+					<select id="department" name ="department">
+					 	<c:forEach items="${departmentList}" var="dVar">
+					 		<c:choose>
+						 	  	<c:when test="${dVar ne ticket.department }">
+						 	  		 <option value="${dVar}">${dVar}</option>
+						 	  	</c:when>
+						 	  	<c:otherwise>
+						 	  		<option value="${dVar}" selected>${dVar}</option>
+						 	  	</c:otherwise>
+					 	  	</c:choose>
+						</c:forEach>
+					</select> 
 				 </div>
-
-
-				<div class="form-group col-xs-5 col-md-5">
-					<label for="location">Location of Problem: <font color="red">*</font></label>
-					<input type="text" class="form-control" id="location"
-						name="location" value="${ticket.ticketLocation}">
-				</div>
-				<div class="form-group col-xs-5 col-md-5">
+				 
+				 <div class="form-group col-xs-5 col-md-5">
 					<label for="units">Units: <font color="red">*</font></label><br>
 					<select class="selectpicker" id="units" name="units" >
 						<c:forEach items="${unitList}" var="unit">
@@ -118,6 +123,20 @@
 						</div>
 					</div>
 				</div>
+
+
+				<div class="form-group col-xs-10 col-md-10">
+					<label for="location">Location of Problem: <font color="red">*</font></label>
+					<input type="text" class="form-control" id="location"
+						name="location" value="${ticket.ticketLocation}">
+				</div>
+				
+				<div class="form-group col-xs-10 col-md-10">
+					<label for="subject">Subject: <font color="red">*</font></label>
+					<input type="text" class="form-control" id="subject"
+						name="subject" value="${ticket.subject}">
+				</div>
+
 				<div class="form-group col-xs-10 col-md-10">
 					<label for="details">Details: <font color="red">*</font></label>
 					<textarea class="form-control" rows="10" id="details"
@@ -129,7 +148,7 @@
 					</b>
 				</div>
 				<div class="form-group col-xs-10 col-md-10">
-					<a href="Home"><button type="button"
+					<a href="Details?id=${ticket.id}"><button type="button"
 							class="btn btn-lg btn-primary ">Cancel</button></a>
 					<input type="hidden" name="id" value="${ticket.id}" />
 					<button class="btn btn-lg btn-primary " name="Submit"
