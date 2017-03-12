@@ -14,13 +14,6 @@
     <listener-class>function.Initialization</listener-class>
   </listener>
   <context-param>
-<<<<<<< HEAD
-    <param-name>onServer</param-name>
-    <param-value>false</param-value>
-  </context-param>
-  <context-param>
-=======
->>>>>>> 61b1120018bf6e4d8a225d35f085b754f2c8338c
     <param-name>domain</param-name>
     <param-value>cs3.calstatela.edu:4046/techit_production/</param-value>
   </context-param>
