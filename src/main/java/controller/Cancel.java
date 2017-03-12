@@ -2,7 +2,6 @@ package controller;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -15,7 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
-import org.apache.commons.dbutils.DbUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import function.RetrieveData;
 import function.SendEmail;
@@ -29,7 +29,7 @@ public class Cancel extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// Does nothing, no page
-		if(request.getSession().getAttribute("user")==null){
+		if(request.getSession().getAttribute("user") == null){
 			response.sendRedirect("Login");
 		}
 		else{
@@ -38,42 +38,25 @@ public class Cancel extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		int id = Integer.parseInt(request.getParameter("cancelBt"));
-		RetrieveData rd = null;
-		if (Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString())){
-			rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
-		}
-		else{
-			String dbURL = request.getServletContext().getAttribute("dbURL").toString();
-			String dbUser = request.getServletContext().getAttribute("dbUser").toString();
-			String dbPass = request.getServletContext().getAttribute("dbPass").toString();
-			rd = new RetrieveData(dbURL, dbUser, dbPass);
-		}
-		StringFilter sf = new StringFilter();
-		String rejected = sf.filterNull(request.getParameter("rejectInput"));
-		
-		Connection c = null;
-		PreparedStatement pstmt = null;
-		PreparedStatement insertUpdate = null;
-		String insertQuery = "insert into updates (ticketId, modifier, updateDetails, modifiedDate) values (?, ?, ?, ?) ";
-		try
-		{
-			if(Boolean.valueOf(request.getServletContext().getAttribute("onServer").toString()))
-			{
-				c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection();
-			}
-			else{
-				String dbURL = request.getServletContext().getAttribute("dbURL").toString();
-				String dbUser = request.getServletContext().getAttribute("dbUser").toString();
-				String dbPass = request.getServletContext().getAttribute("dbPass").toString();
 
-				c = DriverManager.getConnection(dbURL, dbUser, dbPass);
-			}
+		int id = Integer.parseInt(request.getParameter("cancelBt"));
+		RetrieveData rd = new RetrieveData((DataSource)request.getServletContext().getAttribute("dbSource"));
+		
+		StringFilter sf = new StringFilter();
+		
+		String rejected = sf.filterNull(request.getParameter("rejectInput"));
+
+		String insertQuery = "insert into updates (ticketId, modifier, updateDetails, modifiedDate) values (?, ?, ?, ?) ";
+		Logger cancelLog = LoggerFactory.getLogger(Cancel.class);
+		
+		try (Connection c = ((DataSource)request.getServletContext().getAttribute("dbSource")).getConnection()){
 			String cancel = "update tickets set Progress = ? where id = ?";
-            pstmt = c.prepareStatement( cancel );
-            pstmt.setInt( 1, 4 );
-            pstmt.setInt( 2, id );
-            pstmt.executeUpdate();	       
+            
+			try(PreparedStatement pstmt = c.prepareStatement( cancel )){
+	            pstmt.setInt( 1, 4 );
+	            pstmt.setInt( 2, id );
+	            pstmt.executeUpdate();
+			}
             
             
 			// Get current time
@@ -89,14 +72,15 @@ public class Cancel extends HttpServlet {
         	
             if(rejected.isEmpty()){
             	// This means that the user canceled the ticket
-            	insertUpdate = c.prepareStatement(insertQuery);
-            	insertUpdate.setInt(1, id);
-            	insertUpdate.setString(2, request.getSession().getAttribute("user").toString());
-            	insertUpdate.setString(3, "The ticket has been canceled by the requestor.");
-            	insertUpdate.setString(4, currentTime);
-            	insertUpdate.executeUpdate();
+            	try(PreparedStatement insertUpdate = c.prepareStatement(insertQuery)){
+	            	insertUpdate.setInt(1, id);
+	            	insertUpdate.setString(2, request.getSession().getAttribute("user").toString());
+	            	insertUpdate.setString(3, "The ticket has been canceled by the requestor.");
+	            	insertUpdate.setString(4, currentTime);
+	            	insertUpdate.executeUpdate();
+            	}
             	
-            	
+            	cancelLog.info("Ticket #" + id + " has ben canceled by requestor.");
             	
             	final String subjectDetails = "TECHIT - Ticket #" + id + " was canceled by the requestor.";
             	final String emailDetails = "The following ticket was canceled by the requestor. \n" 
@@ -119,13 +103,15 @@ public class Cancel extends HttpServlet {
             }
             else{
             	// This means the supervisor declined/rejected the ticket
-            	insertUpdate = c.prepareStatement(insertQuery);
-            	insertUpdate.setInt(1, id);
-            	insertUpdate.setString(2, request.getSession().getAttribute("user").toString());
-            	insertUpdate.setString(3, "The ticket has been closed by the supervisor. Reason: " + rejected);
-            	insertUpdate.setString(4, currentTime);
-            	insertUpdate.executeUpdate();
+            	try(PreparedStatement insertUpdate = c.prepareStatement(insertQuery)){
+	            	insertUpdate.setInt(1, id);
+	            	insertUpdate.setString(2, request.getSession().getAttribute("user").toString());
+	            	insertUpdate.setString(3, "The ticket has been closed by the supervisor. Reason: " + rejected);
+	            	insertUpdate.setString(4, currentTime);
+	            	insertUpdate.executeUpdate();
+            	}
             	
+            	cancelLog.info("Ticket #" + id + " has been closed by a supervisor. \nReason: " + rejected);
             	
             	final String subjectDetails = "TECHIT - Your ticket #" + id + " was declined by a supervisor.";
             	final String emailDetails = "Your following ticket was declined by a supervisor. \n" 
@@ -148,26 +134,22 @@ public class Cancel extends HttpServlet {
 	    			}).start();
             	}
             }
-            
-            pstmt.close();
-            insertUpdate.close();
-            c.close();
 			request.getSession().setAttribute("tickets", rd.getUserTicket(request.getSession().getAttribute("user").toString(), 
 					Integer.parseInt(request.getSession().getAttribute("position").toString()), 
 					Integer.parseInt(request.getSession().getAttribute("unit_id").toString())));
 			
 			request.getSession().setAttribute("pSuccessMessage", "Ticket has closed successfully!");
 			response.sendRedirect("Details?id="+id);
-		}
-		catch(SQLException e){
+			
+		}catch(SQLException e){
+			cancelLog.error("SQL Error @ Cancel.", e);
 			request.setAttribute("errorMessage", "Something went wrong during cancelation, please try again later!");
 			request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
-			e.printStackTrace();
-		}finally{
-				DbUtils.closeQuietly(pstmt);
-				DbUtils.closeQuietly(insertUpdate);
-				DbUtils.closeQuietly(c);
+			
+		}catch(Exception e){
+			cancelLog.error("Non-SQL Error @ Cancel.", e);
+			request.setAttribute("errorMessage", "Something went wrong during cancelation, please try again later!");
+			request.getRequestDispatcher("/WEB-INF/Home.jsp").forward(request, response);
 		}
 	}
-
 }

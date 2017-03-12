@@ -14,16 +14,19 @@
     <listener-class>function.Initialization</listener-class>
   </listener>
   <context-param>
+<<<<<<< HEAD
     <param-name>onServer</param-name>
     <param-value>false</param-value>
   </context-param>
   <context-param>
+=======
+>>>>>>> 61b1120018bf6e4d8a225d35f085b754f2c8338c
     <param-name>domain</param-name>
     <param-value>cs3.calstatela.edu:4046/techit_production/</param-value>
   </context-param>
   <context-param>
     <param-name>dbURL</param-name>
-    <param-value>jdbc:mysql://cs3.calstatela.edu/cs4961stu01</param-value>
+    <param-value>jdbc:mysql://localhost/cs4961stu01</param-value>
   </context-param>
   <context-param>
     <param-name>dbUser</param-name>
@@ -32,5 +35,9 @@
   <context-param>
     <param-name>dbPass</param-name>
     <param-value>.XCGG1Bc</param-value>
+  </context-param>
+  <context-param>
+  	<param-name>departmentList</param-name>
+  	<param-value>Civil Engineering,Computer Science,Electrical and Computer Engineering,Mechanical Engineering,Technology</param-value>
   </context-param>
 </web-app>

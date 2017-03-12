@@ -1,7 +1,10 @@
  package model;
 
-public class User {
+import java.io.Serializable;
 
+public class User implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private int id; 				// User's unique id
 	private String firstName; 		// User's first name
 	private String lastName; 		// User's last name
@@ -52,6 +55,7 @@ public class User {
 		this.userName = username;
 		this.phoneNumber = phone;
 		this.email = email;
+		this.department = department;
 		switch(position)
 		{
 			case 0:

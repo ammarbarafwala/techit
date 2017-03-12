@@ -228,7 +228,7 @@ public class AndroidLogin extends HttpServlet {
 						jsonObj.addProperty("error", "Invalid username or password, please try again!");
 	    			}
 	    			else{
-	    				jsonObj.addProperty("error", "CSULA account authentication seems to be down, please try again later!");
+	    				jsonObj.addProperty("error", "Invalid username or password, please try again!");
 	    			}
 	    		}
 	    		else

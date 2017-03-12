@@ -77,6 +77,43 @@
 			</div>
 		</div>
 	</div>
+	
+	<!-- Accept Ticket Modal Pop up -->
+	<div class="modal fade" id="myModalAccept" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+				<!-- Modal header -->
+
+				<div class="modal-header" id="acceptModalHeader">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">Accept Ticket
+						Confirmation</h4>
+				</div>
+
+				<!-- Modal Body Content -->
+
+				<div class="modal-body" id="acceptModalBody">
+					<p>By accepting this ticket, you will be assigning yourself as the technician who is working to complete this job.</p>
+					<p>Are you sure you want to accept this ticket?</p>
+				</div>
+
+				<!-- Modal Footer & Button options -->
+
+				<div class="modal-footer">
+					<form class="AssignTechnician" name="AssignTechnicianForm" action="AssignTechnician"
+						method="post">
+						<button type="button" class="btn btn-danger" data-dismiss="modal">No</button>
+						<button type="submit" class="btn btn-success" name="assignTechnicianBt"
+							id="assignTechnicianBt" value="${ticket.id}">Yes</button>
+					</form>
+
+				</div>
+
+			</div>
+		</div>
+	</div>
 
 	<!-- Reject Modal Pop up -->
 	<div class="modal fade" id="myModalReject" role="dialog">
@@ -178,84 +215,157 @@
 			${ successMessage }
 		</div>
 	</c:if>
+	
+	 <!-- Buttons -->
+	<div class="container text-center" id="btnDiv">	
+		<div class="btn-group" id="btnGroup">		
+			<!-- Back to home -->
+			<!-- Glyph icon by http://glyphicons.com/ -->
+			<a class="btn btn-default" type="button" id="hmBtn" href="Home"> <span class="glyphicon glyphicon-home" aria-hidden="true"></span> Back to Home</a>
+			<c:if test="${(sessionScope.user eq ticket.user and ticket.progress eq 'OPEN') or sessionScope.position == 0}">
+				<!--  Cancel  -->
+				<button type="button" class="btn btn-default"
+					onClick="cleanInput('cancel', ${ticket.id})" data-toggle="modal"
+					data-target="#myModalCancel">Cancel Ticket</button>
+				<!--   Edit   -->
+				<a href="EditTicket?id=${ticket.id}"
+					class="btn btn-default">Edit Ticket</a>
+			</c:if>
+	
+			<c:if test="${ sessionScope.position == 1 and ticket.progress eq 'OPEN'  and sessionScope.user ne ticket.user}">
+				<button type="button" class="btn btn-default"
+					onClick="cleanInput('reject', ${ticket.id})" data-toggle="modal"
+					data-target="#myModalReject">Decline Ticket</button>
+			</c:if>
+	
+	
+	
+			<c:if test="${sessionScope.position <= 2}">
+				<a href="Update?id=${ticket.id}" type="button"
+					class="btn btn-default">Update Ticket</a>
+			</c:if>
+			<c:if test="${sessionScope.position <= 1 and ticket.progress ne 'COMPLETED' and ticket.progress ne 'CLOSED'}">
+				<a href="AssignTechnician?id=${ticket.id}&prog=${ticket.progress}" type="button" class="btn btn-default" >Assign Technician</a> 
+				<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModalPriority">Set Priority</button>
+			</c:if>
+			<c:if test="${sessionScope.position == 2 and assigned eq 'false' and ticket.progress ne 'CLOSED'}">
+				<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModalAccept">Accept Ticket</button>
+			</c:if>
+		</div>
+	</div>
 
-	<div class="container">
-		<div id="ticketInfo" class="container col-md-offset-1 col-md-10 text-center">
-			<table class="col-sm-offset-2 col-md-8">
+	<!-- TICKET INFORMATION -->
+	<div class="container" id="ticketAndUpdateContainer">
+		<div id="ticketInfo" class="col-md-5 text-center">
+			<h4><b>Details</b></h4>
+			<table class="col-sm-offset-1 col-md-10">
 				<tr>
 					<td class="main"><b>Ticket ID</b></td>
-					<td class="sub"> ${ticket.id } </td>
+					<td class="main2"><b>Progress</b></td>
 				</tr>
 				<tr>
-					<td class="main"><b>Requester</b></td>
-					<td class="sub"> ${ticket.user } </td>
+					<td class="sub"> ${ticket.id } </td>
+					<c:choose>
+						<c:when test="${ticket.progress eq 'IN PROGRESS' }">
+							<td class="sub" style="background-color: #F5FCA4;"> ${ticket.progress } </td>
+						</c:when>
+						<c:when test="${ticket.progress eq 'COMPLETED' }">
+							<td class="sub" style="background-color: #DFF0D8;"> ${ticket.progress } </td>
+						</c:when>
+						<c:otherwise>
+							<td class="sub"> ${ticket.progress } </td>
+						</c:otherwise>
+					</c:choose>
+				</tr>
+				<tr>
+					<td class="main3" colspan="2"><b>Requester</b></td>
+				</tr>
+				<tr>
+					<td class="sub" colspan="2"> ${ticket.userFirstName } ${ticket.userLastName } </td>
 				</tr>
 				<tr>
 					<td class="main"><b>Phone</b></td>
-					<td class="sub">${ticket.phone }</td>
+					<td class="main2"><b>Email</b> </td>
 				</tr>
 				<tr>
-					<td class="main"><b>Email</b> </td>
+					<td class="sub">${ticket.phone }</td>
 					<td class="sub">${ticket.email }</td>
 				</tr>
 				<tr>
 					<td class="main"><b>Date Submitted</b> </td>
-					<td class="sub">${ticket.startDate }</td>
+					<td class="main2"><b>Department</b>
 				</tr>
 				<tr>
-					<td class="main"><b>Department</b>
+					
+					<td class="sub">${ticket.startDate } ${ticket.startDateTime}</td>
 					<td class="sub">${ticket.department }</td>
 				</tr>
 				<tr>
-					<td class="main"><b>Location of Problem</b> </td>
-					<td class="sub">${ticket.ticketLocation }</td>
+					<td class="main3" colspan="2"><b>Location of Problem</b> </td>
 				</tr>
 				<tr>
-					<td class="main"><b>Priority</b> </td>
+					<td class="sub" colspan="2">${ticket.ticketLocation }</td>
+				</tr>
+				<tr>
+					<td class="main3" colspan="2"><b>Priority</b>
+				</tr>
+				<tr>
 					<c:choose>
-						<c:when test="${ticket.priority eq 'HIGH' }">
-							<td class="sub" style="color: red;">${ticket.priority }</td>
-						</c:when>
-						<c:when test="${ticket.priority eq 'MEDIUM' }">
-							<td class="sub" style="color: yellow;">${ticket.priority }</td>
-						</c:when>
-						<c:otherwise>
-							<td class="sub">${ticket.priority }</td>
-						</c:otherwise>
-						
-					</c:choose>
+							<c:when test="${ticket.priority eq 'HIGH' }">
+								<td class="sub" style="color: red;" colspan="2">${ticket.priority }</td>
+							</c:when>
+							<c:when test="${ticket.priority eq 'MEDIUM' }">
+								<td class="sub" style="color: orange;" colspan="2">${ticket.priority }</td>
+							</c:when>
+							<c:otherwise>
+								<td class="sub" colspan="2">${ticket.priority }</td>
+							</c:otherwise>
+							
+						</c:choose>
 				</tr>
 				<tr>
-					<td class="main"><b>Details</b> </td>
-					<td class="sub">${ticket.details }</td>
+					<td class="main3" colspan="2"><b>Subject</b></td>
 				</tr>
-			
-			<c:choose>
-				<c:when test="${ticket.numOfTechnician > 0}">
-					<c:set var="counter" value="0" scope="page"/>
-						<tr>
-							<td class="main"><b>Technicians </b></td>
-							<td class="sub">
-							<c:forEach items="${ticket.technicians}" var="technicians">
-								<c:set var="counter" value="${counter+1}" scope="page"/>
-								
-								<c:choose>
-									<c:when test="${counter == ticket.numOfTechnician}">
-										${technicians.firstName} ${technicians.lastName } 
-									</c:when>
-									<c:otherwise>
-										${technicians.firstName} ${technicians.lastName }, 
-									</c:otherwise>
-								</c:choose>
-							</c:forEach>
-							</td>
-						</tr>
-				</c:when>
-			</c:choose>
+				<tr>
+					<td class="sub" colspan="2">${ticket.subject }</td>
+				</tr>
+				<tr>
+					<td class="main3" colspan="2"><b>Details</b> </td>
+				</tr>
+				<tr>
+					
+					<td class="sub" colspan="2">${ticket.details }</td>
+				</tr>
+				<tr>
+					<c:if test="${ticket.numOfTechnician > 0}">
+						<td class="main3" colspan="2"><b>Technicians </b></td>
+					</c:if>
+				</tr>
+				<c:choose>
+					<c:when test="${ticket.numOfTechnician > 0}">
+						<c:set var="counter" value="0" scope="page"/>
+							<tr>
+								<td class="sub" colspan="2">
+								<c:forEach items="${ticket.technicians}" var="technicians">
+									<c:set var="counter" value="${counter+1}" scope="page"/>
+									
+									<c:choose>
+										<c:when test="${counter == ticket.numOfTechnician}">
+											${technicians.firstName} ${technicians.lastName } 
+										</c:when>
+										<c:otherwise>
+											${technicians.firstName} ${technicians.lastName }, 
+										</c:otherwise>
+									</c:choose>
+								</c:forEach>
+								</td>
+							</tr>
+					</c:when>
+				</c:choose>
 			</table>
 		</div>
-		
-		<div id="ticketUpdates" class="col-md-offset-1 col-md-10 text-center">
+		<div id="verticalLine" class="col-sm-offset-1"></div>
+		<div id="ticketUpdates" class="col-xs-5 text-center">
 			<c:choose>
 				<c:when test="${ticket.numOfUpdates > 0}">
 					<h4><b>Updates</b></h4>
@@ -293,37 +403,6 @@
 					</table>
 				</c:otherwise>
 			</c:choose>
-		</div>
-		<div class="col-md-offset-1 col-md-10 text-center">			
-			<a class="btn btn-default" type="button" id="hmBtn" href="Home">Back to Home</a>
-			<c:choose>
-				<c:when
-					test="${(sessionScope.user eq ticket.user and ticket.progress eq 'OPEN') or sessionScope.position == 0}">
-					<!--  Cancel  -->
-					<button type="button" class="btn btn-default"
-						onClick="cleanInput('cancel', ${ticket.id})" data-toggle="modal"
-						data-target="#myModalCancel">Cancel Ticket</button>
-					<!--   Edit   -->
-					<a href="EditTicket?id=${ticket.id}"
-						class="navbar-btn btn btn-default">Edit Ticket</a>
-				</c:when>
-	
-				<c:when test="${ sessionScope.position == 1 and ticket.progress eq 'OPEN'  and sessionScope.user ne ticket.user}">
-					<button type="button" class="btn btn-default"
-						onClick="cleanInput('reject', ${ticket.id})" data-toggle="modal"
-						data-target="#myModalReject">Decline Ticket</button>
-				</c:when>
-			</c:choose>
-	
-	
-			<c:if test="${sessionScope.position <= 2}">
-				<a href="Update?id=${ticket.id}" type="button"
-					class="navbar-btn btn btn-default">Update Ticket</a>
-			</c:if>
-			<c:if test="${sessionScope.position <= 1 and ticket.progress ne 'COMPLETED' and ticket.progress ne 'CLOSED'}">
-				<a href="AssignTechnician?id=${ticket.id}&prog=${ticket.progress}" type="button" class="navbar-btn btn btn-default" >Assign Technician</a> 
-				<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModalPriority">Set Priority</button>
-			</c:if>
 		</div>
 	</div>
 </body>

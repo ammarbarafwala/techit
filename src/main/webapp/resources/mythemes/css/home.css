@@ -4,7 +4,7 @@
 	background:white;
 }
 
-td{
+.td{
 	max-width: 30%;
 	word-wrap: break-word;
 	word-break: break-all;

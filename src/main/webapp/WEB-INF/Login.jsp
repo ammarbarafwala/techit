@@ -36,8 +36,8 @@
 			</div>
 		</c:if>
 		<div class="container col-md-offset-2 col-md-8" id="infos">
-			<p>TECHIT is a work-order system created for ECST's TechOps and services under their jurisdiction.</p>
-			<p>If you have request not related to the above, please report them to the designated facilities.</p>
+			<p>TECHIT is a work-order system created for ECST's TechOPs.</p>
+			<p>If you have a request not related to the above, please report it to the designated facility.</p>
 			<p><b>If you have an emergency, please call 911 or contact the emergency lines!</b></p>
 		</div>
 		<div class="container col-md-offset-4 col-md-4" id="login-form">

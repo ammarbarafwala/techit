@@ -1,22 +1,25 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import model.User;
 
-public class Ticket {
+public class Ticket implements Serializable{
+	private static final long serialVersionUID = 1L;
 	
 	private int id; // Ticket's unique id.
 	private String username; // The user who requested the ticket.
-	private String userFirstName;
-	private String userLastName;
-	private List<User> technicians;
-	private Progress currentProgress;
-	private Priority currentPriority;
+	private String userFirstName;	// Requester's first name
+	private String userLastName;	// Requester's last name
+	private List<User> technicians;	// List of all technicians 
+	private Progress currentProgress; // Current progress of the ticket
+	private Priority currentPriority; // Importance or level of urgency of the ticket
 	private String phone; // Requestor's phone
 	private String email; // Requestor's email. May be different from the User's login email.
-	private String department;
+	private String department; // Department that is related to the ticket or the person who created the ticket
 
+	// Type of progresses
 	private enum Progress {
 		OPEN(0), INPROGRESS(1), ONHOLD(2), COMPLETED(3), CLOSED(4);
 
@@ -51,6 +54,7 @@ public class Ticket {
 
 	};
 	
+	// Type of priority
 	private enum Priority {
 		NA(0), LOW(1), MEDIUM(2), HIGH(3);
 		private int priority;
@@ -83,16 +87,16 @@ public class Ticket {
 		}
 	};
 
-	// Constant values that apply to the status of a project
-	// private Status status; //<-- This was changed into a list of comments
-	private int unitId;
-	private String details; // Text concerning the project.
-	private Date startDate; // Project's starting date.
-	private Date endDate; // Project's completed date.
-	private Date lastUpdated;
-	private String lastUpdatedTime;
-	private String ticketLocation; // Location where the project is.
-	private List<Update> updates;
+	private int unitId;				// The unit that was assigned to the ticket.
+	private String subject;			// Subject of the ticket.
+	private String details; 		// Text concerning the project.
+	private Date startDate; 		// Project's starting date.
+	private String startDateTime;	// Time of when the ticket was created.
+	private Date endDate; 			// When the project was completed.
+	private Date lastUpdated;		// Last date where changes were made to the ticket (edits, technician updates, etc.)
+	private String lastUpdatedTime; // Same as lastUpdated but this is for the time changes were made.
+	private String ticketLocation; 	// Location where the project is.
+	private List<Update> updates;	// List of all updates that was made to the ticket.
 	// Needs more work...
 	private String completionDetails; // Information pertaining vendors, cost,
 										// materials used.
@@ -100,8 +104,8 @@ public class Ticket {
 	// Full constructor for every field, probably need when pulling existing
 	// data from database
 	public Ticket(int id, String username, String firstName, String lastName, List<User> technician, String phone, String email, String department, int progress, int priority, 
-			int unitId, String details, Date startDate, Date endDate, Date lastUpdated, String lastUpdatedTime, String ticketLocation, List<Update> updates, 
-			String completionDetails) {
+			int unitId, String subject, String details, Date startDate, String startDateTime, Date endDate, Date lastUpdated, String lastUpdatedTime, 
+			String ticketLocation, List<Update> updates, String completionDetails) {
 		this.id = id;
 		this.username = username;
 		this.userFirstName = firstName;
@@ -147,8 +151,10 @@ public class Ticket {
 		}
 		
 		this.unitId = unitId;
+		this.subject = subject;
 		this.details = details;
 		this.startDate = startDate;
+		this.startDateTime = startDateTime;
 		this.endDate = endDate;
 		this.lastUpdated = lastUpdated;
 		this.lastUpdatedTime = lastUpdatedTime;
@@ -159,7 +165,7 @@ public class Ticket {
 	}
 	// Constructor without updates list and technicians list
 	public Ticket(int id, String username, String userFirstName, String userLastName, String phone, String email, String department, int priority, int unitId, 
-			String details, Date startDate, Date lastUpdated, String ticketLocation) {
+			String subject, String details, Date startDate, Date lastUpdated, String ticketLocation) {
 		this.id = id;
 		this.username = username;
 		this.userFirstName = userFirstName;
@@ -168,6 +174,7 @@ public class Ticket {
 		this.email = email;
 		this.department = department;
 		this.unitId = unitId;
+		this.subject = subject;
 		this.details = details;
 		this.startDate = startDate;
 		this.lastUpdated = lastUpdated;
@@ -192,7 +199,7 @@ public class Ticket {
 	
 	// Constructor without updates list
 	public Ticket(int id, String username, String userFirstName, String userLastName, String phone, String email, String department, int priority,
-			int unitId, String details, Date startDate, Date lastUpdated, String ticketLocation, List<User> technicianList){
+			int unitId, String subject, String details, Date startDate, Date lastUpdated, String ticketLocation, List<User> technicianList){
 		this.id = id;
 		this.username = username;
 		this.userFirstName = userFirstName;
@@ -200,6 +207,7 @@ public class Ticket {
 		this.phone = phone;
 		this.email = email;
 		this.unitId = unitId;
+		this.subject = subject;
 		this.details = details;
 		this.startDate = startDate;
 		this.lastUpdated = lastUpdated;
@@ -223,6 +231,8 @@ public class Ticket {
 		}
 		this.department = department;
 	}
+	
+	// --------------- Getters and Setters below ---------------
 	
 	public String getUserFirstName() {
 		return userFirstName;
@@ -290,8 +300,18 @@ public class Ticket {
 		this.email = email;
 	}
 
+	public String getSubject() {
+		return subject;
+	}
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
 	public String getDetails() {
 		return details;
+	}
+
+	public void setDetails(String details) {
+		this.details = details;
 	}
 	
 	public String getDepartment(){
@@ -302,10 +322,6 @@ public class Ticket {
 		this.department = department;
 	}
 
-	public void setDetails(String details) {
-		this.details = details;
-	}
-
 	public Date getStartDate() {
 		return startDate;
 	}
@@ -314,6 +330,12 @@ public class Ticket {
 		this.startDate = startDate;
 	}
 
+	public String getStartDateTime() {
+		return startDateTime;
+	}
+	public void setStartDateTime(String startDateTime) {
+		this.startDateTime = startDateTime;
+	}
 	public Date getEndDate() {
 		return endDate;
 	}
@@ -325,7 +347,7 @@ public class Ticket {
 	public Date getLastUpdated() {
 		return lastUpdated;
 	}
-
+	
 	public void setLastUpdated(Date lastUpdated) {
 		this.lastUpdated = lastUpdated;
 	}
@@ -436,7 +458,8 @@ public class Ticket {
 				+ "Requestor's Name: " + this.userFirstName + " " 
 				+ this.userLastName + "\n" 
 				+ "Location: " + this.ticketLocation +"\n"
-				+ "Department:" + this.department + "\n"
+				+ "Department: " + this.department + "\n"
+				+ "Subject: " +this.subject +"\n"
 				+ "Details: " + this.details;
 	}
 	
