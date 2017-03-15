@@ -1,12 +1,14 @@
 package function;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.dbutils.DbUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,19 +30,21 @@ public class LoginFunction {
 	}
 	
 	// Don't use this constructor; Deprecated.
-/*	public int checkSystemAccount(String dbURL, String dbUser, String dbPass, String user, String password) throws SQLException 
+	
+	//NOTE: This version is the only one working for the Android Application. Further improvments of the method will be necessary for the mobile
+	//application.
+	public int checkSystemAccount(String dbURL, String dbUser, String dbPass, String user, String password) throws SQLException 
 	{
 		StringFilter sf = new StringFilter();
-		 This method checks the input information with the one in the database.
+		 /*This method checks the input information with the one in the database.
 		 * The method returns one of the following:
 		 * 		0 -- User doesn't exist in the database
 		 * 		1 -- User exist but since password is empty, the account is not
 		 * 				 a special account
 		 * 		2 -- User exists but incorrect password
 		 * 		3 -- User exists, password is correct, user information is saved
-		 * 				into the LoginFunction class variable
-		 
-		
+		 * 				into the LoginFunction class variable*/
+
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
@@ -130,7 +134,7 @@ public class LoginFunction {
 		}
 		
 		return returnInt;
-	}*/
+	}
 	
 	/**
 	 *  This method uses the DataSource param object to create a connection to the database.
