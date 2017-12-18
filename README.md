@@ -1,21 +1,29 @@
-# job_tracker
-web application that tracks a technician's current progress on a project.
+# TechIT: A Work Order System for ECST College at CSULA
 
-Working front-end for users right now. Need to implement technician page, supervisor page, admin page and the following implementations...
+TechIT is a work order system developed by Brandon Ung, Minh Ha, Duc Le, Kevin
+Castillo, and Marjorie Zelaya as their senior design project at Cal State LA.
+The system is currently used by
+[Technical Operations](http://www.calstatela.edu/ecst/ecst-technician-0) of the
+ECST College at CSULA. More information about the project can be found [here]
+(https://csns.calstatela.edu/department/cs/project/view?id=5530052).
 
-- Create ticket
-- cancel ticket
-- edit ticket (for user, technician, and supervisor perspective)
-- assign techinician
-- add accounts
-- add units
-- temp supervisors
+## Software Requirements
 
-Also need to rework database fields.
-=======
-# TechITApp
-TechIT on the phone.
+Java and Maven are required to build the project, and MySQL and a Java EE
+application server (e.g. Tomcat) are required to run it.
 
-This application allows a technician to access the TechIT service. Thet will be able to create, modify and take a ticket that has been created by by the user. 
+## Development Using Eclipse
 
-This application is still under development. The current version allows the technician to login using their CSULA portal accounts. The technician first must be assigned as technicians by the system administrator before using this app.
+1. Clone the project from its GitHub repository.
+2. In Eclipse, select *File* -> *Import* ... -> *Existing Maven Projects* to
+   import the project into Eclipse.
+3. Create an empty MySQL database.
+4. Populate the database using the following two SQL scripts:
+   * `src/main/scripts/techit-create.sql`
+   * `src/main/scripts/techit-test-insert.sql`
+5. Copy `build.properties.sample` to `build.properties`, and change
+   the values in `build.properties` to match your environment.
+6. In Eclipse, right click on the project and select *Maven* -> *Update Project ...*
+   to update the project.
+7. In Eclipse, right click on the project and select *Run As* -> *Run on Server*
+   to run the project.
